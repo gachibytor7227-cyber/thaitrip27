@@ -12,7 +12,7 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen pb-28">
+<body class="bg-slate-950 text-slate-100 min-h-screen pb-24">
 
     <!-- Верхняя панель -->
     <header class="sticky top-0 z-30 bg-slate-950 border-b border-slate-800 px-4 py-2.5 shadow-md">
@@ -22,7 +22,7 @@
                     <span>🌴 Thai Trip 2027</span>
                     <span id="total-counter" class="text-[11px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-bold">75 объектов</span>
                 </h1>
-                <p id="status-line" class="text-[11px] text-slate-400">Бангкок (Башни с бассейном) • Ко Тао • Самуи</p>
+                <p id="status-line" class="text-[11px] text-emerald-400 font-medium">⚡ Автообновление базы активно</p>
             </div>
             <!-- Смена имени -->
             <button type="button" onclick="changeUserName()" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 border border-slate-700 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-200 cursor-pointer">
@@ -35,9 +35,9 @@
         <!-- Вкладки локаций -->
         <div class="max-w-xl mx-auto mt-2 flex gap-1.5 overflow-x-auto no-scrollbar pb-1">
             <button type="button" onclick="setFilter('all')" id="tab-all" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-amber-500 text-slate-950 cursor-pointer">Все (75)</button>
-            <button type="button" onclick="setFilter('bangkok')" id="tab-bangkok" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">🏙 Бангкок (25)</button>
-            <button type="button" onclick="setFilter('tao')" id="tab-tao" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">🐢 Ко Тао (25)</button>
-            <button type="button" onclick="setFilter('samui')" id="tab-samui" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">🏝 Самуи (25)</button>
+            <button type="button" onclick="setFilter('bangkok')" id="tab-bangkok" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">🏙 Бангкок • Башни (25)</button>
+            <button type="button" onclick="setFilter('tao')" id="tab-tao" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">🐢 Ко Тао • Отели (25)</button>
+            <button type="button" onclick="setFilter('samui')" id="tab-samui" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">🏝 Самуи • Виллы (25)</button>
             <button type="button" onclick="setFilter('top')" id="tab-top" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">🏆 Избранные</button>
         </div>
 
@@ -67,50 +67,37 @@
         </div>
     </header>
 
-    <!-- Основной контент -->
+    <!-- Список карточек -->
     <main class="max-w-xl mx-auto px-4 pt-3">
-        <div id="seed-banner" class="hidden mb-4 bg-blue-950/80 border border-blue-500/40 rounded-2xl p-3.5 text-center">
-            <p class="text-xs font-bold text-blue-300 mb-2">⚡ Оптимизация базы данных (по 25 лучших объектов, 1 фото)</p>
-            <button type="button" onclick="resetToOptimizedCatalog(true)" id="sync-catalog-btn" class="bg-blue-500 hover:bg-blue-400 active:scale-95 text-white font-extrabold px-4 py-2 rounded-xl text-xs shadow cursor-pointer">
-                🚀 Перезаписать облегченную базу (75 объектов)
-            </button>
-        </div>
-
         <div id="properties-list" class="space-y-4"></div>
     </main>
 
     <!-- Нижняя панель -->
     <div class="fixed bottom-0 left-0 right-0 z-20 bg-slate-950 border-t border-slate-800 p-3">
         <div class="max-w-xl mx-auto flex gap-2">
-            <button type="button" onclick="openAddModal()" class="flex-1 bg-amber-500 hover:bg-amber-400 active:scale-[0.98] text-slate-950 font-black py-3 rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-1.5 cursor-pointer">
-                <span class="text-base leading-none">＋</span> Добавить свой вариант
-            </button>
-            <button type="button" onclick="openBookingHubModal()" class="bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-extrabold px-3.5 py-3 rounded-2xl text-xs flex items-center gap-1 cursor-pointer">
-                📥 База (75)
-            </button>
-            <button type="button" onclick="loadProperties(true)" class="bg-slate-800 hover:bg-slate-700 active:scale-95 border border-slate-700 text-slate-200 font-bold px-3.5 py-3 rounded-2xl text-sm cursor-pointer" title="Обновить">
-                🔄
+            <button type="button" onclick="openAddModal()" class="flex-1 bg-amber-500 hover:bg-amber-400 active:scale-[0.98] text-slate-950 font-black py-3 rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-1.5 cursor-pointer shadow-lg">
+                <span class="text-base leading-none">＋</span> Добавить свой отель / виллу
             </button>
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО 1: Добавление + Парсер Booking.com -->
+    <!-- МОДАЛЬНОЕ ОКНО: Добавление + Авто-парсер Booking.com -->
     <div id="add-modal" style="display: none !important;" class="fixed inset-0 z-50 bg-black/80 items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-slate-900 border border-slate-700 w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 max-h-[92vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-3">
-                <h2 class="text-base font-black text-white">➕ Добавить отель или виллу</h2>
+                <h2 class="text-base font-black text-white">➕ Добавить свой вариант</h2>
                 <button type="button" onclick="closeAddModal()" class="text-slate-400 hover:text-white text-2xl font-bold px-2 py-1 cursor-pointer">✕</button>
             </div>
 
             <div class="bg-blue-950/50 border border-blue-600/40 rounded-2xl p-3 mb-4">
-                <label class="text-xs font-extrabold text-blue-300 block mb-1.5">⚡ Быстрый импорт по ссылке с Booking.com:</label>
+                <label class="text-xs font-extrabold text-blue-300 block mb-1.5">⚡ Вставь ссылку с Booking.com (данные и фото подтянутся сами):</label>
                 <div class="flex gap-2">
-                    <input id="booking-parse-url" type="url" placeholder="Вставь ссылку с Booking.com..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-blue-400">
+                    <input id="booking-parse-url" type="url" oninput="autoParseOnPaste()" placeholder="https://www.booking.com/hotel/th/..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-blue-400">
                     <button type="button" onclick="parseBookingUrl()" id="parse-btn" class="bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-bold px-3.5 py-2 rounded-xl text-xs whitespace-nowrap cursor-pointer">
-                        ⚡ Подтянуть
+                        ⚡ Найти
                     </button>
                 </div>
-                <p id="parse-status" class="text-[11px] text-slate-400 mt-1.5">Вытащит название, фото, город и даты</p>
+                <p id="parse-status" class="text-[11px] text-slate-400 mt-1.5">Автоматически найдет название, реальное фото отеля и даты</p>
             </div>
 
             <form id="add-form" onsubmit="submitNewProperty(event)" class="space-y-3 text-sm">
@@ -155,8 +142,8 @@
                 </div>
 
                 <div>
-                    <label class="text-xs text-slate-400 font-semibold block mb-1">Ссылка на фото (необязательно)</label>
-                    <input id="f-image" type="url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs outline-none">
+                    <label class="text-xs text-slate-400 font-semibold block mb-1">Ссылка на фото (если пусто — найдет реальное фото отеля автоматически)</label>
+                    <input id="f-image" type="url" placeholder="Оставь пустым для автопоиска фото по названию отеля" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs outline-none">
                 </div>
 
                 <div>
@@ -165,53 +152,17 @@
                 </div>
 
                 <button type="submit" id="submit-btn" class="w-full bg-emerald-500 hover:bg-emerald-400 active:scale-[0.98] text-slate-950 font-black py-3 rounded-2xl text-sm cursor-pointer">
-                    ✅ Сохранить в базу
+                    ✅ Сохранить в общую базу
                 </button>
             </form>
-        </div>
-    </div>
-
-    <!-- МОДАЛЬНОЕ ОКНО 2: Управление базой (75 объектов) -->
-    <div id="booking-hub-modal" style="display: none !important;" class="fixed inset-0 z-50 bg-black/80 items-end sm:items-center justify-center p-0 sm:p-4">
-        <div class="bg-slate-900 border border-slate-700 w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 max-h-[90vh] overflow-y-auto space-y-4">
-            <div class="flex justify-between items-center">
-                <h2 class="text-base font-black text-white">📥 Управление базой (75 объектов)</h2>
-                <button type="button" onclick="closeBookingHubModal()" class="text-slate-400 hover:text-white text-2xl font-bold px-2 py-1 cursor-pointer">✕</button>
-            </div>
-
-            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3">
-                <h3 class="text-xs font-extrabold uppercase tracking-wider text-amber-400">1. Оптимизированная база (по 25 объектов)</h3>
-                <p class="text-xs text-slate-300 leading-relaxed">
-                    Очищает старые тяжелые записи и загружает <b>25 отелей в башнях с бассейном в Бангкоке</b> (6–9 марта), <b>25 отелей на Ко Тао</b> (9–15 марта) и <b>25 вилл на Самуи</b> (15–22 марта). Ваши добавленные вручную варианты сохраняются:
-                </p>
-                <button type="button" onclick="resetToOptimizedCatalog(true)" class="w-full bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-black py-3 rounded-xl text-xs cursor-pointer">
-                    🚀 Сбросить до 75 быстрых объектов в базе
-                </button>
-            </div>
-
-            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3">
-                <h3 class="text-xs font-extrabold uppercase tracking-wider text-emerald-400">2. Поиск на Booking.com (чтобы добавить свои)</h3>
-                <div class="space-y-2 text-xs">
-                    <a href="https://www.booking.com/searchresults.ru.html?ss=Bangkok&checkin=2027-03-06&checkout=2027-03-09&group_adults=5&no_rooms=3&nflt=ht_id%3D204%3Bhotelfacility%3D433" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between bg-slate-900 hover:bg-slate-800 border border-slate-700 p-3 rounded-xl text-slate-100 font-bold">
-                        <span>🏙 Бангкок: Отели с бассейном, 3 номера</span>
-                        <span class="text-amber-400">Booking ↗</span>
-                    </a>
-                    <a href="https://www.booking.com/searchresults.ru.html?ss=Ko+Tao&checkin=2027-03-09&checkout=2027-03-15&group_adults=5&no_rooms=3&nflt=ht_id%3D204%3Bht_id%3D206" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between bg-slate-900 hover:bg-slate-800 border border-slate-700 p-3 rounded-xl text-slate-100 font-bold">
-                        <span>🐢 Ко Тао: Отели и резорты, 3 номера</span>
-                        <span class="text-amber-400">Booking ↗</span>
-                    </a>
-                    <a href="https://www.booking.com/searchresults.ru.html?ss=Koh+Samui&checkin=2027-03-15&checkout=2027-03-22&group_adults=5&no_rooms=1&nflt=ht_id%3D213" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between bg-slate-900 hover:bg-slate-800 border border-slate-700 p-3 rounded-xl text-slate-100 font-bold">
-                        <span>🏝 Самуи: Виллы 3 спальни</span>
-                        <span class="text-amber-400">Booking ↗</span>
-                    </a>
-                </div>
-            </div>
         </div>
     </div>
 
     <script>
         const SUPABASE_URL = "https://ezlxpcbyxxduigbtbvso.supabase.co";
         const SUPABASE_KEY = "sb_publishable_ImsCFPDEuLHSiLqKEL08SQ_Ef_a1f9F";
+        // Версия каталога: при изменении структуры/фото база обновляется сама без кнопок
+        const CATALOG_VERSION_TAG = "Booking_v5_RealPhotos";
 
         const tg = window.Telegram?.WebApp;
         if (tg) {
@@ -240,12 +191,6 @@
         function closeAddModal() {
             document.getElementById("add-modal").style.setProperty("display", "none", "important");
         }
-        function openBookingHubModal() {
-            document.getElementById("booking-hub-modal").style.setProperty("display", "flex", "important");
-        }
-        function closeBookingHubModal() {
-            document.getElementById("booking-hub-modal").style.setProperty("display", "none", "important");
-        }
         function clearSearch() {
             document.getElementById("search-input").value = "";
             renderList();
@@ -268,43 +213,11 @@
             updatePricePreview();
         }
 
-        // Оптимизированные сжатые фото (w=600&q=75) для мгновенной загрузки
-        const PHOTO_POOL = {
-            bangkok: [
-                "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=600&q=75"
-            ],
-            tao: [
-                "https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1559494007-9f5847c49d94?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=75"
-            ],
-            samui: [
-                "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=75",
-                "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=75"
-            ]
-        };
+        // Генератор прямой ссылки на РЕАЛЬНОЕ фото конкретного отеля/виллы
+        function buildRealHotelPhotoUrl(exactSearchQuery, idx = 0) {
+            const serverNum = (idx % 4) + 1;
+            return `https://tse${serverNum}.mm.bing.net/th?q=${encodeURIComponent(exactSearchQuery)}&w=640&h=380&c=7&rs=1&p=0`;
+        }
 
         const LOCATION_NAMES = {
             bangkok: "🏙 Бангкок • Башня",
@@ -313,107 +226,104 @@
         };
 
         // =========================================================================
-        // 1. БАНГКОК — 25 ОТЕЛЕЙ СТРОГО В БАШНЯХ И ОБЯЗАТЕЛЬНО С БАССЕЙНОМ (6–9 МАРТА, 3 НОМЕРА)
+        // 1. БАНГКОК — 25 ОТЕЛЕЙ В БАШНЯХ С БАССЕЙНОМ (6–9 МАРТА, 3 ОТДЕЛЬНЫХ НОМЕРА)
+        // [Название, Цена_РУБ_за_3_номера, Описание, Booking_Slug, Точный_Запрос_Реального_Фото]
         // =========================================================================
         const RAW_BANGKOK = [
-            ["Baiyoke Sky Hotel 4★ (Башня 84 этажа + Бассейн)", 42000, "Знаменитый небоскреб 84 этажа в Пратунаме! Открытый бассейн на 20 этаже + бесплатный вход на вращающуюся смотровую на крыше.", "hotel/th/baiyoke-sky.ru.html"],
-            ["Eastin Grand Hotel Sathorn 5★ (Башня 33 этажа + Инфинити)", 78000, "Небоскреб с прямым переходом на станцию BTS Surasak! Культовый панорамный инфинити-бассейн на 14 этаже над городом.", "hotel/th/eastin-grand-sathorn.ru.html"],
-            ["Eastin Grand Hotel Phayathai 5★ (Башня 51 этаж + 2 бассейна)", 92000, "Новейший небоскреб! 2 панорамных инфинити-бассейна на высоте (22 и 37 этаж) и прямой переход на поезд из аэропорта.", "hotel/th/eastin-grand-phayathai.ru.html"],
-            ["Centara Grand at CentralWorld 5★ (Башня 55 этажей + Бассейн)", 96000, "Небоскреб прямо над ТЦ CentralWorld! Большой бассейн с джакузи на 26 этаже + знаменитый бар Red Sky на 55 этаже.", "hotel/th/centara-grand-at-centralworld.ru.html"],
-            ["Banyan Tree Bangkok 5★ (Башня 61 этаж + Панорамный бассейн)", 114000, "Высотная башня на Сатхоне: открытый бассейн на 21 этаже над небоскребами и легендарный бар Moon Bar на 61 этаже.", "hotel/th/banyan-tree-bangkok.ru.html"],
-            ["Avani+ Riverside Bangkok Hotel 5★ (Башня 26 этажей + Инфинити)", 88000, "Потрясающий панорамный инфинити-бассейн на самой крыше башни (26 этаж) с видом на реку Чао Прайя и скайлайн.", "hotel/th/avani-riverside-bangkok.ru.html"],
-            ["Grande Centre Point Terminal 21 5★ (Башня 32 этажа + Инфинити)", 93000, "Башня прямо над ТЦ Terminal 21 (пересечение BTS Asok и MRT). Огромный панорамный инфинити-бассейн в парке на высоте.", "hotel/th/grande-centre-point-sukhumvit-terminal-21.ru.html"],
-            ["Carlton Hotel Bangkok Sukhumvit 5★ (Башня 34 этажа + Бассейн)", 87000, "Флагманская стеклянная башня 5★ на Сукхумвите: 30-метровый открытый бассейн на 10 этаже и руфтоп на 34 этаже.", "hotel/th/carlton-bangkok-sukhumvit.ru.html"],
-            ["Skyview Hotel Bangkok Sukhumvit 24 5★ (Башня 35 этажей + Инфинити)", 74000, "Небоскреб в 100 м от ТЦ EmQuartier: инфинити-бассейн на 8 этаже и клубный руфтоп-бар Vanilla Sky на 35 этаже.", "hotel/th/compass-skyview.ru.html"],
-            ["Bangkok Marriott Hotel The Surawongse 5★ (Башня 32 этажа + Инфинити)", 102000, "Один из самых красивых открытых инфинити-бассейнов Бангкока на 18 этаже башни с прямым видом на Mahanakhon.", "hotel/th/bangkok-marriott-the-surawongse.ru.html"],
-            ["Bangkok Marriott Hotel Sukhumvit 5★ (Башня 49 этажей, Тонглор)", 99000, "Высотная башня у BTS Thong Lo: открытый бассейн на 7 этаже + трехуровневый панорамный бар Octave на 45–49 этажах.", "hotel/th/bangkok-marriott-sukhumvit.ru.html"],
-            ["SO/ Bangkok 5★ (Башня 30 этажей + Панорамный инфинити)", 118000, "Дизайнерская башня 5★ с панорамным инфинити-бассейном на 10 этаже с видом на парк Люмпини и небоскребы Сатхона.", "hotel/th/sofitel-so-bangkok.ru.html"],
-            ["The Standard, Bangkok Mahanakhon 5★ (Башня 78 этажей + Бассейн)", 165000, "Внутри знаменитого пиксельного небоскреба Mahanakhon! Открытый бассейн на террасе + бесплатный вход на SkyWalk 78 этаж.", "hotel/th/the-standard-bangkok-mahanakhon.ru.html"],
-            ["Millennium Hilton Bangkok 5★ (Башня 32 этажа у ICONSIAM)", 95000, "Небоскреб на берегу реки рядом с ТЦ ICONSIAM: панорамный инфинити-бассейн с шезлонгами прямо в воде и бар на 32 этаже.", "hotel/th/millennium-hilton-bangkok.ru.html"],
-            ["Hotel Indigo Bangkok Wireless Road 5★ (Башня 26 этажей + Инфинити)", 94000, "Открытый панорамный инфинити-бассейн на 24 этаже на самом краю башни с видом на небоскребы Пленчит.", "hotel/th/indigo-bangkok-wireless-road.ru.html"],
-            ["Sindhorn Midtown Hotel Bangkok 5★ (Башня 31 этаж + Инфинити)", 79000, "Современная башня IHG со знаменитым панорамным бассейном Horizon Pool на 18 этаже и баром у воды.", "hotel/th/sindhorn-midtowm.ru.html"],
-            ["The Continent Hotel Asok BTS 5★ (Башня 39 этажей + Бассейн)", 66000, "Небоскреб прямо на перекрестке Асок и Сукхумвит: панорамный бассейн на 37 этаже с видом на весь город.", "hotel/th/the-continent-bangkok.ru.html"],
-            ["Mode Sathorn Hotel 4★ (Башня 38 этажей + Инфинити-бассейн)", 49000, "Стильная башня у ступенек BTS Surasak: панорамный инфинити-бассейн на 11 этаже и видовой руфтоп на 38 этаже.", "hotel/th/mode-sathorn-hotel-manage-by-siam-siam.ru.html"],
-            ["JC Kevin Sathorn Bangkok Hotel 5★ (Башня 40 этажей + Бассейн)", 52000, "Высотная башня 5★ по супер-цене: огромный бассейн-лагуна на террасе и панорамный руфтоп Zoom на 40 этаже.", "hotel/th/anantara-baansathorn-bangkok.ru.html"],
-            ["Amari Bangkok 5★ (Башня 34 этажа + Большой бассейн)", 72000, "Башня 5★ в центре Пратунама (пешком до CentralWorld и Сиама) с большим панорамным бассейном и баром.", "hotel/th/amari-watergate-bangkok.ru.html"],
-            ["Radisson Blu Plaza Bangkok 5★ (Башня 30 этажей, Асок)", 76000, "Небоскреб 5★ в 4 минутах от BTS Asok: открытый бассейн на высоком этаже и панорамный бар на 30 этаже.", "hotel/th/radisson-blu-plaza-bangkok.ru.html"],
-            ["W Bangkok 5★ (Башня 31 этаж + Дизайнерский бассейн)", 105000, "Тусовочный небоскреб 5★ рядом с башней Mahanakhon: необычный бассейн WET Deck с подводной музыкой.", "hotel/th/w-bangkok.ru.html"],
-            ["Novotel Bangkok Sukhumvit 20 4★ (Башня 26 этажей + Инфинити)", 61000, "Высотный отель с панорамным инфинити-бассейном на 9 этаже и руфтоп-баром Sky on 20 на 26 этаже.", "hotel/th/novotel-bangkok-sukhumvit-20.ru.html"],
-            ["Pullman Bangkok Hotel G 5★ (Башня 38 этажей + Бассейн)", 65000, "Белоснежная башня в районе Силом с панорамными окнами в пол, открытым бассейном и баром Scarlett на 37 этаже.", "hotel/th/pullman-bangkok-g.ru.html"],
-            ["Siam@Siam Design Hotel 4.5★ (Башня 25 этажей + Инфинити)", 66000, "Дизайнерская башня в центре Сиама: открытый панорамный инфинити-бассейн на 11 этаже и руфтоп на 25 этаже.", "hotel/th/siam-siam-design-hotel-bangkok.ru.html"]
+            ["Baiyoke Sky Hotel 4★ (Башня 84 этажа + Бассейн)", 42000, "Знаменитый небоскреб 84 этажа в Пратунаме! Открытый бассейн на 20 этаже + бесплатный вход на вращающуюся смотровую на крыше.", "hotel/th/baiyoke-sky.ru.html", "Baiyoke Sky Hotel Bangkok tower exterior pool"],
+            ["Eastin Grand Hotel Sathorn 5★ (Башня 33 этажа + Инфинити)", 78000, "Небоскреб с прямым переходом на станцию BTS Surasak! Культовый панорамный инфинити-бассейн на 14 этаже над городом.", "hotel/th/eastin-grand-sathorn.ru.html", "Eastin Grand Hotel Sathorn Bangkok infinity pool"],
+            ["Eastin Grand Hotel Phayathai 5★ (Башня 51 этаж + 2 бассейна)", 92000, "Новейший небоскреб! 2 панорамных инфинити-бассейна на высоте (22 и 37 этаж) и прямой переход на поезд из аэропорта.", "hotel/th/eastin-grand-phayathai.ru.html", "Eastin Grand Hotel Phayathai Bangkok infinity pool"],
+            ["Centara Grand at CentralWorld 5★ (Башня 55 этажей + Бассейн)", 96000, "Небоскреб прямо над ТЦ CentralWorld! Большой бассейн с джакузи на 26 этаже + знаменитый бар Red Sky на 55 этаже.", "hotel/th/centara-grand-at-centralworld.ru.html", "Centara Grand at CentralWorld Bangkok hotel pool"],
+            ["Banyan Tree Bangkok 5★ (Башня 61 этаж + Панорамный бассейн)", 114000, "Высотная башня на Сатхоне: открытый бассейн на 21 этаже над небоскребами и легендарный бар Moon Bar на 61 этаже.", "hotel/th/banyan-tree-bangkok.ru.html", "Banyan Tree Bangkok hotel swimming pool"],
+            ["Avani+ Riverside Bangkok Hotel 5★ (Башня 26 этажей + Инфинити)", 88000, "Потрясающий панорамный инфинити-бассейн на самой крыше башни (26 этаж) с видом на реку Чао Прайя и скайлайн.", "hotel/th/avani-riverside-bangkok.ru.html", "Avani+ Riverside Bangkok Hotel rooftop infinity pool"],
+            ["Grande Centre Point Terminal 21 5★ (Башня 32 этажа + Инфинити)", 93000, "Башня прямо над ТЦ Terminal 21 (пересечение BTS Asok и MRT). Огромный панорамный инфинити-бассейн на высоте.", "hotel/th/grande-centre-point-sukhumvit-terminal-21.ru.html", "Grande Centre Point Terminal 21 Bangkok pool"],
+            ["Carlton Hotel Bangkok Sukhumvit 5★ (Башня 34 этажа + Бассейн)", 87000, "Флагманская стеклянная башня 5★ на Сукхумвите: 30-метровый открытый бассейн на 10 этаже и руфтоп на 34 этаже.", "hotel/th/carlton-bangkok-sukhumvit.ru.html", "Carlton Hotel Bangkok Sukhumvit swimming pool"],
+            ["Skyview Hotel Bangkok Sukhumvit 24 5★ (Башня 35 этажей + Инфинити)", 74000, "Небоскреб в 100 м от ТЦ EmQuartier: инфинити-бассейн на 8 этаже и клубный руфтоп-бар Vanilla Sky на 35 этаже.", "hotel/th/compass-skyview.ru.html", "Skyview Hotel Bangkok Sukhumvit 24 pool"],
+            ["Bangkok Marriott Hotel The Surawongse 5★ (Башня 32 этажа + Инфинити)", 102000, "Один из самых красивых открытых инфинити-бассейнов Бангкока на 18 этаже башни с прямым видом на Mahanakhon.", "hotel/th/bangkok-marriott-the-surawongse.ru.html", "Bangkok Marriott Hotel The Surawongse infinity pool"],
+            ["Bangkok Marriott Hotel Sukhumvit 5★ (Башня 49 этажей, Тонглор)", 99000, "Высотная башня у BTS Thong Lo: открытый бассейн на 7 этаже + трехуровневый панорамный бар Octave на 45–49 этажах.", "hotel/th/bangkok-marriott-sukhumvit.ru.html", "Bangkok Marriott Hotel Sukhumvit pool Octave"],
+            ["SO/ Bangkok 5★ (Башня 30 этажей + Панорамный инфинити)", 118000, "Дизайнерская башня 5★ с панорамным инфинити-бассейном на 10 этаже с видом на парк Люмпини и небоскребы Сатхона.", "hotel/th/sofitel-so-bangkok.ru.html", "SO Bangkok hotel infinity pool Lumpini Park"],
+            ["The Standard, Bangkok Mahanakhon 5★ (Башня 78 этажей + Бассейн)", 165000, "Внутри знаменитого пиксельного небоскреба Mahanakhon! Открытый бассейн на террасе + бесплатный вход на SkyWalk 78 этаж.", "hotel/th/the-standard-bangkok-mahanakhon.ru.html", "The Standard Bangkok Mahanakhon hotel pool"],
+            ["Millennium Hilton Bangkok 5★ (Башня 32 этажа у ICONSIAM)", 95000, "Небоскреб на берегу реки рядом с ТЦ ICONSIAM: панорамный инфинити-бассейн с шезлонгами в воде и бар на 32 этаже.", "hotel/th/millennium-hilton-bangkok.ru.html", "Millennium Hilton Bangkok hotel pool river"],
+            ["Hotel Indigo Bangkok Wireless Road 5★ (Башня 26 этажей + Инфинити)", 94000, "Открытый панорамный инфинити-бассейн на 24 этаже на самом краю башни с видом на небоскребы Пленчит.", "hotel/th/indigo-bangkok-wireless-road.ru.html", "Hotel Indigo Bangkok Wireless Road infinity pool"],
+            ["Sindhorn Midtown Hotel Bangkok 5★ (Башня 31 этаж + Инфинити)", 79000, "Современная башня IHG со знаменитым панорамным бассейном Horizon Pool на 18 этаже и баром у воды.", "hotel/th/sindhorn-midtowm.ru.html", "Sindhorn Midtown Hotel Bangkok Horizon infinity pool"],
+            ["The Continent Hotel Asok BTS 5★ (Башня 39 этажей + Бассейн)", 66000, "Небоскреб прямо на перекрестке Асок и Сукхумвит: панорамный бассейн на 37 этаже с видом на весь город.", "hotel/th/the-continent-bangkok.ru.html", "The Continent Hotel Bangkok Sukhumvit pool"],
+            ["Mode Sathorn Hotel 4★ (Башня 38 этажей + Инфинити-бассейн)", 49000, "Стильная башня у ступенек BTS Surasak: панорамный инфинити-бассейн на 11 этаже и видовой руфтоп на 38 этаже.", "hotel/th/mode-sathorn-hotel-manage-by-siam-siam.ru.html", "Mode Sathorn Hotel Bangkok infinity pool"],
+            ["JC Kevin Sathorn Bangkok Hotel 5★ (Башня 40 этажей + Бассейн)", 52000, "Высотная башня 5★ по супер-цене: огромный бассейн-лагуна на террасе и панорамный руфтоп Zoom на 40 этаже.", "hotel/th/anantara-baansathorn-bangkok.ru.html", "JC Kevin Sathorn Bangkok Hotel pool"],
+            ["Amari Bangkok 5★ (Башня 34 этажа + Большой бассейн)", 72000, "Башня 5★ в центре Пратунама (пешком до CentralWorld и Сиама) с большим панорамным бассейном и баром.", "hotel/th/amari-watergate-bangkok.ru.html", "Amari Bangkok hotel swimming pool"],
+            ["Radisson Blu Plaza Bangkok 5★ (Башня 30 этажей, Асок)", 76000, "Небоскреб 5★ в 4 минутах от BTS Asok: открытый бассейн на высоком этаже и панорамный бар на 30 этаже.", "hotel/th/radisson-blu-plaza-bangkok.ru.html", "Radisson Blu Plaza Bangkok rooftop pool"],
+            ["W Bangkok 5★ (Башня 31 этаж + Дизайнерский бассейн)", 105000, "Тусовочный небоскреб 5★ рядом с башней Mahanakhon: необычный бассейн WET Deck с подводной музыкой.", "hotel/th/w-bangkok.ru.html", "W Bangkok hotel WET Deck swimming pool"],
+            ["Novotel Bangkok Sukhumvit 20 4★ (Башня 26 этажей + Инфинити)", 61000, "Высотный отель с панорамным инфинити-бассейном на 9 этаже и руфтоп-баром Sky on 20 на 26 этаже.", "hotel/th/novotel-bangkok-sukhumvit-20.ru.html", "Novotel Bangkok Sukhumvit 20 infinity pool"],
+            ["Pullman Bangkok Hotel G 5★ (Башня 38 этажей + Бассейн)", 65000, "Белоснежная башня в районе Силом с панорамными окнами в пол, открытым бассейном и баром Scarlett на 37 этаже.", "hotel/th/pullman-bangkok-g.ru.html", "Pullman Bangkok Hotel G Silom exterior pool"],
+            ["Siam@Siam Design Hotel 4.5★ (Башня 25 этажей + Инфинити)", 66000, "Дизайнерская башня в центре Сиама: открытый панорамный инфинити-бассейн на 11 этаже и руфтоп на 25 этаже.", "hotel/th/siam-siam-design-hotel-bangkok.ru.html", "Siam at Siam Design Hotel Bangkok infinity pool"]
         ];
 
         // =========================================================================
-        // 2. КО ТАО — 25 ЛУЧШИХ ОТЕЛЕЙ И РЕЗОРТОВ (9–15 МАРТА, 3 НОМЕРА)
+        // 2. КО ТАО — 25 РЕАЛЬНЫХ ОТЕЛЕЙ И РЕЗОРТОВ (9–15 МАРТА, 3 ОТДЕЛЬНЫХ НОМЕРА)
         // =========================================================================
         const RAW_TAO = [
-            ["Sai Daeng Resort 4★ (Мыс Shark Bay — 3 отдельных номера)", 96000, "Знаменитый отель на полуострове: снорклинг с черепахами и рифовыми акулами прямо с берега, панорамный бассейн.", "hotel/th/sai-daeng-resort.ru.html"],
-            ["Haad Tien Beach Resort 4★ (Лагуна Shark Bay — 3 номера)", 134000, "Лучший пляжный курорт острова в бирюзовой бухте Shark Bay: пальмовая роща, белый песок и бассейн у моря.", "hotel/th/haadtien-beach-resort.ru.html"],
-            ["Beach Club by Haadtien 4★ (Пляж Shark Bay — 3 номера)", 118000, "Стильный отель прямо у кромки воды в бухте Хаад Тхиан с большим инфинити-бассейном на пляже.", "hotel/th/beach-club-by-haadtien.ru.html"],
-            ["Jamahkiri Dive Resort & Spa 5★ (Shark Bay — 3 номера)", 124000, "Пятизвездочный спа-отель над заливом Тхиан Ог: панорамные номера, бассейн в скалах и свой пирс для снорклинга.", "hotel/th/jamahkiri-spa-resort.ru.html"],
-            ["The Tarna Align Resort 4★ (Сайри — 3 отдельных номера)", 92000, "Современный 4★ отель с двухъярусным инфинити-бассейном, суши-баром на закате и панорамой на весь остров.", "hotel/th/the-tarna-align-resort.ru.html"],
-            ["Dusit Buncha Koh Tao 4★ (Вид на Nang Yuan — 3 номера)", 86000, "Знаменитый вид на три островка Ко Нанг Юань! Инфинити-бассейн в гранитных валунах и отличный снорклинг.", "hotel/th/dusit-buncha-resort.ru.html"],
-            ["Sensi Paradise Beach Resort 3.5★ (Мае Хаад — 3 номера)", 89000, "Атмосферный эко-отель у тихого пляжа Мае Хаад: огромный каскадный бассейн и завтраки у самой воды.", "hotel/th/sensi-paradise-beach-resort.ru.html"],
-            ["Koh Tao Cabana Hotel 4★ (Север пляжа Сайри — 3 номера)", 105000, "Курортный отель в самом красивом и чистом северном углу пляжа Сайри с бассейном и деревянной набережной.", "hotel/th/koh-tao-cabana.ru.html"],
-            ["Ban's Diving Resort 4★ (Центр пляжа Сайри — 3 номера)", 74000, "Главный курорт в центре Сайри Бич: 4 бассейна в тропическом парке, пляжный ресторан и бар Fishbowl.", "hotel/th/ban-s-diving-resort.ru.html"],
-            ["View Point Resort 4★ (Мыс Чалок — 3 отдельных номера)", 98000, "Уединенный отель на зеленом мысе Чалок с собственным секретным пляжем, бассейном и панорамным рестораном.", "hotel/th/view-point-resort.ru.html"],
-            ["Pinnacle Koh Tao Resort 4★ (Пляж June Juea Bay — 3 номера)", 82000, "Отель в собственной тихой бухте Джун Джуа: панорамный бассейн, коралловый риф и бесплатный шаттл.", "hotel/th/pinnacle-koh-tao-resort.ru.html"],
-            ["Koh Tao Montra Resort 4★ (Пляж Мае Хаад — 3 номера)", 76000, "Курортный отель на первой линии Мае Хаад с самым большим трехуровневым бассейном на острове.", "hotel/th/koh-tao-montra-resort-and-spa.ru.html"],
-            ["Blue Tao Beach Hotel 3.5★ (1-я линия Сайри — 3 номера)", 72000, "Современный чистый отель прямо на пешеходной набережной пляжа Сайри с видом на закат.", "hotel/th/blue-tao-beach.ru.html"],
-            ["Seashell Resort Koh Tao 3★ (Пляж Сайри — 3 номера)", 66000, "Первая линия пляжа Сайри в окружении пальм: свой бассейн, дайв-центр и пляжное кафе.", "hotel/th/seashell-resort-koh-tao.ru.html"],
-            ["Coral Grand Resort 3.5★ (Пляж Сайри — 3 номера)", 69000, "Курортный отель вокруг большого бассейна прямо на берегу моря в спокойной части Сайри.", "hotel/th/coral-grand-resort.ru.html"],
-            ["Simple Life Talay & Divers Resort 3.5★ (Сайри — 3 номера)", 62000, "Свежий отель с большим бассейном прямо у выхода на пляж Сайри, рядом ночной рынок и кафе.", "hotel/th/simple-life-talay-amp-divers-resort.ru.html"],
-            ["Wind Beach Resort 3.5★ (1-я линия Сайри — 3 номера)", 65000, "Два бассейна, отличный пляжный гриль-бар на закате и размещение в самом центре Сайри Бич.", "hotel/th/wind-beach-resort.ru.html"],
-            ["Koh Tao Beach Club 3.5★ (Пляж Мае Хаад — 3 номера)", 68000, "Первая линия песчаного пляжа Мае Хаад в 5 минутах от пирса, бассейн прямо у воды.", "hotel/th/beach-club-koh-tao-ko-tao2.ru.html"],
-            ["Koh Tao Relax Freedom Beach Resort 3★ (Freedom Beach)", 64000, "Отель прямо на знаменитом пляже Freedom Beach и в бухте Таа То. Коралловый риф в 10 метрах от берега.", "hotel/th/taatoh-resort.ru.html"],
-            ["Diamond Beach Resort 3★ (Пляж Сайри — 3 номера)", 54000, "Выгодный отель на первой линии главного пляжа Сайри рядом с вечерними фаер-шоу и барами.", "hotel/th/diamond-beach-bungalow.ru.html"],
-            ["Mango Bay Boutique Resort 4★ (Бухта Манго Бэй — 3 номера)", 99000, "Бутик-отель над изумрудной водой самой красивой коралловой бухты севера острова.", "hotel/th/mango-bay-boutique-resort.ru.html"],
-            ["Montalay Beach Resort 3.5★ (Пляж Таноте Бэй — 3 номера)", 64000, "Отель с бассейном на пляже Таноте Бэй, где живые кораллы и черепахи плавают в 20 метрах от берега.", "hotel/th/montalay-beach-resort.ru.html"],
-            ["Chintakiri Resort 3.5★ (Панорама Чалок — 3 номера)", 73000, "Видовой отель с инфинити-бассейном на холме между пляжем Чалок и бухтой Shark Bay.", "hotel/th/chintakiri-resort.ru.html"],
-            ["Big Tree Boutique Hotel 3.5★ (Мае Хаад — 3 номера)", 64000, "Очень стильный бутик-отель с отличным рестораном в 2 минутах ходьбы от пляжа Мае Хаад.", "hotel/th/big-tree-boutique.ru.html"],
-            ["Nangyuan Island Dive Resort 3.5★ (Остров Ко Нанг Юань)", 94000, "Единственный отель прямо на знаменитом острове-заповеднике Нанг Юань с тройной песчаной косой!", "hotel/th/nangyuan-island-dive-resort.ru.html"]
+            ["Sai Daeng Resort 4★ (Мыс Shark Bay — 3 отдельных номера)", 96000, "Знаменитый отель на полуострове: снорклинг с черепахами и рифовыми акулами прямо с берега, панорамный бассейн.", "hotel/th/sai-daeng-resort.ru.html", "Sai Daeng Resort Koh Tao Shark Bay pool"],
+            ["Haad Tien Beach Resort 4★ (Лагуна Shark Bay — 3 номера)", 134000, "Лучший пляжный курорт острова в бирюзовой бухте Shark Bay: пальмовая роща, белый песок и бассейн у моря.", "hotel/th/haadtien-beach-resort.ru.html", "Haad Tien Beach Resort Koh Tao beach pool"],
+            ["Beach Club by Haadtien 4★ (Пляж Shark Bay — 3 номера)", 118000, "Стильный отель прямо у кромки воды в бухте Хаад Тхиан с большим инфинити-бассейном на пляже.", "hotel/th/beach-club-by-haadtien.ru.html", "Beach Club by Haadtien Koh Tao pool"],
+            ["Jamahkiri Dive Resort & Spa 5★ (Shark Bay — 3 номера)", 124000, "Пятизвездочный спа-отель над заливом Тхиан Ог: панорамные номера, бассейн в скалах и свой пирс для снорклинга.", "hotel/th/jamahkiri-spa-resort.ru.html", "Jamahkiri Resort and Spa Koh Tao pool"],
+            ["The Tarna Align Resort 4★ (Сайри — 3 отдельных номера)", 92000, "Современный 4★ отель с двухъярусным инфинити-бассейном, суши-баром на закате и панорамой на весь остров.", "hotel/th/the-tarna-align-resort.ru.html", "The Tarna Align Resort Koh Tao infinity pool"],
+            ["Dusit Buncha Koh Tao 4★ (Вид на Nang Yuan — 3 номера)", 86000, "Знаменитый вид на три островка Ко Нанг Юань! Инфинити-бассейн в гранитных валунах и отличный снорклинг.", "hotel/th/dusit-buncha-resort.ru.html", "Dusit Buncha Resort Koh Tao pool view"],
+            ["Sensi Paradise Beach Resort 3.5★ (Мае Хаад — 3 номера)", 89000, "Атмосферный эко-отель у тихого пляжа Мае Хаад: огромный каскадный бассейн и завтраки у самой воды.", "hotel/th/sensi-paradise-beach-resort.ru.html", "Sensi Paradise Beach Resort Koh Tao pool"],
+            ["Koh Tao Cabana Hotel 4★ (Север пляжа Сайри — 3 номера)", 105000, "Курортный отель в самом красивом и чистом северном углу пляжа Сайри с бассейном и деревянной набережной.", "hotel/th/koh-tao-cabana.ru.html", "Koh Tao Cabana Resort Sairee Beach"],
+            ["Ban's Diving Resort 4★ (Центр пляжа Сайри — 3 номера)", 74000, "Главный курорт в центре Сайри Бич: 4 бассейна в тропическом парке, пляжный ресторан и бар Fishbowl.", "hotel/th/ban-s-diving-resort.ru.html", "Bans Diving Resort Koh Tao swimming pool"],
+            ["View Point Resort 4★ (Мыс Чалок — 3 отдельных номера)", 98000, "Уединенный отель на зеленом мысе Чалок с собственным секретным пляжем, бассейном и панорамным рестораном.", "hotel/th/view-point-resort.ru.html", "View Point Resort Koh Tao Chalok pool"],
+            ["Pinnacle Koh Tao Resort 4★ (Пляж June Juea Bay — 3 номера)", 82000, "Отель в собственной тихой бухте Джун Джуа: панорамный бассейн, коралловый риф и бесплатный шаттл.", "hotel/th/pinnacle-koh-tao-resort.ru.html", "Pinnacle Koh Tao Resort June Juea Bay"],
+            ["Koh Tao Montra Resort 4★ (Пляж Мае Хаад — 3 номера)", 76000, "Курортный отель на первой линии Мае Хаад с самым большим трехуровневым бассейном на острове.", "hotel/th/koh-tao-montra-resort-and-spa.ru.html", "Koh Tao Montra Resort and Spa pool"],
+            ["Blue Tao Beach Hotel 3.5★ (1-я линия Сайри — 3 номера)", 72000, "Современный чистый отель прямо на пешеходной набережной пляжа Сайри с видом на закат.", "hotel/th/blue-tao-beach.ru.html", "Blue Tao Beach Hotel Koh Tao Sairee"],
+            ["Seashell Resort Koh Tao 3★ (Пляж Сайри — 3 номера)", 66000, "Первая линия пляжа Сайри в окружении пальм: свой бассейн, дайв-центр и пляжное кафе.", "hotel/th/seashell-resort-koh-tao.ru.html", "Seashell Resort Koh Tao Sairee Beach pool"],
+            ["Coral Grand Resort 3.5★ (Пляж Сайри — 3 номера)", 69000, "Курортный отель вокруг большого бассейна прямо на берегу моря в спокойной части Сайри.", "hotel/th/coral-grand-resort.ru.html", "Coral Grand Resort Koh Tao Sairee pool"],
+            ["Simple Life Talay & Divers Resort 3.5★ (Сайри — 3 номера)", 62000, "Свежий отель с большим бассейном прямо у выхода на пляж Сайри, рядом ночной рынок и кафе.", "hotel/th/simple-life-talay-amp-divers-resort.ru.html", "Simple Life Talay and Divers Resort Koh Tao pool"],
+            ["Wind Beach Resort 3.5★ (1-я линия Сайри — 3 номера)", 65000, "Два бассейна, отличный пляжный гриль-бар на закате и размещение в самом центре Сайри Бич.", "hotel/th/wind-beach-resort.ru.html", "Wind Beach Resort Koh Tao Sairee pool"],
+            ["Koh Tao Beach Club 3.5★ (Пляж Мае Хаад — 3 номера)", 68000, "Первая линия песчаного пляжа Мае Хаад в 5 минутах от пирса, бассейн прямо у воды.", "hotel/th/beach-club-koh-tao-ko-tao2.ru.html", "Koh Tao Beach Club Mae Haad beach pool"],
+            ["Koh Tao Relax Freedom Beach Resort 3★ (Freedom Beach)", 64000, "Отель прямо на знаменитом пляже Freedom Beach и в бухте Таа То. Коралловый риф в 10 метрах от берега.", "hotel/th/taatoh-resort.ru.html", "Koh Tao Relax Freedom Beach Resort Taatoh"],
+            ["Diamond Beach Resort 3★ (Пляж Сайри — 3 номера)", 54000, "Выгодный отель на первой линии главного пляжа Сайри рядом с вечерними фаер-шоу и барами.", "hotel/th/diamond-beach-bungalow.ru.html", "Diamond Beach Resort Koh Tao Sairee Beach"],
+            ["Mango Bay Boutique Resort 4★ (Бухта Манго Бэй — 3 номера)", 99000, "Бутик-отель над изумрудной водой самой красивой коралловой бухты севера острова.", "hotel/th/mango-bay-boutique-resort.ru.html", "Mango Bay Boutique Resort Koh Tao"],
+            ["Montalay Beach Resort 3.5★ (Пляж Таноте Бэй — 3 номера)", 64000, "Отель с бассейном на пляже Таноте Бэй, где живые кораллы и черепахи плавают в 20 метрах от берега.", "hotel/th/montalay-beach-resort.ru.html", "Montalay Beach Resort Koh Tao Tanote Bay"],
+            ["Chintakiri Resort 3.5★ (Панорама Чалок — 3 номера)", 73000, "Видовой отель с инфинити-бассейном на холме между пляжем Чалок и бухтой Shark Bay.", "hotel/th/chintakiri-resort.ru.html", "Chintakiri Resort Koh Tao Chalok pool"],
+            ["Big Tree Boutique Hotel 3.5★ (Мае Хаад — 3 номера)", 64000, "Очень стильный бутик-отель с отличным рестораном в 2 минутах ходьбы от пляжа Мае Хаад.", "hotel/th/big-tree-boutique.ru.html", "Big Tree Boutique Hotel Koh Tao"],
+            ["Nangyuan Island Dive Resort 3.5★ (Остров Ко Нанг Юань)", 94000, "Единственный отель прямо на знаменитом острове-заповеднике Нанг Юань с тройной песчаной косой!", "hotel/th/nangyuan-island-dive-resort.ru.html", "Nangyuan Island Dive Resort Koh Nang Yuan"]
         ];
 
         // =========================================================================
-        // 3. САМУИ — 25 ЛУЧШИХ ВИЛЛ С 3 СПАЛЬНЯМИ И БАССЕЙНОМ (15–22 МАРТА, 7 НОЧЕЙ)
+        // 3. САМУИ — 25 РЕАЛЬНЫХ ВИЛЛ С 3 СПАЛЬНЯМИ И БАССЕЙНОМ (15–22 МАРТА, 7 НОЧЕЙ)
         // =========================================================================
         const RAW_SAMUI = [
-            ["Villa Tenament 3BR Modern with Infinity Pool (Бопут / Чавенг Ной)", 168000, "Рейтинг 9.7! Вилла 163 м², 3 спальни, 3 ванные, личный инфинити-бассейн с видом на море и горы + трансфер.", "hotel/th/villa-tenament-3br-modern-with-infinity-pool.ru.html"],
-            ["Beachfront 3BR Villa Baan Rim Haad (Ламаи, 1-я линия моря)", 195000, "Рейтинг 9.6! Прямой выход на пляж Ламаи! 180 м², 3 спальни, 4 ванные, свой бассейн прямо у берега.", "hotel/th/beach-front-villa-baan-rim-haad.ru.html"],
-            ["Villa Sumalee 3BR Private Pool — 8 mins to Beach (Ламаи)", 142000, "Рейтинг 9.4! Огромная вилла 250 м² в пальмовом саду. 3 спальни, большой приватный бассейн, пешком до пляжа.", "hotel/th/villa-sumalee-3br-private-pool.ru.html"],
-            ["Mai Tai Luxury 3 Bedroom Pool Villa (Пляж Чонг Мон)", 175000, "Престижный район Чонг Мон с белым песком. 3 спальни, 3 ванные, приватный бассейн и терраса с шезлонгами.", "hotel/th/mai-tai-luxury-3-bedroom-villa.ru.html"],
-            ["Villa Chacha 3 Bedrooms Private Pool (Ламаи, 3 кровати King)", 132000, "Рейтинг 9.1! 200 м², во всех 3 спальнях кровати King-size и отдельные санузлы, большой приватный бассейн.", "hotel/th/villa-chacha-3-bedrooms-private-pool.ru.html"],
-            ["Love Is Pool Villa — Modern & Cozy 3BR (Бопут)", 125000, "Свежая дизайнерская 3-спальная вилла после реновации. Свой бассейн, просторная гостиная и кухня.", "hotel/th/love-is-pool-villa-modern-3br-pool-villa-cozy-style.ru.html"],
-            ["3 Bedroom Villa with Swimming Pool Lamai (Ламаи)", 118000, "Оценка 10/10! 3 спальни, приватный бассейн, закрытый зеленый двор, барбекю и полная кухня.", "hotel/th/3-bedroom-swimming-pool-lamai.ru.html"],
-            ["Sandalwood Luxury Villas — 3BR Panoramic Sea View (Чавенг Ной)", 210000, "Вилла на склоне Чавенг Ной с фантастическим видом на залив. 3 спальни, личный инфинити-бассейн.", "hotel/th/sandalwood-luxury-villas.ru.html"],
-            ["Karma Resort — 3 Bedroom Pool Villa (Пляж Бопут)", 220000, "Бутик-вилла 4★ в 2 минутах от Fisherman's Village. 3 спальни, приватный бассейн, пляжный клуб и завтраки.", "hotel/th/karma-samui.ru.html"],
-            ["Pawanthorn Samui — 3BR Private Pool Villa (Чонг Мон)", 144000, "Уютный комплекс частных вилл у пляжа Чонг Мон. 3 спальни, свой бассейн с джакузи и терраса.", "hotel/th/pawanthorn-samui.ru.html"],
-            ["Wild Cottages Luxury & Natural 3BR Pool Villa (Ламаи)", 189000, "Эксклюзивная вилла с видом на слонов в джунглях! 3 спальни, инфинити-бассейн и панорамная терраса.", "hotel/th/wild-cottages-luxury-and-natural.ru.html"],
-            ["The Sea Koh Samui Resort — 3BR Pool Villa (Банг По)", 172000, "Первая береговая линия пляжа Банг По с видом на Пханган. 3 спальни, свой бассейн и пляжный ресторан.", "hotel/th/the-sea-koh-samui-boutique-resort-and-residences.ru.html"],
-            ["Baan Haad Ngam Boutique Resort — 3BR Pool Villa (Чавенг)", 176000, "Тихий северный край пляжа Чавенг. Вилла с 3 спальнями, частным бассейном и выходом к белому песку.", "hotel/th/baan-haad-ngam-boutique-resort.ru.html"],
-            ["Samui Bayside Luxury Villas — 3BR Sea View (Самронг Бэй)", 245000, "Закрытая бухта Самронг Бэй. 3 спальни, свой инфинити-бассейн прямо у берега моря.", "hotel/th/samui-bayside-luxury-villas.ru.html"],
-            ["Villa Labaron — 3BR Beachside Pool Villa (Банграк)", 164000, "Вилла у самой воды на пляже Банграк с видом на закаты. 3 спальни, приватный бассейн.", "hotel/th/villa-labaron.ru.html"],
-            ["Celes Beachfront Resort — 3BR Pool Residence (Пляж Бопут)", 260000, "Люкс-резиденция 5★ на первой линии пляжа Бопут. 3 спальни, частный бассейн, сервис 5★.", "hotel/th/celes-beachfront-resort-koh-samui.ru.html"],
-            ["Khwan Beach Resort — 3BR Luxury Pool Villa (Маенам)", 198000, "Бутик-резорт в 100 м от пляжа Маенам. Вилла с 3 спальнями, приватным бассейном и тропическим садом.", "hotel/th/khwan-beach-resort.ru.html"],
-            ["Jungle Club Samui — 3BR Panoramic Villa (Чавенг Ной)", 165000, "Легендарная смотровая площадка острова! Вилла с 3 спальнями и панорамным видом на весь залив Чавенг.", "hotel/th/the-jungle-club.ru.html"],
-            ["Tropical Season Villa Resort — 3BR Pool Villa (Маенам)", 119000, "Выгодная 3-спальная вилла с частным бассейном в тихом пальмовом районе Маенам.", "hotel/th/tropical-season-villa-resort.ru.html"],
-            ["Horizon Residence — 3BR Pool Villa Choeng Mon (Чонг Мон)", 152000, "600 метров до пляжа Чонг Мон! Современная вилла с 3 спальнями, приватным бассейном и охраной.", "hotel/th/horizon-residence-rentals.ru.html"],
-            ["Idyllic Samui Beach Villa Resort — 3BR Beachfront Pool", 215000, "Прямой выход в тихую лагуну Самронг! 3 спальни, собственный бассейн на берегу, бесплатные каяки.", "hotel/th/idyllic-samui-resort.ru.html"],
-            ["Sea Valley Hotel & Spa — 3BR Pool Villa (Липа Ной)", 158000, "Пляж Липа Ной (лучшие закаты и песчаное дно). 3 спальни, приватный бассейн с гидромассажем.", "hotel/th/sea-valley-hotel-and-spa.ru.html"],
-            ["Crystal Bay Yacht Club — 3BR Family Villa (Silver Beach)", 162000, "Прямо в самой красивой бухте острова — Crystal Bay (Серебряный пляж) со снорклингом.", "hotel/th/crystal-bay-yacht-club-beach-resort.ru.html"],
-            ["The Sunset Beach Resort & Spa — 3BR Pool Residence", 178000, "Пятизвездочный сервис на побережье Талинг Нгам. 3 спальни, приватный бассейн и спа-центр.", "hotel/th/the-sunset-beach-resort-amp-spa-taling-ngam.ru.html"],
-            ["Coconut Grove 3BR Private Pool Villa (Маенам Бич)", 112000, "Доступная 3-спальная вилла в районе Маенам: свой бассейн, барбекю-терраса и глубокое море.", "search:Maenam+3+bedroom+private+pool+villa+Samui"]
+            ["Villa Tenament 3BR Modern with Infinity Pool (Бопут / Чавенг Ной)", 168000, "Рейтинг 9.7! Вилла 163 м², 3 спальни, 3 ванные, личный инфинити-бассейн с видом на море и горы + трансфер.", "hotel/th/villa-tenament-3br-modern-with-infinity-pool.ru.html", "Villa Tenament 3BR Modern with Infinity Pool Koh Samui"],
+            ["Beachfront 3BR Villa Baan Rim Haad (Ламаи, 1-я линия моря)", 195000, "Рейтинг 9.6! Прямой выход на пляж Ламаи! 180 м², 3 спальни, 4 ванные, свой бассейн прямо у берега.", "hotel/th/beach-front-villa-baan-rim-haad.ru.html", "Beachfront Villa Baan Rim Haad Koh Samui"],
+            ["Villa Sumalee 3BR Private Pool — 8 mins to Beach (Ламаи)", 142000, "Рейтинг 9.4! Огромная вилла 250 м² в пальмовом саду. 3 спальни, большой приватный бассейн, пешком до пляжа.", "hotel/th/villa-sumalee-3br-private-pool.ru.html", "Villa Sumalee 3BR Private Pool Lamai Koh Samui"],
+            ["Mai Tai Luxury 3 Bedroom Pool Villa (Пляж Чонг Мон)", 175000, "Престижный район Чонг Мон с белым песком. 3 спальни, 3 ванные, приватный бассейн и терраса с шезлонгами.", "hotel/th/mai-tai-luxury-3-bedroom-villa.ru.html", "Mai Tai Luxury 3 Bedroom Villa Koh Samui"],
+            ["Villa Chacha 3 Bedrooms Private Pool (Ламаи, 3 кровати King)", 132000, "Рейтинг 9.1! 200 м², во всех 3 спальнях кровати King-size и отдельные санузлы, большой приватный бассейн.", "hotel/th/villa-chacha-3-bedrooms-private-pool.ru.html", "Villa Chacha 3 Bedrooms Private Pool Koh Samui"],
+            ["Love Is Pool Villa — Modern & Cozy 3BR (Бопут)", 125000, "Свежая дизайнерская 3-спальная вилла после реновации. Свой бассейн, просторная гостиная и кухня.", "hotel/th/love-is-pool-villa-modern-3br-pool-villa-cozy-style.ru.html", "Love Is Pool Villa Modern 3BR Koh Samui"],
+            ["3 Bedroom Villa with Swimming Pool Lamai (Ламаи)", 118000, "Оценка 10/10! 3 спальни, приватный бассейн, закрытый зеленый двор, барбекю и полная кухня.", "hotel/th/3-bedroom-swimming-pool-lamai.ru.html", "3 Bedroom Villa Swimming Pool Lamai Koh Samui"],
+            ["Sandalwood Luxury Villas — 3BR Panoramic Sea View (Чавенг Ной)", 210000, "Вилла на склоне Чавенг Ной с фантастическим видом на залив. 3 спальни, личный инфинити-бассейн.", "hotel/th/sandalwood-luxury-villas.ru.html", "Sandalwood Luxury Villas Koh Samui infinity pool"],
+            ["Karma Resort — 3 Bedroom Pool Villa (Пляж Бопут)", 220000, "Бутик-вилла 4★ в 2 минутах от Fisherman's Village. 3 спальни, приватный бассейн, пляжный клуб и завтраки.", "hotel/th/karma-samui.ru.html", "Karma Resort Koh Samui Bophut pool villa"],
+            ["Pawanthorn Samui — 3BR Private Pool Villa (Чонг Мон)", 144000, "Уютный комплекс частных вилл у пляжа Чонг Мон. 3 спальни, свой бассейн с джакузи и терраса.", "hotel/th/pawanthorn-samui.ru.html", "Pawanthorn Samui luxury pool villa"],
+            ["Wild Cottages Luxury & Natural 3BR Pool Villa (Ламаи)", 189000, "Эксклюзивная вилла с видом на слонов в джунглях! 3 спальни, инфинити-бассейн и панорамная терраса.", "hotel/th/wild-cottages-luxury-and-natural.ru.html", "Wild Cottages Luxury and Natural Koh Samui pool"],
+            ["The Sea Koh Samui Resort — 3BR Pool Villa (Банг По)", 172000, "Первая береговая линия пляжа Банг По с видом на Пханган. 3 спальни, свой бассейн и пляжный ресторан.", "hotel/th/the-sea-koh-samui-boutique-resort-and-residences.ru.html", "The Sea Koh Samui Resort and Residences pool villa"],
+            ["Baan Haad Ngam Boutique Resort — 3BR Pool Villa (Чавенг)", 176000, "Тихий северный край пляжа Чавенг. Вилла с 3 спальнями, частным бассейном и выходом к белому песку.", "hotel/th/baan-haad-ngam-boutique-resort.ru.html", "Baan Haad Ngam Boutique Resort Villas Koh Samui"],
+            ["Samui Bayside Luxury Villas — 3BR Sea View (Самронг Бэй)", 245000, "Закрытая бухта Самронг Бэй. 3 спальни, свой инфинити-бассейн прямо у берега моря.", "hotel/th/samui-bayside-luxury-villas.ru.html", "Samui Bayside Luxury Villas Koh Samui pool"],
+            ["Villa Labaron — 3BR Beachside Pool Villa (Банграк)", 164000, "Вилла у самой воды на пляже Банграк с видом на закаты. 3 спальни, приватный бассейн.", "hotel/th/villa-labaron.ru.html", "Villa Labaron Koh Samui Bangrak pool"],
+            ["Celes Beachfront Resort — 3BR Pool Residence (Пляж Бопут)", 260000, "Люкс-резиденция 5★ на первой линии пляжа Бопут. 3 спальни, частный бассейн, сервис 5★.", "hotel/th/celes-beachfront-resort-koh-samui.ru.html", "Celes Beachfront Resort Koh Samui pool villa"],
+            ["Khwan Beach Resort — 3BR Luxury Pool Villa (Маенам)", 198000, "Бутик-резорт в 100 м от пляжа Маенам. Вилла с 3 спальнями, приватным бассейном и тропическим садом.", "hotel/th/khwan-beach-resort.ru.html", "Khwan Beach Resort Koh Samui luxury pool villa"],
+            ["Jungle Club Samui — 3BR Panoramic Villa (Чавенг Ной)", 165000, "Легендарная смотровая площадка острова! Вилла с 3 спальнями и панорамным видом на весь залив Чавенг.", "hotel/th/the-jungle-club.ru.html", "The Jungle Club Koh Samui panoramic pool"],
+            ["Tropical Season Villa Resort — 3BR Pool Villa (Маенам)", 119000, "Выгодная 3-спальная вилла с частным бассейном в тихом пальмовом районе Маенам.", "hotel/th/tropical-season-villa-resort.ru.html", "Tropical Season Villa Resort Koh Samui pool"],
+            ["Horizon Residence — 3BR Pool Villa Choeng Mon (Чонг Мон)", 152000, "600 метров до пляжа Чонг Мон! Современная вилла с 3 спальнями, приватным бассейном и охраной.", "hotel/th/horizon-residence-rentals.ru.html", "Horizon Residence Choeng Mon Koh Samui villa pool"],
+            ["Idyllic Samui Beach Villa Resort — 3BR Beachfront Pool", 215000, "Прямой выход в тихую лагуну Самронг! 3 спальни, собственный бассейн на берегу, бесплатные каяки.", "hotel/th/idyllic-samui-resort.ru.html", "Idyllic Samui Beach Villa Resort Koh Samui"],
+            ["Sea Valley Hotel & Spa — 3BR Pool Villa (Липа Ной)", 158000, "Пляж Липа Ной (лучшие закаты и песчаное дно). 3 спальни, приватный бассейн с гидромассажем.", "hotel/th/sea-valley-hotel-and-spa.ru.html", "Sea Valley Hotel and Spa Koh Samui pool villa"],
+            ["Crystal Bay Yacht Club — 3BR Family Villa (Silver Beach)", 162000, "Прямо в самой красивой бухте острова — Crystal Bay (Серебряный пляж) со снорклингом.", "hotel/th/crystal-bay-yacht-club-beach-resort.ru.html", "Crystal Bay Yacht Club Beach Resort Koh Samui"],
+            ["The Sunset Beach Resort & Spa — 3BR Pool Residence", 178000, "Пятизвездочный сервис на побережье Талинг Нгам. 3 спальни, приватный бассейн и спа-центр.", "hotel/th/the-sunset-beach-resort-amp-spa-taling-ngam.ru.html", "The Sunset Beach Resort and Spa Taling Ngam Koh Samui"],
+            ["Garrya Tongsai Bay Samui 5★ — Pool Villa Suite (Тонгсай Бэй)", 265000, "Закрытая частная бухта Тонгсай! Роскошная вилла 5★ на склоне с собственным бассейном и видом на море.", "hotel/th/the-tongsai-bay.ru.html", "Garrya Tongsai Bay Samui pool villa"]
         ];
 
-        function buildBookingUrl(slugOrSearch, checkin, checkout, noRooms = 3, extraParams = "") {
-            if (slugOrSearch.startsWith("search:")) {
-                const q = encodeURIComponent(slugOrSearch.replace("search:", ""));
-                return `https://www.booking.com/searchresults.ru.html?ss=${q}&checkin=${checkin}&checkout=${checkout}&group_adults=5&no_rooms=${noRooms}${extraParams}`;
-            }
-            return `https://www.booking.com/${slugOrSearch}?checkin=${checkin}&checkout=${checkout}&group_adults=5&no_rooms=${noRooms}`;
+        function buildBookingUrl(slug, checkin, checkout, noRooms = 3) {
+            return `https://www.booking.com/${slug}?checkin=${checkin}&checkout=${checkout}&group_adults=5&no_rooms=${noRooms}`;
         }
 
-        // Формируем облегченный массив из 75 объектов (25 + 25 + 25), строго по 1 фото
+        // Формируем каталог из 75 реальных объектов с индивидуальными реальными фотографиями
         const BOOKING_CATALOG = [
             ...RAW_BANGKOK.map((item, idx) => ({
                 id: "b" + (idx + 1),
@@ -422,10 +332,10 @@
                 nights: 3,
                 dates_text: "6–9 марта (3 номера)",
                 price_rub: item[1],
-                image_url: PHOTO_POOL.bangkok[idx % PHOTO_POOL.bangkok.length],
+                image_url: buildRealHotelPhotoUrl(item[4], idx),
                 booking_url: buildBookingUrl(item[3], "2027-03-06", "2027-03-09", 3),
                 notes: item[2],
-                added_by: "Booking.com",
+                added_by: CATALOG_VERSION_TAG,
                 votes: {}
             })),
             ...RAW_TAO.map((item, idx) => ({
@@ -435,10 +345,10 @@
                 nights: 6,
                 dates_text: "9–15 марта (3 номера)",
                 price_rub: item[1],
-                image_url: PHOTO_POOL.tao[idx % PHOTO_POOL.tao.length],
+                image_url: buildRealHotelPhotoUrl(item[4], idx),
                 booking_url: buildBookingUrl(item[3], "2027-03-09", "2027-03-15", 3),
                 notes: item[2],
-                added_by: "Booking.com",
+                added_by: CATALOG_VERSION_TAG,
                 votes: {}
             })),
             ...RAW_SAMUI.map((item, idx) => ({
@@ -448,29 +358,40 @@
                 nights: 7,
                 dates_text: "15–22 марта (Вилла)",
                 price_rub: item[1],
-                image_url: PHOTO_POOL.samui[idx % PHOTO_POOL.samui.length],
-                booking_url: buildBookingUrl(item[3], "2027-03-15", "2027-03-22", 1, "&nflt=ht_id%3D213"),
+                image_url: buildRealHotelPhotoUrl(item[4], idx),
+                booking_url: buildBookingUrl(item[3], "2027-03-15", "2027-03-22", 1),
                 notes: item[2],
-                added_by: "Booking.com",
+                added_by: CATALOG_VERSION_TAG,
                 votes: {}
             }))
         ];
 
+        // Карта правильных фото по названию отеля (мгновенно исправляет любые старые ссылки из БД)
+        const PHOTO_MAP_BY_TITLE = {};
+        BOOKING_CATALOG.forEach(item => {
+            PHOTO_MAP_BY_TITLE[item.title.toLowerCase().trim()] = item.image_url;
+        });
+
         let allProperties = [...BOOKING_CATALOG];
         let currentFilter = "all";
         let currentSort = "default";
-        let hasAutoCleaned = false;
+        let isAutoSyncing = false;
         let lastDataSignature = "";
 
-        // Берем только 1 фото (даже если в старой записи было несколько через |)
-        function getSinglePhoto(p, idx) {
-            const raw = (p.image_url || "").trim();
-            if (raw) {
-                const firstUrl = raw.split(/[|,\n]+/)[0].trim();
-                if (firstUrl.startsWith("http")) return firstUrl;
+        // Всегда возвращает актуальное реальное фото отеля/виллы
+        function getAccuratePhoto(p, idx) {
+            const key = (p.title || "").toLowerCase().trim();
+            if (PHOTO_MAP_BY_TITLE[key]) {
+                return PHOTO_MAP_BY_TITLE[key];
             }
-            const pool = PHOTO_POOL[p.location] || PHOTO_POOL.bangkok;
-            return pool[idx % pool.length];
+            const raw = (p.image_url || "").trim().split(/[|,\n]+/)[0].trim();
+            // Если в БД застряла старая стоковая фотка Unsplash — автоматически меняем на реальное фото по названию отеля!
+            if (!raw || raw.includes("images.unsplash.com")) {
+                const cleanTitle = (p.title || "Thailand Hotel").replace(/\([^)]*\)/g, "").replace(/[★]/g, "").trim();
+                const locWord = p.location === "bangkok" ? "Bangkok hotel pool" : (p.location === "tao" ? "Koh Tao resort" : "Koh Samui pool villa");
+                return buildRealHotelPhotoUrl(`${cleanTitle} ${locWord}`, idx);
+            }
+            return raw;
         }
 
         async function supabaseRequest(endpoint, method = "GET", body = null) {
@@ -499,106 +420,117 @@
             return await response.json();
         }
 
-        // Загрузка из базы и авто-очистка от старых 192 тяжелых записей
-        async function loadProperties(forceRender = false) {
+        // =========================================================================
+        // ПОЛНАЯ АВТОМАТИЧЕСКАЯ СИНХРОНИЗАЦИЯ БАЗЫ SUPABASE (БЕЗ КНОПОК)
+        // =========================================================================
+        async function autoSyncDatabase() {
+            if (isAutoSyncing) return;
             const statusEl = document.getElementById("status-line");
+
             try {
                 const data = await supabaseRequest("thai_properties?select=*&order=created_at.asc&limit=300");
 
-                // Если в базе старый перегруженный каталог (> 90 объектов или старые карусели с '|'), автоматически меняем на легкий (75 шт.)
-                const hasOldHeavyData = (data && data.length > 90) || (data && data.some(d => (d.image_url || "").includes("|")));
-                if ((!data || data.length === 0 || hasOldHeavyData) && !hasAutoCleaned) {
-                    hasAutoCleaned = true;
-                    await resetToOptimizedCatalog(false);
-                    return;
-                }
+                // Проверяем, актуальна ли база (все ли 75 объектов имеют тег Booking_v5_RealPhotos и реальные фото)
+                const v5Count = (data || []).filter(d => d.added_by === CATALOG_VERSION_TAG).length;
+                const hasLegacyRows = (data || []).some(d => 
+                    d.added_by === "Booking.com" || 
+                    d.added_by === "Подборка" || 
+                    (d.image_url || "").includes("images.unsplash.com")
+                );
 
-                if (data && data.length > 0) {
+                if (!data || data.length === 0 || v5Count !== 75 || hasLegacyRows) {
+                    isAutoSyncing = true;
+                    statusEl.innerText = "🔄 Автообновление фото и отелей в базе...";
+
+                    // 1. Сохраняем все существующие голоса по названиям отелей, чтобы ничего не пропало!
+                    const savedVotesByTitle = {};
+                    (data || []).forEach(row => {
+                        const t = (row.title || "").toLowerCase().trim();
+                        if (row.votes && Object.keys(row.votes).length > 0) {
+                            savedVotesByTitle[t] = row.votes;
+                        }
+                    });
+
+                    // 2. Удаляем старые каталожные записи (пользовательские варианты не трогаем)
+                    await supabaseRequest("thai_properties?added_by=in.(Booking.com,Подборка,Booking_v5_RealPhotos)", "DELETE");
+
+                    // 3. Готовим обновленные 75 объектов с реальными фото и сохраненными голосами
+                    const payload = BOOKING_CATALOG.map(({ id, ...rest }) => {
+                        const key = rest.title.toLowerCase().trim();
+                        return {
+                            ...rest,
+                            votes: savedVotesByTitle[key] || rest.votes || {}
+                        };
+                    });
+
+                    // 4. Записываем в Supabase двумя быстрыми пакетами
+                    for (let i = 0; i < payload.length; i += 40) {
+                        await supabaseRequest("thai_properties", "POST", payload.slice(i, i + 40));
+                    }
+
+                    const fresh = await supabaseRequest("thai_properties?select=*&order=created_at.asc&limit=250");
+                    if (fresh && fresh.length > 0) {
+                        allProperties = fresh;
+                        lastDataSignature = JSON.stringify(fresh.map(d => [d.id, d.votes, d.title, d.price_rub]));
+                        updateCounters();
+                        renderList();
+                    }
+                    isAutoSyncing = false;
+                } else {
+                    // База уже актуальна — проверяем, изменились ли голоса или новые отели
                     const newSignature = JSON.stringify(data.map(d => [d.id, d.votes, d.title, d.price_rub]));
-                    allProperties = data;
-                    const bkkCount = data.filter(p => p.location === "bangkok").length;
-                    const taoCount = data.filter(p => p.location === "tao").length;
-                    const samuiCount = data.filter(p => p.location === "samui").length;
-                    statusEl.innerText = `🟢 База: ${bkkCount} башен Бангкок • ${taoCount} Ко Тао • ${samuiCount} Самуи`;
-                    document.getElementById("seed-banner").classList.add("hidden");
-
-                    if (forceRender || newSignature !== lastDataSignature) {
+                    if (newSignature !== lastDataSignature) {
+                        allProperties = data;
                         lastDataSignature = newSignature;
                         updateCounters();
                         renderList();
                     }
-                    return;
                 }
-            } catch (err) {
-                console.warn("Локальный режим:", err.message);
-                statusEl.innerText = `⚪ Быстрый режим: 25 башен Бангкок • 25 Ко Тао • 25 Самуи`;
-            }
 
-            if (forceRender || !lastDataSignature) {
-                lastDataSignature = "local";
-                updateCounters();
-                renderList();
+                const bkkCount = allProperties.filter(p => p.location === "bangkok").length;
+                const taoCount = allProperties.filter(p => p.location === "tao").length;
+                const samuiCount = allProperties.filter(p => p.location === "samui").length;
+                statusEl.innerText = `🟢 Онлайн-база: ${bkkCount} Бангкок • ${taoCount} Ко Тао • ${samuiCount} Самуи`;
+            } catch (err) {
+                isAutoSyncing = false;
+                console.warn("Автономный режим:", err.message);
+                statusEl.innerText = `🟢 Каталог: 25 башен Бангкок • 25 Ко Тао • 25 Самуи`;
             }
         }
 
-        // Очистка старых авто-записей Booking.com и запись 75 легких объектов (сохраняет добавленные вручную друзьями!)
-        async function resetToOptimizedCatalog(showNotice = false) {
-            const btn = document.getElementById("sync-catalog-btn");
-            if (btn) btn.innerText = "⏳ Оптимизируем базу...";
-
-            try {
-                // Удаляем старые авто-сгенерированные записи, оставляя добавленные участниками вручную
-                await supabaseRequest("thai_properties?added_by=in.(Booking.com,Подборка)", "DELETE");
-
-                const cleanItems = BOOKING_CATALOG.map(({ id, ...rest }) => rest);
-                for (let i = 0; i < cleanItems.length; i += 40) {
-                    const chunk = cleanItems.slice(i, i + 40);
-                    await supabaseRequest("thai_properties", "POST", chunk);
-                }
-
-                closeBookingHubModal();
-                const fresh = await supabaseRequest("thai_properties?select=*&order=created_at.asc&limit=200");
-                if (fresh && fresh.length > 0) {
-                    allProperties = fresh;
-                }
-                document.getElementById("seed-banner").classList.add("hidden");
-                updateCounters();
-                renderList();
-                if (showNotice) {
-                    alert(`Готово! База оптимизирована: сейчас ${allProperties.length} объектов (по 1 легкой фотографии).`);
-                }
-            } catch (err) {
-                if (showNotice) alert("Ошибка обновления базы: " + err.message);
-            } finally {
-                if (btn) btn.innerText = "🚀 Перезаписать облегченную базу (75 объектов)";
+        // Авто-парсинг сразу при вставке ссылки
+        let parseTimer = null;
+        function autoParseOnPaste() {
+            clearTimeout(parseTimer);
+            const val = document.getElementById("booking-parse-url").value.trim();
+            if (val.startsWith("http")) {
+                parseTimer = setTimeout(parseBookingUrl, 300);
             }
         }
 
-        // Парсер ссылки с Booking.com (1 фото)
         async function parseBookingUrl() {
             const urlInput = document.getElementById("booking-parse-url");
             const status = document.getElementById("parse-status");
             const parseBtn = document.getElementById("parse-btn");
             const rawUrl = urlInput.value.trim();
 
-            if (!rawUrl) {
-                alert("Вставь ссылку с Booking.com в поле!");
-                return;
-            }
+            if (!rawUrl) return;
 
             parseBtn.innerText = "⏳...";
-            status.innerText = "Извлекаем данные с Booking.com...";
+            status.innerText = "Ищем данные и реальное фото отеля...";
             document.getElementById("f-url").value = rawUrl;
 
             let detectedLoc = "bangkok";
+            let extractedName = "";
             try {
                 const u = new URL(rawUrl);
                 const pathMatch = u.pathname.match(/\/hotel\/[a-z]{2}\/([^.\/]+)/i);
                 if (pathMatch && pathMatch[1]) {
-                    const slugName = pathMatch[1]
+                    extractedName = pathMatch[1]
+                        .replace(/\.[a-z-]+$/i, "")
                         .replace(/-/g, " ")
                         .replace(/\b\w/g, l => l.toUpperCase());
-                    document.getElementById("f-title").value = slugName;
+                    document.getElementById("f-title").value = extractedName;
                 }
 
                 const lowerUrl = rawUrl.toLowerCase();
@@ -611,6 +543,11 @@
                 autoSetDatesByLocation();
             } catch (e) {}
 
+            // Сразу формируем реальное фото по названию отеля
+            if (extractedName) {
+                document.getElementById("f-image").value = buildRealHotelPhotoUrl(`${extractedName} Thailand hotel pool`, 0);
+            }
+
             try {
                 const ogRes = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(rawUrl)}`);
                 if (ogRes.ok) {
@@ -618,22 +555,25 @@
                     const d = ogJson?.data;
                     if (d?.title && !d.title.includes("Booking.com:")) {
                         const cleanTitle = d.title.replace(/\s*[-–|].*Booking\.com.*$/i, "").trim();
-                        if (cleanTitle.length > 3) document.getElementById("f-title").value = cleanTitle;
+                        if (cleanTitle.length > 3) {
+                            document.getElementById("f-title").value = cleanTitle;
+                            document.getElementById("f-image").value = buildRealHotelPhotoUrl(`${cleanTitle} Thailand`, 0);
+                        }
                     }
-                    if (d?.image?.url) {
+                    if (d?.image?.url && d.image.url.includes("bstatic.com")) {
                         document.getElementById("f-image").value = d.image.url;
                     }
                     if (d?.description) {
                         document.getElementById("f-notes").value = d.description.slice(0, 200);
                     }
                 }
-                status.innerText = "✅ Данные подтянуты! Укажи цену ниже.";
+                status.innerText = "✅ Отель и его реальное фото найдены! Укажи цену ниже.";
                 status.className = "text-[11px] text-emerald-400 font-semibold mt-1.5";
             } catch (e) {
-                status.innerText = "✅ Ссылка распознана! Проверь название и укажи стоимость.";
+                status.innerText = "✅ Ссылка и фото отеля готовы! Укажи стоимость.";
                 status.className = "text-[11px] text-amber-400 font-semibold mt-1.5";
             } finally {
-                parseBtn.innerText = "⚡ Подтянуть";
+                parseBtn.innerText = "⚡ Найти";
             }
         }
 
@@ -646,9 +586,9 @@
 
             document.getElementById("total-counter").innerText = `${countAll} объектов`;
             document.getElementById("tab-all").innerText = `Все (${countAll})`;
-            document.getElementById("tab-bangkok").innerText = `🏙 Бангкок (${countBkk})`;
-            document.getElementById("tab-tao").innerText = `🐢 Ко Тао (${countTao})`;
-            document.getElementById("tab-samui").innerText = `🏝 Самуи (${countSamui})`;
+            document.getElementById("tab-bangkok").innerText = `🏙 Бангкок • Башни (${countBkk})`;
+            document.getElementById("tab-tao").innerText = `🐢 Ко Тао • Отели (${countTao})`;
+            document.getElementById("tab-samui").innerText = `🏝 Самуи • Виллы (${countSamui})`;
             document.getElementById("tab-top").innerText = `🏆 За (${countTop})`;
         }
 
@@ -712,13 +652,15 @@
             const maybeUsers = Object.entries(votesObj).filter(([_, v]) => v === "maybe").map(([u]) => u);
             const noUsers = Object.entries(votesObj).filter(([_, v]) => v === "no").map(([u]) => u);
 
-            const imgSrc = getSinglePhoto(p, idx);
+            const imgSrc = getAccuratePhoto(p, idx);
+            const backupQuery = encodeURIComponent((p.title || "Thailand Hotel").replace(/\([^)]*\)/g, "").trim());
+            const backupImg = `https://th.bing.com/th?q=${backupQuery}&w=600&h=360&c=7&rs=1`;
             const locLabel = LOCATION_NAMES[p.location] || p.location;
 
             return `
-                <div class="relative h-48 w-full bg-slate-800">
-                    <img src="${escapeHtml(imgSrc)}" loading="lazy" decoding="async" alt="${escapeHtml(p.title)}" onerror="this.src='${PHOTO_POOL.bangkok[0]}'" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-black/30"></div>
+                <div class="relative h-52 w-full bg-slate-800">
+                    <img src="${escapeHtml(imgSrc)}" loading="lazy" decoding="async" alt="${escapeHtml(p.title)}" onerror="if(this.src!=='${backupImg}'){this.src='${backupImg}';}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-black/35"></div>
                     
                     <div class="absolute top-3 left-3 flex flex-wrap gap-1.5">
                         <span class="bg-slate-950/90 text-amber-400 text-xs font-extrabold px-2.5 py-1 rounded-full border border-amber-500/30">
@@ -850,7 +792,6 @@
             `).join("");
         }
 
-        // Быстрое голосование: обновляет только одну карточку без перерисовки всей страницы
         async function castVote(propertyId, voteType, idx = 0) {
             const item = allProperties.find(p => String(p.id) === String(propertyId));
             if (!item) return;
@@ -910,17 +851,20 @@
         async function submitNewProperty(e) {
             e.preventDefault();
 
+            const titleVal = document.getElementById("f-title").value.trim();
             const rawPrice = Number(document.getElementById("f-price").value) || 0;
             const currency = document.getElementById("f-currency").value;
             const loc = document.getElementById("f-location").value;
             const priceRub = currency === "THB" ? Math.round(rawPrice * 2.5) : Math.round(rawPrice);
 
             const rawImage = document.getElementById("f-image").value.trim();
-            const pool = PHOTO_POOL[loc] || PHOTO_POOL.bangkok;
-            const finalImage = rawImage.startsWith("http") ? rawImage : pool[0];
+            const locSearch = loc === "bangkok" ? "Bangkok hotel pool" : (loc === "tao" ? "Koh Tao resort" : "Koh Samui villa pool");
+            const finalImage = rawImage.startsWith("http") 
+                ? rawImage 
+                : buildRealHotelPhotoUrl(`${titleVal} ${locSearch}`, 0);
 
             const newItem = {
-                title: document.getElementById("f-title").value.trim(),
+                title: titleVal,
                 location: loc,
                 nights: Number(document.getElementById("f-nights").value) || 3,
                 dates_text: document.getElementById("f-dates").value.trim() || "6–9 марта (3 номера)",
@@ -950,16 +894,19 @@
             } catch (err) {
                 alert("Ошибка сохранения: " + err.message);
             } finally {
-                btn.innerText = "✅ Сохранить в базу";
+                btn.innerText = "✅ Сохранить в общую базу";
                 btn.disabled = false;
             }
         }
 
-        // Запуск
+        // Мгновенная отрисовка + запуск фонового автообновления базы каждые 4 секунды
         updateCounters();
         renderList();
-        loadProperties(true);
-        setInterval(() => loadProperties(false), 12000);
+        autoSyncDatabase();
+        setInterval(autoSyncDatabase, 4000);
+        document.addEventListener("visibilitychange", () => {
+            if (!document.hidden) autoSyncDatabase();
+        });
     </script>
 </body>
 </html>
