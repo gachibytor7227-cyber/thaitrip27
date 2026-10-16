@@ -31,7 +31,7 @@
                         1฿ = 2.75₽ ✎
                     </button>
                 </div>
-                <p id="status-line" class="text-[10px] text-emerald-400 font-medium mt-0.5">⚡ Автообновление базы активно</p>
+                <p id="status-line" class="text-[10px] text-emerald-400 font-medium mt-0.5">🟢 База подключена (тихая синхронизация)</p>
             </div>
 
             <!-- Смена имени -->
@@ -42,7 +42,7 @@
             </button>
         </div>
 
-        <!-- Вкладки локаций и Карта (Адаптивная сетка — ничего не обрезается!) -->
+        <!-- Вкладки локаций и Карта -->
         <div class="max-w-xl mx-auto mt-2 grid grid-cols-3 sm:grid-cols-6 gap-1.5">
             <button type="button" onclick="setFilter('all')" id="tab-all" class="filter-btn py-1.5 px-1 rounded-xl text-[11px] font-bold text-center truncate bg-amber-500 text-slate-950 cursor-pointer shadow">Все (75)</button>
             <button type="button" onclick="setFilter('bangkok')" id="tab-bangkok" class="filter-btn py-1.5 px-1 rounded-xl text-[11px] font-bold text-center truncate bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">🏙 Бангкок (25)</button>
@@ -219,7 +219,7 @@
     <script>
         const SUPABASE_URL = "https://ezlxpcbyxxduigbtbvso.supabase.co";
         const SUPABASE_KEY = "sb_publishable_ImsCFPDEuLHSiLqKEL08SQ_Ef_a1f9F";
-        const CATALOG_VERSION_TAG = "Booking_v9_RoomSelector";
+        const CATALOG_VERSION_TAG = "Booking_v10_Stable";
 
         const tg = window.Telegram?.WebApp;
         if (tg) {
@@ -231,7 +231,6 @@
                           || "Алексей";
         document.getElementById("current-user-label").innerText = currentUser;
 
-        // Режим просмотра номеров в отелях: 2 = Пара (1 номер на 2 взрослых), 1 = Один (1 номер на 1 взрослого)
         let hotelGuestMode = Number(localStorage.getItem("thai_guest_mode")) || 2;
 
         function setGuestMode(mode) {
@@ -248,11 +247,11 @@
                     btn2.className = "px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-800 text-slate-300 hover:text-white cursor-pointer transition";
                 }
             }
-            renderList();
+            // Обновляем только блоки цен и кнопок внутри карточек без перезагрузки фото!
+            allProperties.forEach((p, idx) => patchSingleCardControls(p, idx));
             if (currentFilter === "map") renderMapPins(null);
         }
 
-        // Актуальный курс THB -> RUB
         let thbToRubRate = Number(localStorage.getItem("thai_thb_rate")) || 2.75;
 
         function updateRateBadge() {
@@ -286,7 +285,6 @@
                 localStorage.setItem("thai_thb_rate", String(thbToRubRate));
                 localStorage.setItem("thai_thb_rate_manual", "1");
                 updateRateBadge();
-                renderList();
             }
         }
 
@@ -296,7 +294,7 @@
                 currentUser = newName.trim();
                 localStorage.setItem("thai_user_name", currentUser);
                 document.getElementById("current-user-label").innerText = currentUser;
-                renderList();
+                allProperties.forEach((p, idx) => patchSingleCardControls(p, idx));
             }
         }
 
@@ -333,7 +331,7 @@
         }
 
         // =========================================================================
-        // ВИРТУАЛЬНАЯ КАРУСЕЛЬ НА 5 РАКУРСОВ (В ОДНОМ ТЕГЕ <img> — 0 ЛАГОВ)
+        // ВИРТУАЛЬНАЯ КАРУСЕЛЬ НА 5 РАКУРСОВ (В ОДНОМ ТЕГЕ <img>)
         // =========================================================================
         const PHOTO_ANGLES = [
             { suffix: "swimming pool exterior", label: "1/5 • Бассейн и фасад" },
@@ -396,11 +394,6 @@
             if (tg?.HapticFeedback) tg.HapticFeedback.selectionChanged();
         }
 
-        // =========================================================================
-        // УМНЫЕ ССЫЛКИ НА BOOKING, TRIP.COM И AGODA:
-        // Для Отелей (Бангкок и Ко Тао) — ищет 1 номер на 2 чел (Пара) ИЛИ 1 номер на 1 чел (Один)!
-        // Для Вилл (Самуи) — ищет всю виллу на 5 человек!
-        // =========================================================================
         function getAggregatorLinks(p, overrideAdults = null) {
             const cleanName = getCleanHotelName(p.title);
             const isVilla = p.location === "samui";
@@ -410,7 +403,6 @@
             const checkin = isVilla ? "2027-03-15" : (p.location === "bangkok" ? "2027-03-06" : "2027-03-09");
             const checkout = isVilla ? "2027-03-22" : (p.location === "bangkok" ? "2027-03-09" : "2027-03-15");
 
-            // Для вилл всегда 5 взрослых и 1 вилла; для отелей — 1 номер на 2 взрослых (Пара) или 1 взрослого (Сингл)
             const adults = isVilla ? 5 : (overrideAdults || hotelGuestMode || 2);
             const rooms = 1;
 
@@ -428,7 +420,7 @@
         };
 
         // =========================================================================
-        // КАТАЛОГ 75 ОБЪЕКТОВ (ЦЕНЫ СИНХРОНИЗИРОВАНЫ С ПОИСКОМ 1 НОМЕРА НА BOOKING)
+        // КАТАЛОГ 75 ОБЪЕКТОВ
         // =========================================================================
         const RAW_BANGKOK = [
             ["Baiyoke Sky Hotel 4★ (Башня 84 этажа + Бассейн)", 58000, "Небоскреб 84 этажа в Пратунаме! Открытый бассейн на 20 этаже + бесплатная смотровая площадка на 84 этаже (~6 800 ₽/сут за 1 номер).", "Baiyoke Sky Hotel Bangkok tower exterior pool", 13.7544, 100.5404],
@@ -553,8 +545,6 @@
         let allProperties = [...BOOKING_CATALOG];
         let currentFilter = "all";
         let currentSort = "default";
-        let isAutoSyncing = false;
-        let lastDataSignature = "";
 
         function extractVotesOnly(votesObj) {
             if (!votesObj || typeof votesObj !== "object") return {};
@@ -601,8 +591,9 @@
                 return;
             }
 
-            const item = allProperties.find(p => String(p.id) === String(activeCommentPropertyId));
-            if (!item) return;
+            const idx = allProperties.findIndex(p => String(p.id) === String(activeCommentPropertyId));
+            if (idx === -1) return;
+            const item = allProperties[idx];
 
             const propId = activeCommentPropertyId;
             const currentVotesObj = { ...(item.votes || {}) };
@@ -619,7 +610,7 @@
             item.votes = currentVotesObj;
 
             closeCommentModal();
-            renderList();
+            patchSingleCardControls(item, idx);
 
             try {
                 await supabaseRequest(`thai_properties?id=eq.${propId}`, "PATCH", { votes: currentVotesObj });
@@ -634,8 +625,7 @@
             currentVotesObj._comments = extractCommentsList(currentVotesObj).filter(c => c.id !== commentId);
             item.votes = currentVotesObj;
 
-            const cardEl = document.getElementById(`card-${propId}`);
-            if (cardEl) cardEl.innerHTML = renderCardInnerHtml(item, idx);
+            patchSingleCardControls(item, idx);
 
             try {
                 await supabaseRequest(`thai_properties?id=eq.${propId}`, "PATCH", { votes: currentVotesObj });
@@ -643,51 +633,8 @@
         }
 
         // =========================================================================
-        // АВТОМАТИЧЕСКОЕ ПОДСАСЫВАНИЕ ЦЕНЫ С BOOKING / TRIP + УДОБНЫЙ ВВОД ЦЕНЫ 1 НОМЕРА
+        // РЕДАКТИРОВАНИЕ ЦЕНЫ 1 НОМЕРА (БЕЗ ПЕРЕЗАГРУЗКИ СТРАНИЦЫ)
         // =========================================================================
-        async function autoFetchHotelPrice(propId, idx, event) {
-            if (event) event.stopPropagation();
-            const item = allProperties.find(p => String(p.id) === String(propId));
-            if (!item) return;
-
-            const btn = document.getElementById(`sync-price-btn-${propId}`);
-            if (btn) btn.innerText = "⏳ Ищем цену на Booking...";
-
-            const isVilla = item.location === "samui";
-            const links = getAggregatorLinks(item, 2); // запрашиваем цену за 1 номер на 2 взрослых (или всю виллу)
-
-            try {
-                const res = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(links.booking)}`);
-                if (res.ok) {
-                    const json = await res.json();
-                    const textBlob = `${json?.data?.title || ""} ${json?.data?.description || ""}`;
-                    const match = textBlob.match(/(?:от|from|price|цена|RUB|₽|THB|฿)\s*([0-9][0-9\s,.]{2,7})/i) ||
-                                  textBlob.match(/([0-9][0-9\s]{3,7})\s*(?:₽|руб|RUB|THB|฿)/i);
-
-                    if (match && match[1]) {
-                        const rawVal = parseInt(match[1].replace(/[^0-9]/g, ""), 10);
-                        if (rawVal > 1500 && rawVal < 600000) {
-                            const isThb = textBlob.includes("฿") || textBlob.includes("THB");
-                            const roomRub = isThb ? Math.round(rawVal * thbToRubRate) : rawVal;
-                            const totalRub = isVilla ? roomRub : Math.round(roomRub / 0.35);
-
-                            item.price_rub = totalRub;
-                            await supabaseRequest(`thai_properties?id=eq.${propId}`, "PATCH", { price_rub: totalRub });
-                            const cardEl = document.getElementById(`card-${propId}`);
-                            if (cardEl) cardEl.innerHTML = renderCardInnerHtml(item, idx);
-                            return;
-                        }
-                    }
-                }
-                // Если Booking скрыл динамический тариф за капчей — открываем быстрый ввод по 1 номеру
-                editPropertyPrice(propId, idx);
-            } catch (e) {
-                editPropertyPrice(propId, idx);
-            } finally {
-                if (btn) btn.innerText = "⚡ Обновить цену";
-            }
-        }
-
         async function editPropertyPrice(propId, idx) {
             const item = allProperties.find(p => String(p.id) === String(propId));
             if (!item) return;
@@ -710,12 +657,10 @@
             if (isNaN(numVal) || numVal < 100) return;
 
             const enteredRub = isThb ? Math.round(numVal * thbToRubRate) : Math.round(numVal);
-            // Если это отель — введенная цена 1 номера для пары составляет 35% от общего бюджета (2 пары по 35% + 1 сингл 30% = 100%)
             const newTotalRub = isVilla ? enteredRub : Math.round(enteredRub / 0.35);
 
             item.price_rub = newTotalRub;
-            const cardEl = document.getElementById(`card-${propId}`);
-            if (cardEl) cardEl.innerHTML = renderCardInnerHtml(item, idx);
+            patchSingleCardControls(item, idx);
 
             try {
                 await supabaseRequest(`thai_properties?id=eq.${propId}`, "PATCH", { price_rub: newTotalRub });
@@ -828,7 +773,7 @@
         }
 
         // =========================================================================
-        // СЕТЕВЫЕ ЗАПРОСЫ И АВТООБНОВЛЕНИЕ БАЗЫ SUPABASE
+        // СТАБИЛЬНАЯ СИНХРОНИЗАЦИЯ С SUPABASE (БЕЗ ПЕРЕРИСОВКИ ВСЕЙ СТРАНИЦЫ!)
         // =========================================================================
         async function supabaseRequest(endpoint, method = "GET", body = null) {
             const url = `${SUPABASE_URL}/rest/v1/${endpoint}`;
@@ -856,26 +801,24 @@
             return await response.json();
         }
 
-        async function autoSyncDatabase() {
-            if (isAutoSyncing) return;
+        // Вызывается ТОЛЬКО 1 РАЗ при старте приложения
+        async function initDatabaseOnce() {
             const statusEl = document.getElementById("status-line");
-
             try {
                 const data = await supabaseRequest("thai_properties?select=*&order=created_at.asc&limit=300");
 
-                const v9Count = (data || []).filter(d => d.added_by === CATALOG_VERSION_TAG).length;
-                const hasOldCatalog = (data || []).some(d => 
-                    d.added_by === "Booking.com" || 
-                    d.added_by === "Подборка" || 
-                    d.added_by === "Booking_v5_RealPhotos" ||
-                    d.added_by === "Booking_v6_VirtualCarousel_Comments" ||
-                    d.added_by === "Booking_v8_VerifiedPrices"
-                );
+                if (data && data.length >= 60) {
+                    // База уже наполнена — просто берем её 1 раз и рисуем список
+                    allProperties = data;
+                    updateCounters();
+                    renderList();
+                    statusEl.innerText = `🟢 Онлайн: ${allProperties.length} объектов`;
+                    return;
+                }
 
-                if (!data || data.length === 0 || v9Count !== 75 || hasOldCatalog) {
-                    isAutoSyncing = true;
-                    statusEl.innerText = "🔄 Автообновление каталога и цен...";
-
+                // Если база пустая или совсем старая — заполняем 1 раз в жизни
+                if (!localStorage.getItem("thai_db_seeded_v10")) {
+                    localStorage.setItem("thai_db_seeded_v10", "1");
                     const savedVotesByTitle = {};
                     (data || []).forEach(row => {
                         const t = (row.title || "").toLowerCase().trim();
@@ -884,7 +827,7 @@
                         }
                     });
 
-                    await supabaseRequest("thai_properties?added_by=in.(Booking.com,Подборка,Booking_v5_RealPhotos,Booking_v6_VirtualCarousel_Comments,Booking_v8_VerifiedPrices,Booking_v9_RoomSelector)", "DELETE");
+                    await supabaseRequest("thai_properties?id=not.is.null", "DELETE");
 
                     const payload = BOOKING_CATALOG.map(({ id, ...rest }) => {
                         const key = rest.title.toLowerCase().trim();
@@ -901,29 +844,44 @@
                     const fresh = await supabaseRequest("thai_properties?select=*&order=created_at.asc&limit=250");
                     if (fresh && fresh.length > 0) {
                         allProperties = fresh;
-                        lastDataSignature = JSON.stringify(fresh.map(d => [d.id, d.votes, d.title, d.price_rub]));
-                        updateCounters();
-                        renderList();
-                    }
-                    isAutoSyncing = false;
-                } else {
-                    const newSignature = JSON.stringify(data.map(d => [d.id, d.votes, d.title, d.price_rub]));
-                    if (newSignature !== lastDataSignature) {
-                        allProperties = data;
-                        lastDataSignature = newSignature;
                         updateCounters();
                         renderList();
                     }
                 }
-
-                const bkkCount = allProperties.filter(p => p.location === "bangkok").length;
-                const taoCount = allProperties.filter(p => p.location === "tao").length;
-                const samuiCount = allProperties.filter(p => p.location === "samui").length;
-                statusEl.innerText = `🟢 Онлайн: ${bkkCount} Бангкок • ${taoCount} Ко Тао • ${samuiCount} Самуи`;
+                statusEl.innerText = `🟢 Онлайн: ${allProperties.length} объектов`;
             } catch (err) {
-                isAutoSyncing = false;
-                statusEl.innerText = `🟢 Каталог: 25 Бангкок • 25 Ко Тао • 25 Самуи`;
+                statusEl.innerText = `🟢 Каталог готов (75 объектов)`;
             }
+        }
+
+        // Тихая проверка голосов и цен раз в 15 секунд: НЕ ТРОГАЕТ скролл и НЕ ПЕРЕРИСОВЫВАЕТ весь список!
+        async function silentPollVotesAndPrices() {
+            try {
+                const rows = await supabaseRequest("thai_properties?select=id,votes,price_rub&limit=300");
+                if (!rows || !rows.length) return;
+
+                let countersChanged = false;
+                rows.forEach(remoteRow => {
+                    const idx = allProperties.findIndex(p => String(p.id) === String(remoteRow.id));
+                    if (idx === -1) return;
+
+                    const localItem = allProperties[idx];
+                    const oldSig = JSON.stringify([localItem.votes || {}, localItem.price_rub]);
+                    const newSig = JSON.stringify([remoteRow.votes || {}, remoteRow.price_rub]);
+
+                    if (oldSig !== newSig) {
+                        localItem.votes = remoteRow.votes || {};
+                        localItem.price_rub = remoteRow.price_rub;
+                        countersChanged = true;
+                        // Точечно обновляем ТОЛЬКО нижнюю панель этой одной карточки, не трогая фото!
+                        patchSingleCardControls(localItem, idx);
+                    }
+                });
+
+                if (countersChanged) {
+                    updateCounters();
+                }
+            } catch (e) {}
         }
 
         let parseTimer = null;
@@ -1045,7 +1003,6 @@
             const sortBar = document.getElementById("sort-bar");
             const guestBar = document.getElementById("guest-mode-bar");
 
-            // Показываем переключатель «Пара / Один» везде, кроме вкладки Самуи (где виллы целиком)
             if (guestBar) {
                 if (filter === "samui") guestBar.classList.add("hidden");
                 else guestBar.classList.remove("hidden");
@@ -1092,16 +1049,14 @@
         }
 
         // =========================================================================
-        // ОТРИСОВКА КАРТОЧКИ
+        // РАЗДЕЛЬНАЯ ОТРИСОВКА: ФОТО НЕ ПЕРЕРИСОВЫВАЕТСЯ ПРИ ГОЛОСОВАНИИ ИЛИ СМЕНЕ ЦЕН!
         // =========================================================================
-        function renderCardInnerHtml(p, idx) {
+        function renderCardControlsHtml(p, idx) {
             const propId = String(p.id);
             const totalRub = Number(p.price_rub) || 0;
             const isVilla = p.location === "samui";
             const nights = Number(p.nights) || (isVilla ? 7 : 3);
 
-            // Для отелей: 1 номер для пары (2 чел) = 35% бюджета, 1 номер сингл (1 чел) = 30% бюджета
-            // (2 пары × 35% + 1 сингл × 30% = 100% на 5 человек)
             const coupleRub = isVilla ? Math.round(totalRub * 0.40) : Math.round(totalRub * 0.35);
             const singleRub = isVilla ? Math.round(totalRub * 0.20) : Math.round(totalRub * 0.30);
 
@@ -1116,12 +1071,6 @@
             const maybeUsers = Object.entries(cleanVotes).filter(([_, v]) => v === "maybe").map(([u]) => u);
             const noUsers = Object.entries(cleanVotes).filter(([_, v]) => v === "no").map(([u]) => u);
 
-            const slide = getVirtualSlideData(p, idx);
-            const backupQuery = encodeURIComponent(getCleanHotelName(p.title) + " Thailand");
-            const backupImg = `https://th.bing.com/th?q=${backupQuery}&w=600&h=360&c=7&rs=1`;
-            const locLabel = LOCATION_NAMES[p.location] || p.location;
-
-            // Ссылки в зависимости от того, выбран ли режим «Пара (2 чел)» или «Один (1 чел)»
             const activeLinks = getAggregatorLinks(p, hotelGuestMode);
             const pairBookingLink = getAggregatorLinks(p, 2).booking;
             const singleBookingLink = getAggregatorLinks(p, 1).booking;
@@ -1130,11 +1079,160 @@
             const isSingleSelected = !isVilla && hotelGuestMode === 1;
 
             return `
+                ${p.notes ? `<p class="text-xs text-slate-300 leading-relaxed">${escapeHtml(p.notes)}</p>` : ''}
+
+                ${isVilla ? `
+                <div onclick="editPropertyPrice('${propId}',${idx})" class="bg-slate-950 hover:bg-slate-900 border border-slate-800 rounded-2xl p-2.5 grid grid-cols-3 gap-2 text-center cursor-pointer transition">
+                    <div class="border-r border-slate-800 pr-1">
+                        <span class="text-[10px] text-slate-400 block">Вся вилла (${nights} н.) ✎</span>
+                        <span class="text-sm font-extrabold text-white">${formatRub(totalRub)}</span>
+                        <span class="text-[9px] text-slate-500 block">${formatRub(totalRub / nights)}/сут</span>
+                    </div>
+                    <div class="border-r border-slate-800 px-1">
+                        <span class="text-[10px] text-amber-400 font-bold block">👫 С пары (40%)</span>
+                        <span class="text-base font-black text-amber-400">${formatRub(coupleRub)}</span>
+                        <span class="text-[9px] text-amber-500/70 block">за двоих (${nights} н.)</span>
+                    </div>
+                    <div class="pl-1">
+                        <span class="text-[10px] text-slate-400 block">🧍 С одного (20%)</span>
+                        <span class="text-sm font-bold text-slate-200">${formatRub(singleRub)}</span>
+                        <span class="text-[9px] text-slate-500 block">за 1 чел (${nights} н.)</span>
+                    </div>
+                </div>
+                ` : `
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-2">
+                    <div class="grid grid-cols-3 gap-1.5 text-center">
+                        <div onclick="setGuestMode(2)" class="rounded-xl p-1.5 cursor-pointer transition ${isPairSelected ? 'bg-amber-500/15 border border-amber-500/60' : 'bg-slate-900/60 border border-slate-800 hover:border-slate-700'}">
+                            <span class="text-[10px] text-amber-400 font-extrabold block">👫 Пара (2 чел)</span>
+                            <span class="text-sm sm:text-base font-black text-amber-400">${formatRub(coupleRub)}</span>
+                            <span class="text-[9px] text-slate-400 block">1 ном • ${formatRub(couplePerNight)}/сут</span>
+                        </div>
+                        <div onclick="setGuestMode(1)" class="rounded-xl p-1.5 cursor-pointer transition ${isSingleSelected ? 'bg-emerald-500/15 border border-emerald-500/60' : 'bg-slate-900/60 border border-slate-800 hover:border-slate-700'}">
+                            <span class="text-[10px] text-emerald-400 font-extrabold block">🧍 Один (1 чел)</span>
+                            <span class="text-sm sm:text-base font-black text-emerald-300">${formatRub(singleRub)}</span>
+                            <span class="text-[9px] text-slate-400 block">1 ном • ${formatRub(singlePerNight)}/сут</span>
+                        </div>
+                        <div onclick="editPropertyPrice('${propId}',${idx})" class="rounded-xl p-1.5 bg-slate-900/40 border border-slate-800/80 hover:border-amber-500/40 cursor-pointer" title="Нажми, чтобы изменить цену 1 номера">
+                            <span class="text-[10px] text-slate-400 block">Все 3 номера ✎</span>
+                            <span class="text-xs sm:text-sm font-extrabold text-white">${formatRub(totalRub)}</span>
+                            <span class="text-[9px] text-amber-400/90 font-bold block mt-0.5">✎ Изменить цену</span>
+                        </div>
+                    </div>
+                </div>
+                `}
+
+                ${isVilla ? `
+                <div class="grid grid-cols-3 gap-1.5">
+                    <a href="${escapeHtml(activeLinks.booking)}" target="_blank" rel="noopener noreferrer" class="py-2 rounded-xl text-[11px] font-extrabold bg-blue-950/90 hover:bg-blue-900 text-blue-200 border border-blue-700/60 flex items-center justify-center gap-1">
+                        🔗 Booking (Вилла)
+                    </a>
+                    <a href="${escapeHtml(activeLinks.trip)}" target="_blank" rel="noopener noreferrer" class="py-2 rounded-xl text-[11px] font-extrabold bg-indigo-950/90 hover:bg-indigo-900 text-indigo-200 border border-indigo-700/60 flex items-center justify-center gap-1">
+                        💳 Trip.com
+                    </a>
+                    <a href="${escapeHtml(activeLinks.agoda)}" target="_blank" rel="noopener noreferrer" class="py-2 rounded-xl text-[11px] font-extrabold bg-purple-950/90 hover:bg-purple-900 text-purple-200 border border-purple-700/60 flex items-center justify-center gap-1">
+                        🌏 Agoda
+                    </a>
+                </div>
+                ` : `
+                <div class="space-y-1.5">
+                    <div class="grid grid-cols-2 gap-1.5">
+                        <a href="${escapeHtml(pairBookingLink)}" target="_blank" rel="noopener noreferrer" class="py-2 px-2 rounded-xl text-[11px] font-extrabold bg-blue-950 hover:bg-blue-900 text-blue-200 border ${isPairSelected ? 'border-amber-400 ring-1 ring-amber-400/40' : 'border-blue-700/60'} flex items-center justify-center gap-1 text-center">
+                            🔗 Booking: 👫 Пара (2 чел)
+                        </a>
+                        <a href="${escapeHtml(singleBookingLink)}" target="_blank" rel="noopener noreferrer" class="py-2 px-2 rounded-xl text-[11px] font-extrabold bg-teal-950 hover:bg-teal-900 text-teal-200 border ${isSingleSelected ? 'border-emerald-400 ring-1 ring-emerald-400/40' : 'border-teal-700/60'} flex items-center justify-center gap-1 text-center">
+                            🔗 Booking: 🧍 Один (1 чел)
+                        </a>
+                    </div>
+                    <div class="grid grid-cols-2 gap-1.5">
+                        <a href="${escapeHtml(activeLinks.trip)}" target="_blank" rel="noopener noreferrer" class="py-1.5 rounded-xl text-[11px] font-bold bg-indigo-950/80 hover:bg-indigo-900 text-indigo-200 border border-indigo-700/50 flex items-center justify-center gap-1">
+                            💳 Trip.com (${activeLinks.adults === 2 ? 'на 2 чел' : 'на 1 чел'})
+                        </a>
+                        <a href="${escapeHtml(activeLinks.agoda)}" target="_blank" rel="noopener noreferrer" class="py-1.5 rounded-xl text-[11px] font-bold bg-purple-950/80 hover:bg-purple-900 text-purple-200 border border-purple-700/50 flex items-center justify-center gap-1">
+                            🌏 Agoda (${activeLinks.adults === 2 ? 'на 2 чел' : 'на 1 чел'})
+                        </a>
+                    </div>
+                </div>
+                `}
+
+                <div class="grid grid-cols-3 gap-2">
+                    <button type="button" onclick="castVote('${propId}', 'yes', ${idx})" class="py-2 rounded-xl text-xs font-extrabold cursor-pointer transition active:scale-95 ${myVote === 'yes' ? 'bg-emerald-500 text-slate-950 ring-2 ring-white' : 'bg-emerald-950/70 text-emerald-300 border border-emerald-700/60'}">
+                        👍 За (${yesUsers.length})
+                    </button>
+                    <button type="button" onclick="castVote('${propId}', 'maybe', ${idx})" class="py-2 rounded-xl text-xs font-extrabold cursor-pointer transition active:scale-95 ${myVote === 'maybe' ? 'bg-amber-400 text-slate-950 ring-2 ring-white' : 'bg-amber-950/60 text-amber-300 border border-amber-700/50'}">
+                        🤔 Думаю (${maybeUsers.length})
+                    </button>
+                    <button type="button" onclick="castVote('${propId}', 'no', ${idx})" class="py-2 rounded-xl text-xs font-extrabold cursor-pointer transition active:scale-95 ${myVote === 'no' ? 'bg-rose-500 text-white ring-2 ring-white' : 'bg-rose-950/60 text-rose-300 border border-rose-700/50'}">
+                        👎 Нет (${noUsers.length})
+                    </button>
+                </div>
+
+                <div class="bg-slate-950/70 rounded-xl p-2.5 text-[11px] space-y-1.5 border border-slate-800/70">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-start gap-1.5">
+                            <span class="text-emerald-400 font-bold shrink-0">👍 За:</span>
+                            <span class="text-slate-200">${yesUsers.length ? yesUsers.map(escapeHtml).join(', ') : '<span class="text-slate-600">пока никто</span>'}</span>
+                        </div>
+                        <button type="button" onclick="openCommentModal('${propId}')" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold px-2 py-0.5 rounded-lg border border-slate-700 cursor-pointer shrink-0">
+                            💬 Коммент (${commentsList.length})
+                        </button>
+                    </div>
+
+                    ${maybeUsers.length ? `
+                    <div class="flex items-start gap-1.5">
+                        <span class="text-amber-400 font-bold shrink-0">🤔 Думают:</span>
+                        <span class="text-slate-300">${maybeUsers.map(escapeHtml).join(', ')}</span>
+                    </div>` : ''}
+                    ${noUsers.length ? `
+                    <div class="flex items-start gap-1.5">
+                        <span class="text-rose-400 font-bold shrink-0">👎 Против:</span>
+                        <span class="text-slate-400">${noUsers.map(escapeHtml).join(', ')}</span>
+                    </div>` : ''}
+
+                    ${commentsList.length ? `
+                    <div class="pt-1.5 mt-1 border-t border-slate-800/80 space-y-1">
+                        ${commentsList.map(c => `
+                            <div class="bg-slate-900/90 border border-slate-800 rounded-lg px-2 py-1 flex items-start justify-between gap-2">
+                                <div>
+                                    <span class="font-bold text-amber-300">${escapeHtml(c.user)}:</span>
+                                    <span class="text-slate-200 ml-1">${escapeHtml(c.text)}</span>
+                                    <span class="text-[9px] text-slate-500 ml-1">${escapeHtml(c.time || '')}</span>
+                                </div>
+                                ${c.user === currentUser ? `<button type="button" onclick="deleteComment('${propId}', '${c.id}',${idx})" class="text-slate-500 hover:text-rose-400 text-[10px] font-bold cursor-pointer">✕</button>` : ''}
+                            </div>
+                        `).join("")}
+                    </div>` : ''}
+                </div>`;
+        }
+
+        // Точечное обновление одной карточки без перезагрузки картинки
+        function patchSingleCardControls(p, idx) {
+            const propId = String(p.id);
+            const bodyEl = document.getElementById(`card-body-${propId}`);
+            if (bodyEl) {
+                bodyEl.innerHTML = renderCardControlsHtml(p, idx);
+            }
+            const yesBadge = document.getElementById(`yes-badge-${propId}`);
+            if (yesBadge) {
+                yesBadge.innerText = `🔥 ${countVotes(p.votes, "yes")}/5`;
+            }
+        }
+
+        function renderFullCardHtml(p, idx) {
+            const propId = String(p.id);
+            const isVilla = p.location === "samui";
+            const nights = Number(p.nights) || (isVilla ? 7 : 3);
+            const yesCount = countVotes(p.votes, "yes");
+
+            const slide = getVirtualSlideData(p, idx);
+            const backupQuery = encodeURIComponent(getCleanHotelName(p.title) + " Thailand");
+            const backupImg = `https://th.bing.com/th?q=${backupQuery}&w=600&h=360&c=7&rs=1`;
+            const locLabel = LOCATION_NAMES[p.location] || p.location;
+
+            return `
                 <div class="relative h-52 w-full bg-slate-800 select-none">
                     <img id="img-${propId}" src="${escapeHtml(slide.url)}" loading="lazy" decoding="async" alt="${escapeHtml(p.title)}" onerror="if(this.src!=='${backupImg}'){this.src='${backupImg}';}" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-black/40 pointer-events-none"></div>
                     
-                    <!-- Кнопки виртуальной карусели ❮ и ❯ -->
                     <button type="button" onclick="stepCarousel('${propId}', ${idx}, -1)" class="absolute left-2.5 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-slate-950/75 hover:bg-slate-950 active:scale-90 text-white border border-white/20 flex items-center justify-center text-xs font-black cursor-pointer shadow-lg">❮</button>
                     <button type="button" onclick="stepCarousel('${propId}', ${idx}, 1)" class="absolute right-2.5 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-slate-950/75 hover:bg-slate-950 active:scale-90 text-white border border-white/20 flex items-center justify-center text-xs font-black cursor-pointer shadow-lg">❯</button>
 
@@ -1148,8 +1246,8 @@
                     </div>
 
                     <div class="absolute top-3 right-3 flex items-center gap-1.5 z-10">
-                        <span class="bg-emerald-500 text-slate-950 text-xs font-black px-2.5 py-1 rounded-full shadow">
-                            🔥 ${yesUsers.length}/5
+                        <span id="yes-badge-${propId}" class="bg-emerald-500 text-slate-950 text-xs font-black px-2.5 py-1 rounded-full shadow">
+                            🔥 ${yesCount}/5
                         </span>
                         <button type="button" onclick="deleteProperty('${propId}')" class="bg-slate-950/85 hover:bg-rose-600 text-slate-300 hover:text-white text-xs px-2.5 py-1 rounded-full cursor-pointer" title="Удалить">🗑</button>
                     </div>
@@ -1167,135 +1265,8 @@
                     </div>
                 </div>
 
-                <div class="p-3.5 space-y-3">
-                    ${p.notes ? `<p class="text-xs text-slate-300 leading-relaxed">${escapeHtml(p.notes)}</p>` : ''}
-
-                    ${isVilla ? `
-                    <!-- Блок цен для ВИЛЛЫ (Самуи) -->
-                    <div onclick="editPropertyPrice('${propId}',${idx})" class="bg-slate-950 hover:bg-slate-900 border border-slate-800 rounded-2xl p-2.5 grid grid-cols-3 gap-2 text-center cursor-pointer transition">
-                        <div class="border-r border-slate-800 pr-1">
-                            <span class="text-[10px] text-slate-400 block">Вся вилла (${nights} н.) ✎</span>
-                            <span class="text-sm font-extrabold text-white">${formatRub(totalRub)}</span>
-                            <span class="text-[9px] text-slate-500 block">${formatRub(totalRub / nights)}/сут</span>
-                        </div>
-                        <div class="border-r border-slate-800 px-1">
-                            <span class="text-[10px] text-amber-400 font-bold block">👫 С пары (40%)</span>
-                            <span class="text-base font-black text-amber-400">${formatRub(coupleRub)}</span>
-                            <span class="text-[9px] text-amber-500/70 block">за двоих (${nights} н.)</span>
-                        </div>
-                        <div class="pl-1">
-                            <span class="text-[10px] text-slate-400 block">🧍 С одного (20%)</span>
-                            <span class="text-sm font-bold text-slate-200">${formatRub(singleRub)}</span>
-                            <span class="text-[9px] text-slate-500 block">за 1 чел (${nights} н.)</span>
-                        </div>
-                    </div>
-                    ` : `
-                    <!-- Блок цен для ОТЕЛЕЙ (Бангкок и Ко Тао): клик переключает режим Пара (2 чел) / Один (1 чел) -->
-                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-2 space-y-2">
-                        <div class="grid grid-cols-3 gap-1.5 text-center">
-                            <div onclick="setGuestMode(2)" class="rounded-xl p-1.5 cursor-pointer transition ${isPairSelected ? 'bg-amber-500/15 border border-amber-500/60' : 'bg-slate-900/60 border border-slate-800 hover:border-slate-700'}">
-                                <span class="text-[10px] text-amber-400 font-extrabold block">👫 Пара (2 чел)</span>
-                                <span class="text-sm sm:text-base font-black text-amber-400">${formatRub(coupleRub)}</span>
-                                <span class="text-[9px] text-slate-400 block">1 номер • ${formatRub(couplePerNight)}/сут</span>
-                            </div>
-                            <div onclick="setGuestMode(1)" class="rounded-xl p-1.5 cursor-pointer transition ${isSingleSelected ? 'bg-emerald-500/15 border border-emerald-500/60' : 'bg-slate-900/60 border border-slate-800 hover:border-slate-700'}">
-                                <span class="text-[10px] text-emerald-400 font-extrabold block">🧍 Один (1 чел)</span>
-                                <span class="text-sm sm:text-base font-black text-emerald-300">${formatRub(singleRub)}</span>
-                                <span class="text-[9px] text-slate-400 block">1 номер • ${formatRub(singlePerNight)}/сут</span>
-                            </div>
-                            <div onclick="editPropertyPrice('${propId}',${idx})" class="rounded-xl p-1.5 bg-slate-900/40 border border-slate-800/80 hover:border-amber-500/40 cursor-pointer">
-                                <span class="text-[10px] text-slate-400 block">Все 3 номера ✎</span>
-                                <span class="text-xs sm:text-sm font-extrabold text-white">${formatRub(totalRub)}</span>
-                                <span id="sync-price-btn-${propId}" onclick="autoFetchHotelPrice('${propId}',${idx}, event)" class="text-[9px] text-blue-400 hover:underline font-bold block mt-0.5">⚡ Обновить цену</span>
-                            </div>
-                        </div>
-                    </div>
-                    `}
-
-                    <!-- Кнопки агрегаторов: для Отелей явно показывают, на сколько человек ищется 1 номер! -->
-                    ${isVilla ? `
-                    <div class="grid grid-cols-3 gap-1.5">
-                        <a href="${escapeHtml(activeLinks.booking)}" target="_blank" rel="noopener noreferrer" class="py-2 rounded-xl text-[11px] font-extrabold bg-blue-950/90 hover:bg-blue-900 text-blue-200 border border-blue-700/60 flex items-center justify-center gap-1">
-                            🔗 Booking (Вилла)
-                        </a>
-                        <a href="${escapeHtml(activeLinks.trip)}" target="_blank" rel="noopener noreferrer" class="py-2 rounded-xl text-[11px] font-extrabold bg-indigo-950/90 hover:bg-indigo-900 text-indigo-200 border border-indigo-700/60 flex items-center justify-center gap-1">
-                            💳 Trip.com
-                        </a>
-                        <a href="${escapeHtml(activeLinks.agoda)}" target="_blank" rel="noopener noreferrer" class="py-2 rounded-xl text-[11px] font-extrabold bg-purple-950/90 hover:bg-purple-900 text-purple-200 border border-purple-700/60 flex items-center justify-center gap-1">
-                            🌏 Agoda
-                        </a>
-                    </div>
-                    ` : `
-                    <div class="space-y-1.5">
-                        <div class="grid grid-cols-2 gap-1.5">
-                            <a href="${escapeHtml(pairBookingLink)}" target="_blank" rel="noopener noreferrer" class="py-2 px-2 rounded-xl text-[11px] font-extrabold bg-blue-950 hover:bg-blue-900 text-blue-200 border ${isPairSelected ? 'border-amber-400 ring-1 ring-amber-400/40' : 'border-blue-700/60'} flex items-center justify-center gap-1 text-center">
-                                🔗 Booking: 👫 Пара (2 чел)
-                            </a>
-                            <a href="${escapeHtml(singleBookingLink)}" target="_blank" rel="noopener noreferrer" class="py-2 px-2 rounded-xl text-[11px] font-extrabold bg-teal-950 hover:bg-teal-900 text-teal-200 border ${isSingleSelected ? 'border-emerald-400 ring-1 ring-emerald-400/40' : 'border-teal-700/60'} flex items-center justify-center gap-1 text-center">
-                                🔗 Booking: 🧍 Один (1 чел)
-                            </a>
-                        </div>
-                        <div class="grid grid-cols-2 gap-1.5">
-                            <a href="${escapeHtml(activeLinks.trip)}" target="_blank" rel="noopener noreferrer" class="py-1.5 rounded-xl text-[11px] font-bold bg-indigo-950/80 hover:bg-indigo-900 text-indigo-200 border border-indigo-700/50 flex items-center justify-center gap-1">
-                                💳 Trip.com (${activeLinks.adults === 2 ? 'на 2 чел' : 'на 1 чел'})
-                            </a>
-                            <a href="${escapeHtml(activeLinks.agoda)}" target="_blank" rel="noopener noreferrer" class="py-1.5 rounded-xl text-[11px] font-bold bg-purple-950/80 hover:bg-purple-900 text-purple-200 border border-purple-700/50 flex items-center justify-center gap-1">
-                                🌏 Agoda (${activeLinks.adults === 2 ? 'на 2 чел' : 'на 1 чел'})
-                            </a>
-                        </div>
-                    </div>
-                    `}
-
-                    <!-- Кнопки голосования -->
-                    <div class="grid grid-cols-3 gap-2">
-                        <button type="button" onclick="castVote('${propId}', 'yes', ${idx})" class="py-2 rounded-xl text-xs font-extrabold cursor-pointer transition active:scale-95 ${myVote === 'yes' ? 'bg-emerald-500 text-slate-950 ring-2 ring-white' : 'bg-emerald-950/70 text-emerald-300 border border-emerald-700/60'}">
-                            👍 За (${yesUsers.length})
-                        </button>
-                        <button type="button" onclick="castVote('${propId}', 'maybe', ${idx})" class="py-2 rounded-xl text-xs font-extrabold cursor-pointer transition active:scale-95 ${myVote === 'maybe' ? 'bg-amber-400 text-slate-950 ring-2 ring-white' : 'bg-amber-950/60 text-amber-300 border border-amber-700/50'}">
-                            🤔 Думаю (${maybeUsers.length})
-                        </button>
-                        <button type="button" onclick="castVote('${propId}', 'no', ${idx})" class="py-2 rounded-xl text-xs font-extrabold cursor-pointer transition active:scale-95 ${myVote === 'no' ? 'bg-rose-500 text-white ring-2 ring-white' : 'bg-rose-950/60 text-rose-300 border border-rose-700/50'}">
-                            👎 Нет (${noUsers.length})
-                        </button>
-                    </div>
-
-                    <!-- Список проголосовавших + Короткие комментарии -->
-                    <div class="bg-slate-950/70 rounded-xl p-2.5 text-[11px] space-y-1.5 border border-slate-800/70">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-start gap-1.5">
-                                <span class="text-emerald-400 font-bold shrink-0">👍 За:</span>
-                                <span class="text-slate-200">${yesUsers.length ? yesUsers.map(escapeHtml).join(', ') : '<span class="text-slate-600">пока никто</span>'}</span>
-                            </div>
-                            <button type="button" onclick="openCommentModal('${propId}')" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold px-2 py-0.5 rounded-lg border border-slate-700 cursor-pointer shrink-0">
-                                💬 Коммент (${commentsList.length})
-                            </button>
-                        </div>
-
-                        ${maybeUsers.length ? `
-                        <div class="flex items-start gap-1.5">
-                            <span class="text-amber-400 font-bold shrink-0">🤔 Думают:</span>
-                            <span class="text-slate-300">${maybeUsers.map(escapeHtml).join(', ')}</span>
-                        </div>` : ''}
-                        ${noUsers.length ? `
-                        <div class="flex items-start gap-1.5">
-                            <span class="text-rose-400 font-bold shrink-0">👎 Против:</span>
-                            <span class="text-slate-400">${noUsers.map(escapeHtml).join(', ')}</span>
-                        </div>` : ''}
-
-                        ${commentsList.length ? `
-                        <div class="pt-1.5 mt-1 border-t border-slate-800/80 space-y-1">
-                            ${commentsList.map(c => `
-                                <div class="bg-slate-900/90 border border-slate-800 rounded-lg px-2 py-1 flex items-start justify-between gap-2">
-                                    <div>
-                                        <span class="font-bold text-amber-300">${escapeHtml(c.user)}:</span>
-                                        <span class="text-slate-200 ml-1">${escapeHtml(c.text)}</span>
-                                        <span class="text-[9px] text-slate-500 ml-1">${escapeHtml(c.time || '')}</span>
-                                    </div>
-                                    ${c.user === currentUser ? `<button type="button" onclick="deleteComment('${propId}', '${c.id}',${idx})" class="text-slate-500 hover:text-rose-400 text-[10px] font-bold cursor-pointer">✕</button>` : ''}
-                                </div>
-                            `).join("")}
-                        </div>` : ''}
-                    </div>
+                <div id="card-body-${propId}" class="p-3.5 space-y-3">
+                    ${renderCardControlsHtml(p, idx)}
                 </div>`;
         }
 
@@ -1347,7 +1318,7 @@
 
             container.innerHTML = items.map((p, idx) => `
                 <article id="card-${p.id}" class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-lg">
-                    ${renderCardInnerHtml(p, idx)}
+                    ${renderFullCardHtml(p, idx)}
                 </article>
             `).join("");
         }
@@ -1365,13 +1336,7 @@
 
             item.votes = updatedVotes;
             updateCounters();
-
-            const cardEl = document.getElementById(`card-${propertyId}`);
-            if (cardEl && currentFilter !== "top" && currentSort !== "votes") {
-                cardEl.innerHTML = renderCardInnerHtml(item, idx);
-            } else {
-                renderList();
-            }
+            patchSingleCardControls(item, idx);
 
             if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred("light");
 
@@ -1470,16 +1435,13 @@
             }
         }
 
-        // Запуск
+        // Запуск: рисуем 1 раз, база синхронизируется тихо без перерисовки экрана
         setGuestMode(hotelGuestMode);
         fetchLiveExchangeRate();
         updateCounters();
         renderList();
-        autoSyncDatabase();
-        setInterval(autoSyncDatabase, 4000);
-        document.addEventListener("visibilitychange", () => {
-            if (!document.hidden) autoSyncDatabase();
-        });
+        initDatabaseOnce();
+        setInterval(silentPollVotesAndPrices, 15000);
     </script>
 </body>
 </html>
