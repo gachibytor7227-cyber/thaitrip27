@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Thai Trip 2027 — Выбор вилл и отелей</title>
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase JS Client v2 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen pb-28">
+
+    <!-- Верхняя панель (Хедер) -->
+    <header class="sticky top-0 z-30 bg-slate-950/90 backdrop-blur-md border-b border-slate-800 px-4 py-3">
+        <div class="max-w-xl mx-auto flex items-center justify-between">
+            <div>
+                <h1 class="text-lg font-black tracking-tight text-amber-400 flex items-center gap-1.5">
+                    <span>🌴 Thai Trip 2027</span>
+                    <span class="text-xs bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-bold">5 чел.</span>
+                </h1>
+                <p class="text-xs text-slate-400">Бангкок • Ко Тао / Пханган • Самуи</p>
+            </div>
+            <!-- Кнопка смены имени -->
+            <button onclick="changeUserName()" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-200 transition">
+                <span>👤</span>
+                <span id="current-user-label">Гость</span>
+                <span class="text-slate-500 text-[10px]">✎</span>
+            </button>
+        </div>
+
+        <!-- Фильтры категорий -->
+        <div class="max-w-xl mx-auto mt-3 flex gap-2 overflow-x-auto no-scrollbar pb-1">
+            <button onclick="setFilter('all')" id="tab-all" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-amber-500 text-slate-950 shadow">Все варианты</button>
+            <button onclick="setFilter('top')" id="tab-top" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700">🏆 Фавориты</button>
+            <button onclick="setFilter('bangkok')" id="tab-bangkok" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700">🏙 Бангкок</button>
+            <button onclick="setFilter('samui')" id="tab-samui" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700">🏝 Самуи (Виллы)</button>
+            <button onclick="setFilter('tao')" id="tab-tao" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700">🐢 Ко Тао</button>
+            <button onclick="setFilter('phangan')" id="tab-phangan" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700">🌕 Пханган</button>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="max-w-xl mx-auto px-4 pt-4">
+        <!-- Блок подсказки, если в базе ещё нет данных -->
+        <div id="seed-banner" class="hidden mb-4 bg-slate-900 border border-amber-500/40 rounded-2xl p-4 text-center">
+            <p class="text-sm font-bold text-amber-400">В базе пока пусто!</p>
+            <p class="text-xs text-slate-400 mt-1 mb-3">Загрузить готовую подборку из 6 пентхаусов Бангкока (6–9 марта) + виллы на Самуи и Ко Тао с расчетом в рублях?</p>
+            <button onclick="seedStarterProperties()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold px-5 py-2.5 rounded-xl text-xs shadow-lg transition">
+                🚀 Загрузить стартовую подборку (8 объектов)
+            </button>
+        </div>
+
+        <!-- Список карточек -->
+        <div id="properties-list" class="space-y-5">
+            <div class="text-center text-slate-500 py-14 text-sm">Загружаем виллы и отели...</div>
+        </div>
+    </main>
+
+    <!-- Плавающая нижняя панель -->
+    <div class="fixed bottom-0 left-0 right-0 z-30 bg-slate-950/90 backdrop-blur-md border-t border-slate-800 p-3">
+        <div class="max-w-xl mx-auto flex gap-2">
+            <button onclick="openAddModal()" class="flex-1 bg-amber-500 hover:bg-amber-400 active:scale-[0.99] text-slate-950 font-black py-3 rounded-2xl text-sm shadow-lg shadow-amber-500/10 flex items-center justify-center gap-2 transition">
+                <span class="text-lg leading-none">＋</span> Добавить свой вариант
+            </button>
+            <button onclick="loadProperties()" class="bg-slate-800 hover:
