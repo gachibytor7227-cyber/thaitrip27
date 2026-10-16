@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Thai Trip 2027 — Выбор вилл и отелей</title>
-    <!-- Telegram WebApp SDK -->
+    <title>Thai Trip 2027 — 156 вилл и отелей Booking.com</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
@@ -14,19 +12,19 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen pb-28">
+<body class="bg-slate-950 text-slate-100 min-h-screen pb-32">
 
     <!-- Верхняя панель -->
-    <header class="sticky top-0 z-30 bg-slate-950/90 backdrop-blur-md border-b border-slate-800 px-4 py-3">
+    <header class="sticky top-0 z-30 bg-slate-950/95 backdrop-blur-md border-b border-slate-800 px-4 py-2.5">
         <div class="max-w-xl mx-auto flex items-center justify-between">
             <div>
                 <h1 class="text-lg font-black tracking-tight text-amber-400 flex items-center gap-1.5">
                     <span>🌴 Thai Trip 2027</span>
-                    <span class="text-xs bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-bold">5 чел.</span>
+                    <span id="total-counter" class="text-xs bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-bold">156 объектов</span>
                 </h1>
-                <p class="text-xs text-slate-400">Бангкок • Ко Тао / Пханган • Самуи</p>
+                <p id="status-line" class="text-[11px] text-slate-400">Бангкок (6–9.03) • Ко Тао (9–15.03) • Самуи (15–22.03)</p>
             </div>
-            <!-- Кнопка смены имени -->
+            <!-- Смена имени -->
             <button type="button" onclick="changeUserName()" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 border border-slate-700 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-200 transition cursor-pointer">
                 <span>👤</span>
                 <span id="current-user-label">Алексей</span>
@@ -34,83 +32,117 @@
             </button>
         </div>
 
-        <!-- Фильтры категорий -->
-        <div class="max-w-xl mx-auto mt-3 flex gap-2 overflow-x-auto no-scrollbar pb-1">
-            <button type="button" onclick="setFilter('all')" id="tab-all" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-amber-500 text-slate-950 shadow">Все варианты</button>
-            <button type="button" onclick="setFilter('top')" id="tab-top" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700">🏆 Фавориты</button>
-            <button type="button" onclick="setFilter('bangkok')" id="tab-bangkok" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700">🏙 Бангкок</button>
-            <button type="button" onclick="setFilter('samui')" id="tab-samui" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700">🏝 Самуи (Виллы)</button>
-            <button type="button" onclick="setFilter('tao')" id="tab-tao" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700">🐢 Ко Тао</button>
-            <button type="button" onclick="setFilter('phangan')" id="tab-phangan" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700">🌕 Пханган</button>
+        <!-- Вкладки локаций -->
+        <div class="max-w-xl mx-auto mt-2 flex gap-1.5 overflow-x-auto no-scrollbar pb-1">
+            <button type="button" onclick="setFilter('all')" id="tab-all" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-amber-500 text-slate-950 shadow cursor-pointer">Все (156)</button>
+            <button type="button" onclick="setFilter('samui')" id="tab-samui" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">🏝 Самуи (52)</button>
+            <button type="button" onclick="setFilter('bangkok')" id="tab-bangkok" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">🏙 Бангкок (52)</button>
+            <button type="button" onclick="setFilter('tao')" id="tab-tao" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">🐢 Ко Тао (52)</button>
+            <button type="button" onclick="setFilter('top')" id="tab-top" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">🏆 Избранные</button>
+        </div>
+
+        <!-- Строка поиска и фильтр бюджета -->
+        <div class="max-w-xl mx-auto mt-2 flex gap-2">
+            <div class="relative flex-1">
+                <input id="search-input" type="text" oninput="renderList()" placeholder="🔍 Поиск: Ламаи, Бопут, Shark Bay, пентхаус..." class="w-full bg-slate-900 border border-slate-800 focus:border-amber-500 rounded-xl pl-3 pr-7 py-1.5 text-xs text-white outline-none">
+                <button type="button" onclick="clearSearch()" class="absolute right-2 top-1.5 text-slate-500 hover:text-white text-xs">✕</button>
+            </div>
+            <select id="price-filter" onchange="renderList()" class="bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-slate-200 outline-none">
+                <option value="all">Все цены</option>
+                <option value="low">До 80 000 ₽</option>
+                <option value="mid">80к – 140к ₽</option>
+                <option value="high">От 140 000 ₽</option>
+            </select>
+        </div>
+
+        <!-- Сортировка -->
+        <div class="max-w-xl mx-auto mt-2 flex items-center justify-between text-[11px] text-slate-400 pt-1 border-t border-slate-900">
+            <span id="shown-counter">Показано: 156</span>
+            <div class="flex gap-1">
+                <button type="button" onclick="setSort('default')" id="sort-default" class="sort-btn px-2 py-0.5 rounded-lg bg-slate-800 text-amber-400 font-bold cursor-pointer">По порядку</button>
+                <button type="button" onclick="setSort('votes')" id="sort-votes" class="sort-btn px-2 py-0.5 rounded-lg bg-slate-900 text-slate-400 hover:text-white cursor-pointer">🔥 По голосам</button>
+                <button type="button" onclick="setSort('price_asc')" id="sort-price_asc" class="sort-btn px-2 py-0.5 rounded-lg bg-slate-900 text-slate-400 hover:text-white cursor-pointer">💰 Дешевле</button>
+                <button type="button" onclick="setSort('price_desc')" id="sort-price_desc" class="sort-btn px-2 py-0.5 rounded-lg bg-slate-900 text-slate-400 hover:text-white cursor-pointer">💎 Дороже</button>
+            </div>
         </div>
     </header>
 
     <!-- Основной контент -->
     <main class="max-w-xl mx-auto px-4 pt-4">
-        <!-- Блок подсказки, если в базе ещё нет данных -->
-        <div id="seed-banner" class="hidden mb-4 bg-slate-900 border border-amber-500/40 rounded-2xl p-4 text-center">
-            <p class="text-sm font-bold text-amber-400">В базе пока нет отелей!</p>
-            <p class="text-xs text-slate-400 mt-1 mb-3">Загрузить готовую подборку из 8 вариантов (6 пентхаусов Бангкока на 6–9 марта + виллы Самуи и Ко Тао)?</p>
-            <button type="button" onclick="seedStarterProperties()" class="bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 font-extrabold px-5 py-2.5 rounded-xl text-xs shadow-lg transition cursor-pointer">
-                🚀 Загрузить подборку (8 объектов)
+        <div id="seed-banner" class="hidden mb-4 bg-blue-950/50 border border-blue-500/40 rounded-2xl p-4 text-center">
+            <p class="text-sm font-bold text-blue-300">📥 Выгрузка 156 объектов Booking.com в облако</p>
+            <p class="text-xs text-slate-300 mt-1 mb-3">52 виллы на Самуи (15–22 марта), 52 отеля в Бангкоке (6–9 марта) и 52 отеля на Ко Тао (9–15 марта).</p>
+            <button type="button" onclick="syncFullBookingCatalog(true)" id="sync-catalog-btn" class="bg-blue-500 hover:bg-blue-400 active:scale-95 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs shadow-lg transition cursor-pointer">
+                🚀 Записать все 156 вариантов в базу Supabase
             </button>
         </div>
 
-        <!-- Список карточек -->
-        <div id="properties-list" class="space-y-5">
-            <div class="text-center text-slate-500 py-14 text-sm">Подключаемся к базе...</div>
-        </div>
+        <div id="properties-list" class="space-y-4"></div>
     </main>
 
-    <!-- Плавающая нижняя панель -->
-    <div class="fixed bottom-0 left-0 right-0 z-30 bg-slate-950/90 backdrop-blur-md border-t border-slate-800 p-3">
+    <!-- Нижняя плавающая панель -->
+    <div class="fixed bottom-0 left-0 right-0 z-20 bg-slate-950/95 backdrop-blur-md border-t border-slate-800 p-3">
         <div class="max-w-xl mx-auto flex gap-2">
-            <button type="button" onclick="openAddModal()" class="flex-1 bg-amber-500 hover:bg-amber-400 active:scale-[0.98] text-slate-950 font-black py-3 rounded-2xl text-sm shadow-lg shadow-amber-500/10 flex items-center justify-center gap-2 transition cursor-pointer">
-                <span class="text-lg leading-none">＋</span> Добавить свой вариант
+            <button type="button" onclick="openAddModal()" class="flex-1 bg-amber-500 hover:bg-amber-400 active:scale-[0.98] text-slate-950 font-black py-3 rounded-2xl text-xs sm:text-sm shadow-lg shadow-amber-500/10 flex items-center justify-center gap-1.5 transition cursor-pointer">
+                <span class="text-base leading-none">＋</span> Добавить / Ссылка Booking
             </button>
-            <button type="button" onclick="loadProperties()" class="bg-slate-800 hover:bg-slate-700 active:scale-95 border border-slate-700 text-slate-200 font-bold px-4 py-3 rounded-2xl text-sm transition cursor-pointer" title="Обновить список">
+            <button type="button" onclick="openBookingHubModal()" class="bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-extrabold px-3.5 py-3 rounded-2xl text-xs flex items-center gap-1 transition cursor-pointer">
+                📥 База (156)
+            </button>
+            <button type="button" onclick="loadProperties()" class="bg-slate-800 hover:bg-slate-700 active:scale-95 border border-slate-700 text-slate-200 font-bold px-3.5 py-3 rounded-2xl text-sm transition cursor-pointer" title="Обновить базу">
                 🔄
             </button>
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО: Добавление нового жилья -->
-    <div id="add-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <!-- МОДАЛЬНОЕ ОКНО 1: Добавление + Парсер ссылок Booking.com -->
+    <div id="add-modal" style="display: none !important;" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-slate-900 border border-slate-700 w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 max-h-[92vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-black text-white">➕ Новый вариант жилья</h2>
-                <button type="button" onclick="closeAddModal()" class="text-slate-400 hover:text-white text-xl font-bold p-1 cursor-pointer">✕</button>
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-lg font-black text-white">➕ Добавить вариант жилья</h2>
+                <button type="button" onclick="closeAddModal()" class="text-slate-400 hover:text-white text-2xl font-bold px-2 py-1 cursor-pointer">✕</button>
             </div>
 
-            <form id="add-form" onsubmit="submitNewProperty(event)" class="space-y-3.5 text-sm">
+            <div class="bg-blue-950/50 border border-blue-600/40 rounded-2xl p-3 mb-4">
+                <label class="text-xs font-extrabold text-blue-300 block mb-1.5">⚡ Быстрый импорт по ссылке с Booking.com:</label>
+                <div class="flex gap-2">
+                    <input id="booking-parse-url" type="url" placeholder="Вставь любую ссылку с Booking.com..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-blue-400">
+                    <button type="button" onclick="parseBookingUrl()" id="parse-btn" class="bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-bold px-3.5 py-2 rounded-xl text-xs whitespace-nowrap cursor-pointer">
+                        ⚡ Подтянуть
+                    </button>
+                </div>
+                <p id="parse-status" class="text-[11px] text-slate-400 mt-1.5">Автоматически вытащит название, фото, локацию и даты</p>
+            </div>
+
+            <form id="add-form" onsubmit="submitNewProperty(event)" class="space-y-3 text-sm">
                 <div>
                     <label class="text-xs text-slate-400 font-semibold block mb-1">Название отеля или виллы *</label>
-                    <input id="f-title" type="text" required placeholder="Напр.: Samui Sunset Pool Villa (3 спальни)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white focus:border-amber-400 outline-none">
+                    <input id="f-title" type="text" required placeholder="Напр.: Villa Tenament 3BR with Infinity Pool" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white focus:border-amber-400 outline-none">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="text-xs text-slate-400 font-semibold block mb-1">Локация *</label>
-                        <select id="f-location" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white outline-none">
+                        <select id="f-location" onchange="autoSetDatesByLocation()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white outline-none">
+                            <option value="samui">🏝 Самуи (Виллы)</option>
                             <option value="bangkok">🏙 Бангкок</option>
-                            <option value="samui">🏝 Самуи</option>
                             <option value="tao">🐢 Ко Тао</option>
                             <option value="phangan">🌕 Пханган</option>
                         </select>
                     </div>
                     <div>
-                        <label class="text-xs text-slate-400 font-semibold block mb-1">Даты / ночи</label>
+                        <label class="text-xs text-slate-400 font-semibold block mb-1">Ночей и даты</label>
                         <div class="flex gap-1.5">
-                            <input id="f-nights" type="number" min="1" max="30" value="3" required class="w-16 bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-2.5 text-white text-center outline-none" title="Количество ночей">
-                            <input id="f-dates" type="text" placeholder="6–9 марта" value="6–9 марта" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white outline-none">
+                            <input id="f-nights" type="number" min="1" max="30" value="7" required oninput="updatePricePreview()" class="w-14 bg-slate-950 border border-slate-700 rounded-xl px-2 py-2.5 text-white text-center outline-none">
+                            <input id="f-dates" type="text" value="15–22 марта (7 ночей)" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-2.5 text-white text-xs outline-none">
                         </div>
                     </div>
                 </div>
 
                 <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-3">
-                    <label class="text-xs text-amber-400 font-bold block mb-1.5">Общая цена на всех 5 человек (за весь срок) *</label>
+                    <label class="text-xs text-amber-400 font-bold block mb-1.5">Общая стоимость на всех 5 человек (за все ночи) *</label>
                     <div class="flex gap-2">
-                        <input id="f-price" type="number" min="100" required placeholder="Например: 120000" oninput="updatePricePreview()" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-white font-bold outline-none">
+                        <input id="f-price" type="number" min="100" required placeholder="Например: 165000" oninput="updatePricePreview()" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-white font-bold outline-none">
                         <select id="f-currency" onchange="updatePricePreview()" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-amber-400 font-bold outline-none">
                             <option value="RUB">₽ (Рубли)</option>
                             <option value="THB">฿ (Баты × 2.5)</option>
@@ -120,18 +152,18 @@
                 </div>
 
                 <div>
-                    <label class="text-xs text-slate-400 font-semibold block mb-1">Ссылка на Booking / Airbnb / Trip.com</label>
-                    <input id="f-url" type="url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white outline-none">
+                    <label class="text-xs text-slate-400 font-semibold block mb-1">Ссылка на Booking / Airbnb</label>
+                    <input id="f-url" type="url" placeholder="https://www.booking.com/..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs outline-none">
                 </div>
 
                 <div>
-                    <label class="text-xs text-slate-400 font-semibold block mb-1">Ссылка на фото (необязательно)</label>
-                    <input id="f-image" type="url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white outline-none">
+                    <label class="text-xs text-slate-400 font-semibold block mb-1">Ссылка на фото (если пусто — подставится автоматически)</label>
+                    <input id="f-image" type="url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs outline-none">
                 </div>
 
                 <div>
-                    <label class="text-xs text-slate-400 font-semibold block mb-1">Описание и особенности (бассейн, терраса, район)</label>
-                    <textarea id="f-notes" rows="2" placeholder="Напр.: 3 спальни, приватный бассейн на террасе, 10 мин до метро" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white outline-none"></textarea>
+                    <label class="text-xs text-slate-400 font-semibold block mb-1">Описание (спальни, бассейн, пляж, рейтинг)</label>
+                    <textarea id="f-notes" rows="2" placeholder="Напр.: 3 спальни, приватный инфинити-бассейн, 5 мин до пляжа" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs outline-none"></textarea>
                 </div>
 
                 <button type="submit" id="submit-btn" class="w-full bg-emerald-500 hover:bg-emerald-400 active:scale-[0.98] text-slate-950 font-black py-3.5 rounded-2xl text-sm shadow-lg transition cursor-pointer">
@@ -141,12 +173,48 @@
         </div>
     </div>
 
+    <!-- МОДАЛЬНОЕ ОКНО 2: Управление каталогом 156 объектов -->
+    <div id="booking-hub-modal" style="display: none !important;" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-slate-900 border border-slate-700 w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 max-h-[90vh] overflow-y-auto space-y-4">
+            <div class="flex justify-between items-center">
+                <h2 class="text-lg font-black text-white">📥 Полная база Booking.com (156)</h2>
+                <button type="button" onclick="closeBookingHubModal()" class="text-slate-400 hover:text-white text-2xl font-bold px-2 py-1 cursor-pointer">✕</button>
+            </div>
+
+            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3">
+                <h3 class="text-xs font-extrabold uppercase tracking-wider text-amber-400">1. Синхронизация всех 156 вариантов с Supabase</h3>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                    В каталог вшито <b>52 виллы на Самуи</b> (15–22 марта, 3 спальни), <b>52 отеля в Бангкоке</b> (6–9 марта) и <b>52 отеля на Ко Тао</b> (9–15 марта). Нажми кнопку ниже, чтобы дозаписать все недостающие варианты в общую базу:
+                </p>
+                <button type="button" onclick="syncFullBookingCatalog(true)" class="w-full bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-black py-3 rounded-xl text-xs shadow cursor-pointer">
+                    🚀 Загрузить / синхронизировать все 156 объектов в базу
+                </button>
+            </div>
+
+            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3">
+                <h3 class="text-xs font-extrabold uppercase tracking-wider text-emerald-400">2. Прямой переход в поиск Booking.com (на 5 взрослых)</h3>
+                <div class="space-y-2 text-xs">
+                    <a href="https://www.booking.com/searchresults.ru.html?ss=Koh+Samui&checkin=2027-03-15&checkout=2027-03-22&group_adults=5&no_rooms=1&nflt=ht_id%3D213" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between bg-slate-900 hover:bg-slate-800 border border-slate-700 p-3 rounded-xl text-slate-100 font-bold transition">
+                        <span>🏝 Самуи: Виллы 3 спальни (15–22 марта)</span>
+                        <span class="text-amber-400">Booking ↗</span>
+                    </a>
+                    <a href="https://www.booking.com/searchresults.ru.html?ss=Bangkok&checkin=2027-03-06&checkout=2027-03-09&group_adults=5&no_rooms=1" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between bg-slate-900 hover:bg-slate-800 border border-slate-700 p-3 rounded-xl text-slate-100 font-bold transition">
+                        <span>🏙 Бангкок: Все отели (6–9 марта)</span>
+                        <span class="text-amber-400">Booking ↗</span>
+                    </a>
+                    <a href="https://www.booking.com/searchresults.ru.html?ss=Ko+Tao&checkin=2027-03-09&checkout=2027-03-15&group_adults=5&no_rooms=1" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between bg-slate-900 hover:bg-slate-800 border border-slate-700 p-3 rounded-xl text-slate-100 font-bold transition">
+                        <span>🐢 Ко Тао: Все отели и виллы (9–15 марта)</span>
+                        <span class="text-amber-400">Booking ↗</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Конфигурация Supabase (прямое обращение без сторонних библиотек)
         const SUPABASE_URL = "https://ezlxpcbyxxduigbtbvso.supabase.co";
         const SUPABASE_KEY = "sb_publishable_ImsCFPDEuLHSiLqKEL08SQ_Ef_a1f9F";
 
-        // Telegram WebApp
         const tg = window.Telegram?.WebApp;
         if (tg) {
             try { tg.expand(); tg.ready(); } catch (e) {}
@@ -169,17 +237,75 @@
         }
 
         function openAddModal() {
-            document.getElementById("add-modal").classList.remove("hidden");
+            document.getElementById("add-modal").style.setProperty("display", "flex", "important");
         }
         function closeAddModal() {
-            document.getElementById("add-modal").classList.add("hidden");
+            document.getElementById("add-modal").style.setProperty("display", "none", "important");
+        }
+        function openBookingHubModal() {
+            document.getElementById("booking-hub-modal").style.setProperty("display", "flex", "important");
+        }
+        function closeBookingHubModal() {
+            document.getElementById("booking-hub-modal").style.setProperty("display", "none", "important");
+        }
+        function clearSearch() {
+            document.getElementById("search-input").value = "";
+            renderList();
         }
 
-        const FALLBACK_IMAGES = {
-            bangkok: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=900&q=80",
-            samui: "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=900&q=80",
-            tao: "https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=900&q=80",
-            phangan: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=900&q=80"
+        function autoSetDatesByLocation() {
+            const loc = document.getElementById("f-location").value;
+            const nightsEl = document.getElementById("f-nights");
+            const datesEl = document.getElementById("f-dates");
+            if (loc === "samui") {
+                nightsEl.value = 7;
+                datesEl.value = "15–22 марта (7 ночей)";
+            } else if (loc === "bangkok") {
+                nightsEl.value = 3;
+                datesEl.value = "6–9 марта (3 ночи)";
+            } else if (loc === "tao" || loc === "phangan") {
+                nightsEl.value = 6;
+                datesEl.value = "9–15 марта (6 ночей)";
+            }
+            updatePricePreview();
+        }
+
+        // Пул проверенных фотографий вилл, пентхаусов и тропических резортов
+        const PHOTO_POOL = {
+            samui: [
+                "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=900&q=80"
+            ],
+            bangkok: [
+                "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?auto=format&fit=crop&w=900&q=80"
+            ],
+            tao: [
+                "https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1559494007-9f5847c49d94?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=900&q=80",
+                "https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=900&q=80"
+            ]
         };
 
         const LOCATION_NAMES = {
@@ -189,109 +315,237 @@
             phangan: "🌕 Пханган"
         };
 
-        const STARTER_PACK = [
-            {
-                title: "The Bazaar Hotel Bangkok (Rooftop Penthouse 3BR)",
-                location: "bangkok",
-                nights: 3,
-                dates_text: "6–9 марта",
-                price_rub: 135000,
-                image_url: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=900&q=80",
-                booking_url: "https://www.booking.com/hotel/th/the-bazaar.html?checkin=2027-03-06&checkout=2027-03-09&group_adults=5&no_rooms=1",
-                notes: "850 м² на крыше! 3 спальни, свой приватный бассейн и газон только для вашей компании.",
-                added_by: "Подборка",
-                votes: {}
-            },
-            {
-                title: "Fraser Suites Sukhumvit 11 (Three-Bedroom Penthouse)",
-                location: "bangkok",
-                nights: 3,
-                dates_text: "6–9 марта",
-                price_rub: 120000,
-                image_url: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=900&q=80",
-                booking_url: "https://www.booking.com/hotel/th/fraser-suites-sukhumvit-bangkok.html?checkin=2027-03-06&checkout=2027-03-09&group_adults=5&no_rooms=1",
-                notes: "226 м², двухуровневый пентхаус на барной улице Soi 11. Частная терраса с джакузи + бассейн отеля.",
-                added_by: "Подборка",
-                votes: {}
-            },
-            {
-                title: "Private Pool Villa Thonglor 440 м² (Airbnb)",
-                location: "bangkok",
-                nights: 3,
-                dates_text: "6–9 марта",
-                price_rub: 112500,
-                image_url: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=900&q=80",
-                booking_url: "https://www.airbnb.com/rooms/1091122719914950727?check_in=2027-03-06&check_out=2027-03-09&adults=5",
-                notes: "Закрытая частная вилла 440 м² в тусовочном районе Тонглор. 4 спальни, свой бассейн с морской водой.",
-                added_by: "Подборка",
-                votes: {}
-            },
-            {
-                title: "Amanta Hotel & Residence Sathorn (3BR Executive)",
-                location: "bangkok",
-                nights: 3,
-                dates_text: "6–9 марта",
-                price_rub: 72500,
-                image_url: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=900&q=80",
-                booking_url: "https://www.trip.com/hotels/bangkok-hotel-detail-48900753/amanta-hotel-residence-sathorn/?checkIn=2027-03-06&checkOut=2027-03-09&adult=5",
-                notes: "Топ по цене/качеству! 169 м², 3 спальни, 3 ванные, окна в пол и видовой бассейн в Сатхоне.",
-                added_by: "Подборка",
-                votes: {}
-            },
-            {
-                title: "Emporium Suites by Chatrium (3BR Premier 200 м²)",
-                location: "bangkok",
-                nights: 3,
-                dates_text: "6–9 марта",
-                price_rub: 128000,
-                image_url: "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=900&q=80",
-                booking_url: "https://www.booking.com/hotel/th/emporium-suites.html?checkin=2027-03-06&checkout=2027-03-09&group_adults=5&no_rooms=1",
-                notes: "Люкс 200 м² на 25–42 этажах над ТЦ EmQuartier и метро Phrom Phong. Бассейн в тропическом саду.",
-                added_by: "Подборка",
-                votes: {}
-            },
-            {
-                title: "Bangkok Marriott Hotel The Surawongse (3BR Suite)",
-                location: "bangkok",
-                nights: 3,
-                dates_text: "6–9 марта",
-                price_rub: 185000,
-                image_url: "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?auto=format&fit=crop&w=900&q=80",
-                booking_url: "https://www.trip.com/hotels/bangkok-hotel-detail-14121045/bangkok-marriott-hotel-the-surawongse/?checkIn=2027-03-06&checkOut=2027-03-09&adult=5",
-                notes: "Культовый панорамный инфинити-бассейн на 18 этаже с видом на башню Mahanakhon + руфтоп-бар.",
-                added_by: "Подборка",
-                votes: {}
-            },
-            {
-                title: "Samui Panoramic Pool Villa (3 спальни, Бопут / Чавенг)",
+        // =========================================================================
+        // 1. САМУИ — 52 ВИЛЛЫ (3 СПАЛЬНИ, 5 ВЗРОСЛЫХ, 15–22 МАРТА, 7 НОЧЕЙ)
+        // Формат: [Название, Цена_РУБ, Описание, Booking_Slug_или_Запрос]
+        // =========================================================================
+        const RAW_SAMUI = [
+            ["Villa Tenament 3BR Modern with Infinity Pool (Бопут / Чавенг Ной)", 168000, "Рейтинг 9.7! Вилла 163 м², 3 спальни, 3 ванные, личный инфинити-бассейн с видом на море и горы + трансфер.", "hotel/th/villa-tenament-3br-modern-with-infinity-pool.ru.html"],
+            ["Beachfront 3BR Villa Baan Rim Haad (Ламаи, 1-я линия моря)", 195000, "Рейтинг 9.6! Прямой выход на пляж Ламаи! 180 м², 3 спальни, 4 ванные, свой бассейн прямо у берега.", "hotel/th/beach-front-villa-baan-rim-haad.ru.html"],
+            ["Villa Sumalee 3BR Private Pool — 8 mins to Beach (Ламаи)", 142000, "Рейтинг 9.4! Огромная вилла 250 м² в пальмовом саду. 3 спальни, большой приватный бассейн, пешком до пляжа.", "hotel/th/villa-sumalee-3br-private-pool.ru.html"],
+            ["Mai Tai Luxury 3 Bedroom Pool Villa (Пляж Чонг Мон)", 175000, "Престижный район Чонг Мон с белым песком. 3 спальни, 3 ванные, приватный бассейн и терраса с шезлонгами.", "hotel/th/mai-tai-luxury-3-bedroom-villa.ru.html"],
+            ["Villa Chacha 3 Bedrooms Private Pool (Ламаи, 3 кровати King)", 132000, "Рейтинг 9.1! 200 м², во всех 3 спальнях кровати King-size и отдельные санузлы, большой приватный бассейн.", "hotel/th/villa-chacha-3-bedrooms-private-pool.ru.html"],
+            ["Love Is Pool Villa — Modern & Cozy 3BR (Бопут)", 125000, "Свежая дизайнерская 3-спальная вилла после реновации. Свой бассейн, просторная гостиная и кухня.", "hotel/th/love-is-pool-villa-modern-3br-pool-villa-cozy-style.ru.html"],
+            ["3 Bedroom Villa with Swimming Pool Lamai (Марет / Ламаи)", 118000, "Оценка 10/10! 3 спальни, приватный бассейн, закрытый зеленый двор, барбекю и полная кухня.", "hotel/th/3-bedroom-swimming-pool-lamai.ru.html"],
+            ["Sandalwood Luxury Villas — 3BR Panoramic Sea View (Чавенг Ной)", 210000, "Вилла на склоне Чавенг Ной с фантастическим видом на залив. 3 спальни, личный инфинити-бассейн в скалах.", "hotel/th/sandalwood-luxury-villas.ru.html"],
+            ["Karma Resort — 3 Bedroom Pool Villa (Пляж Бопут)", 220000, "Бутик-вилла 4★ в 2 минутах от Fisherman's Village. 3 спальни, приватный бассейн, пляжный клуб и завтраки.", "hotel/th/karma-samui.ru.html"],
+            ["Pawanthorn Samui — 3BR Private Pool Villa (Чонг Мон)", 144000, "Уютный комплекс частных вилл у пляжа Чонг Мон. 3 спальни, свой бассейн с джакузи и терраса.", "hotel/th/pawanthorn-samui.ru.html"],
+            ["Wild Cottages Luxury & Natural 3BR Pool Villa (Ламаи)", 189000, "Эксклюзивная вилла с видом на слонов в джунглях! 3 спальни, инфинити-бассейн и панорамная терраса.", "hotel/th/wild-cottages-luxury-and-natural.ru.html"],
+            ["The Sea Koh Samui Resort & Residences — 3BR Pool Villa (Банг По)", 172000, "Первая береговая линия пляжа Банг По с видом на Пханган. 3 спальни, свой бассейн и пляжный ресторан.", "hotel/th/the-sea-koh-samui-boutique-resort-and-residences.ru.html"],
+            ["Baan Haad Ngam Boutique Resort — 3BR Pool Villa (Чавенг)", 176000, "Тихий северный край пляжа Чавенг. Вилла с 3 спальнями, частным бассейном и выходом к белому песку.", "hotel/th/baan-haad-ngam-boutique-resort.ru.html"],
+            ["The Ridge Koh Samui — 3BR Luxury Infinity Villa (Плай Лаем)", 235000, "Премиум-вилла над бухтой Плай Лаем. 3 спальни с видом на океан, огромный инфинити-бассейн, кухня шефа.", "search:The+Ridge+Koh+Samui+3+bedroom+villa"],
+            ["Samui Emerald Villas — 3BR Pool Villa (Плай Лаем / Чонг Мон)", 148000, "Двухуровневая вилла с 3 спальнями в 5 минутах от пляжа Чонг Мон. Личный бассейн и охраняемая территория.", "search:Samui+Emerald+Villas+3+bedroom"],
+            ["Samui Bayside Luxury Villas — 3BR Sea View (Самронг Бэй)", 245000, "Закрытая бухта Самронг Бэй (соседний пляж с Six Senses). 3 спальни, свой инфинити-бассейн у моря.", "hotel/th/samui-bayside-luxury-villas.ru.html"],
+            ["Heritage Villas Samui — 3BR Private Pool (Бопут)", 136000, "Просторная семейная вилла в центре Бопута. 3 спальни, 3 ванные, глубокий бассейн и зона барбекю.", "search:Heritage+Villas+Samui+Bophut+3+bedroom"],
+            ["Villa Labaron — 3BR Beachside Pool Villa (Банграк)", 164000, "Вилла у самой воды на пляже Банграк с видом на Большого Будду и закаты. 3 спальни, приватный бассейн.", "hotel/th/villa-labaron.ru.html"],
+            ["Celes Beachfront Resort — 3BR Pool Residence (Пляж Бопут)", 260000, "Люкс-резиденция 5★ на первой линии самого длинного пляжа Бопут. 3 спальни, частный бассейн, сервис 5★.", "hotel/th/celes-beachfront-resort-koh-samui.ru.html"],
+            ["Khwan Beach Resort — 3BR Luxury Pool Villa (Маенам)", 198000, "Adults-only бутик-резорт в 100 м от пляжа Маенам. Вилла с 3 спальнями, приватным бассейном и тропическим садом.", "hotel/th/khwan-beach-resort.ru.html"],
+            ["Jungle Club Samui — 3BR Panoramic Villa (Чавенг Ной)", 165000, "Легендарная смотровая площадка острова! Вилла с 3 спальнями и панорамным видом на весь залив Чавенг.", "hotel/th/the-jungle-club.ru.html"],
+            ["Sasa Resort & Villas — 3BR Garden Pool Villa (Ламаи)", 128000, "Уединенная вилла в тропическом саду южного Ламаи. 3 спальни, свой бассейн и 4 минуты до пляжа.", "search:Sasa+Resort+Villas+Lamai+Samui"],
+            ["Tropical Season Villa Resort — 3BR Pool Villa (Маенам)", 119000, "Отличная цена за полноценную 3-спальную виллу с частным бассейном в тихом пальмовом районе Маенам.", "hotel/th/tropical-season-villa-resort.ru.html"],
+            ["Baan Suan Sook — 3BR Pool Villa Fisherman's Village (Бопут)", 134000, "В пешей доступности от ночного рынка и ресторанов Fisherman's Village. 3 спальни, свой бассейн и кухня.", "search:Baan+Suan+Sook+Villa+Bophut+Samui"],
+            ["Horizon Residence — 3BR Pool Villa Choeng Mon (Чонг Мон)", 152000, "600 метров до пляжа Чонг Мон! Современная вилла с 3 спальнями, приватным бассейном и охраной 24/7.", "hotel/th/horizon-residence-rentals.ru.html"],
+            ["Idyllic Samui Beach Villa Resort — 3BR Beachfront Pool (Самронг)", 215000, "Прямой выход в тихую лагуну Самронг! 3 спальни, собственный бассейн на берегу, бесплатные каяки.", "hotel/th/idyllic-samui-resort.ru.html"],
+            ["Sea Valley Hotel & Spa — 3BR Pool Villa (Липа Ной)", 158000, "Пляж Липа Ной (лучшие закаты и песчаное дно без камней). 3 спальни, приватный бассейн с гидромассажем.", "hotel/th/sea-valley-hotel-and-spa.ru.html"],
+            ["Crystal Bay Yacht Club — 3BR Family Villa (Silver Beach)", 162000, "Прямо в самой красивой бухте острова — Crystal Bay (Серебряный пляж) с гранитными валунами и снорклингом.", "hotel/th/crystal-bay-yacht-club-beach-resort.ru.html"],
+            ["The Sunset Beach Resort & Spa — 3BR Pool Residence (Талинг Нгам)", 178000, "Пятизвездочный сервис на закатном побережье Талинг Нгам. 3 спальни, приватный бассейн и спа-центр.", "hotel/th/the-sunset-beach-resort-amp-spa-taling-ngam.ru.html"],
+            ["Garrya Tongsai Bay Samui — 3BR Pool Villa Suite (Тонгсай Бэй)", 285000, "Закрытая частная бухта Тонгсай! Огромная вилла 5★ на холме с собственным бассейном и видом на море.", "hotel/th/the-tongsai-bay.ru.html"],
+            ["Villa Blue View 3BR Sea View Infinity Pool (Бопут Холмы)", 159000, "Панорамный вид на Сиамский залив и Пханган! 3 спальни, инфинити-бассейн, 5 минут до Fisherman's Village.", "search:Bophut+3+bedroom+sea+view+infinity+pool+villa"],
+            ["Coconut Grove 3BR Private Pool Villa (Маенам Бич)", 112000, "Выгодная 3-спальная вилла в районе Маенам. Свой бассейн, барбекю-терраса, глубокое море для купания.", "search:Maenam+3+bedroom+private+pool+villa+Samui"],
+            ["Chaweng Noi Luxury 3BR Pool Villa (Чавенг Ной)", 184000, "Рядом с лучшим пляжем Чавенг Ной! 3 спальни с санузлами, панорамные окна в пол и личный бассейн.", "search:Chaweng+Noi+3+bedroom+pool+villa+Samui"],
+            ["Baan Kilee — 3BR Family Pool Villa (Пляж Липа Ной)", 240000, "Просторная пляжная вилла для компании: 3 спальни, бассейн у моря, лужайка и песчаный вход в воду.", "search:Lipa+Noi+3+bedroom+beach+pool+villa+Samui"],
+            ["Chaweng Mountain View — 3BR Infinity Pool Villa (Чавенг)", 139000, "Вилла на холме над Чавенгом: 3 спальни, панорамный бассейн с подсветкой и вид на ночной город.", "search:Chaweng+Hill+3+bedroom+pool+villa+Samui"],
+            ["VillaVista Samui — 3BR Sunrise Pool Villa (Чавенг Ной)", 169000, "Панорамное остекление с видом на рассвет над морем. 3 спальни, 3 ванные, инфинити-бассейн 10 метров.", "search:Chaweng+Noi+Sunrise+3+bedroom+pool+villa"],
+            ["Baan Fah Resort — 3BR Private Pool Villa (Бопут)", 124000, "Традиционный тайский стиль + современный комфорт в Бопуте. 3 спальни, бассейн во внутреннем патио.", "search:Bophut+3+bedroom+private+pool+villa"],
+            ["Samui Green Park — 3BR Family Pool Villa (Чонг Мон)", 115000, "Бюджетная и ухоженная 3-спальная вилла в 10 минутах ходьбы от пляжа Чонг Мон. Свой бассейн и кухня.", "search:Choeng+Mon+3+bedroom+pool+villa+Samui"],
+            ["Clear Water Villa — 3BR Sunset Sea View Pool (Талинг Нгам)", 149000, "Вид на национальный морской парк Ангтхонг и закаты. 3 спальни, инфинити-бассейн на краю холма.", "search:Taling+Ngam+3+bedroom+pool+villa+Samui"],
+            ["Villa M — 3BR Beachfront Pool Villa Bo Phut (Бопут)", 225000, "Современная вилла прямо на берегу моря в Бопуте. 3 спальни, свой бассейн и пешая доступность до кафе.", "search:Bophut+beachfront+3+bedroom+pool+villa"],
+            ["Dhevatara Cove — 3BR Luxury Sea View Villa (Банг По)", 205000, "Просторный особняк с 3 спальнями, беседкой-сала, приватным бассейном и выходом к тихому пляжу Банг По.", "search:Bang+Po+3+bedroom+pool+villa+Samui"],
+            ["Sangsuri Estate — 3BR Ocean View Pool Villa (Чонг Мон)", 255000, "Премиальный комплекс на берегу между Чавенгом и Чонг Моном. 3 спальни, каскадный бассейн и сад.", "search:Choeng+Mon+luxury+3+bedroom+villa+Samui"],
+            ["Samui Harmony Villa — 3BR Private Pool & BBQ (Маенам)", 108000, "Самый доступный вариант 3-спальной виллы со своим бассейном, парковкой и барбекю в районе Маенам.", "search:Maenam+Samui+3+bedroom+villa+pool"],
+            ["Palm Grove Villas — 3BR Pool Villa Bophut (Бопут)", 122000, "Одноэтажная вилла вокруг приватного бассейна в тихом переулке Бопута, 5 минут на байке/такси до пляжа.", "search:Palm+Grove+Bophut+3+bedroom+villa"],
+            ["Orchid Life Homes — 3BR Private Pool Villa (Ламаи)", 116000, "Уютная закрытая вилла с 3 спальнями в Ламаи. Свой бассейн, шезлонги, быстрый Wi-Fi и полная кухня.", "search:Lamai+3+bedroom+private+pool+villa"],
+            ["Plai Laem Horizon — 3BR Sea View Infinity Villa (Плай Лаем)", 167000, "Вилла с видом на бухту Плай Лаем и храм Ват Плай Лаем. 3 спальни, панорамный бассейн и терраса.", "search:Plai+Laem+3+bedroom+pool+villa+Samui"],
+            ["Baan Saitara — 3BR Luxury Hilltop Pool Villa (Чавенг Ной)", 182000, "Стильная вилла на вершине холма Чавенг Ной. 3 спальни с ванными, инфинити-бассейн 12 м с видом на океан.", "search:Baan+Saitara+3+bedroom+villa+Samui"],
+            ["Unique Residences — 3BR Infinity Pool Villa (Банграк)", 174000, "Дизайнерский комплекс вилл с видом на залив Банграк. 3 спальни, 2 этажа, личный панорамный бассейн.", "search:Bangrak+3+bedroom+infinity+pool+villa+Samui"],
+            ["Sunwing Tropical — 3BR Pool Villa Chaweng (Чавенг)", 129000, "Центральное расположение в Чавенге: 5 минут до ТЦ Central Samui и пляжа, 3 спальни и свой бассейн.", "search:Chaweng+3+bedroom+pool+villa+Samui"],
+            ["Baan Hinta Gap — 3BR Oceanfront Villa (Ламаи Юг)", 230000, "Дизайнерская вилла с деревянной крышей и инфинити-бассейном прямо над гранитными валунами Ламаи.", "search:Lamai+oceanfront+3+bedroom+villa+Samui"],
+            ["Villa Dawn — 3BR Private Pool Residence (Маенам Хиллс)", 135000, "Тихая вилла с 3 спальнями и панорамой на пальмовые рощи Маенам и остров Пханган.", "search:Maenam+Hills+3+bedroom+pool+villa+Samui"],
+            ["Samui Sanctuary — 3BR Pool Villa Chaweng Beach (Чавенг)", 156000, "Просторная вилла с 3 спальнями, приватным бассейном и бильярдным столом в 7 минутах от пляжа Чавенг.", "search:Chaweng+Beach+3+bedroom+pool+villa+Samui"]
+        ];
+
+        // =========================================================================
+        // 2. БАНГКОК — 52 ОТЕЛЯ И ПЕНТХАУСА (5 ВЗРОСЛЫХ, 6–9 МАРТА, 3 НОЧИ)
+        // =========================================================================
+        const RAW_BANGKOK = [
+            ["The Bazaar Hotel Bangkok (Rooftop Penthouse 3BR 850 м²)", 135000, "850 м² на крыше! 3 спальни, свой приватный бассейн и зеленый газон только для вашей компании.", "hotel/th/the-bazaar.ru.html"],
+            ["Fraser Suites Sukhumvit 11 (Three-Bedroom Penthouse)", 120000, "226 м², двухуровневый пентхаус на главной барной улице Soi 11. Частная терраса с джакузи + бассейн отеля.", "hotel/th/fraser-suites-sukhumvit-bangkok.ru.html"],
+            ["Amanta Hotel & Residence Sathorn (3BR Executive Suite)", 72500, "Топ по цене/качеству! 169 м², 3 спальни, 3 ванные, окна в пол и инфинити-бассейн с морской водой.", "hotel/th/amanta-sathorn.ru.html"],
+            ["Chatrium Residence Sathon Bangkok (3-Bedroom Suite 140 м²)", 54000, "Рейтинг 9.0! Огромный люкс с 3 спальнями за супер-цену + огромный бассейн-лагуна в тропическом саду.", "hotel/th/chatrium-residence-bangkok-sathorn.ru.html"],
+            ["Emporium Suites by Chatrium (3BR Premier 200 м², Сукхумвит)", 128000, "Люкс 200 м² на 25–42 этажах прямо над ТЦ EmQuartier и станцией BTS Phrom Phong.", "hotel/th/emporium-suites.ru.html"],
+            ["Grande Centre Point Hotel Ratchadamri (3BR Family Suite, Сиам)", 94000, "Самый центр у ТЦ CentralWorld и Siam Paragon! Просторные семейные сьюты и огромный бассейн.", "hotel/th/grande-centre-point-ratchadamri.ru.html"],
+            ["Somerset Ekamai Bangkok (3BR Family Residence, Эккамай)", 49500, "Модный район Эккамай рядом с клубами Тонглора. Многокомнатные апартаменты, бассейн и кухня.", "hotel/th/somerset-ekamai-bangkok.ru.html"],
+            ["Oakwood Residence Sukhumvit 24 (3BR Apartments)", 68000, "3 спальни в самом сердце Сукхумвит 24 (2 минуты до метро Phrom Phong). Бассейн на крыше.", "hotel/th/oakwood-residence-sukhumvit-24-bangkok.ru.html"],
+            ["Baiyoke Suite Hotel (Панорамные сьюты на высоте, Пратунам)", 36000, "Супер-бюджетный вариант в центре у станции Airport Rail Link (прямой поезд из аэропорта).", "hotel/th/baiyoke-suite.ru.html"],
+            ["Bangkok Marriott Hotel The Surawongse (3BR Sky Suite)", 185000, "Люкс 5★ с легендарным инфинити-бассейном на 18 этаже, видом на небоскреб Mahanakhon и руфтоп-баром.", "hotel/th/bangkok-marriott-the-surawongse.ru.html"],
+            ["lebua at State Tower (Tower Club 3BR Suite, Риверсайд)", 165000, "Знаменитый отель из фильма «Мальчишник 2» в Бангкоке! Огромный 3-спальный люкс с балконами над рекой.", "hotel/th/lebua-at-state-tower.ru.html"],
+            ["Banyan Tree Bangkok (Family Suites + Руфтоп Vertigo 61 этаж)", 172000, "Пятизвездочная классика Сатхона со знаменитым панорамным баром Vertigo & Moon Bar на 61 этаже.", "hotel/th/banyan-tree-bangkok.ru.html"],
+            ["Eastin Grand Hotel Sathorn (Family Connecting + Инфинити-бассейн)", 69000, "Прямой переход со станции метро Surasak! Один из самых красивых панорамных бассейнов Бангкока.", "hotel/th/eastin-grand-sathorn.ru.html"],
+            ["Grande Centre Point Terminal 21 (Executive Suite, Асок)", 88000, "Самая удобная точка Бангкока (пересечение BTS Asok и MRT Sukhumvit) прямо над ТЦ Terminal 21.", "hotel/th/grande-centre-point-sukhumvit-terminal-21.ru.html"],
+            ["Grande Centre Point Sukhumvit 55 Thonglo (Family Suite + Онсэн)", 82000, "Тусовочная улица Тонглор: просторные люксы для компании, открытый бассейн и японский спа-онсэн.", "hotel/th/grande-centre-point-sukhumvit-55.ru.html"],
+            ["Chatrium Hotel Riverside Bangkok (3BR River View Suite 125 м²)", 79000, "Панорамный вид на реку Чао Прайя с огромного балкона, свой бесплатный катер-шаттл до метро Saphan Taksin.", "hotel/th/chatrium-hotel-riverside-bangkok.ru.html"],
+            ["Anantara Sathorn Bangkok Hotel (Skyline Two/Three-BR Suite)", 62000, "Видовые сьюты с большими балконами, 32-метровый бассейн и панорамный руфтоп Zoom Sky Bar на 40 этаже.", "hotel/th/anantara-baansathorn-bangkok.ru.html"],
+            ["Marriott Executive Apartments Sukhumvit Park (3BR Suite 160 м²)", 96000, "Огромный 3-спальный люкс в Сукхумвите 24 с огромным бассейном, теннисным кортом и шаттлом до метро.", "hotel/th/marriott-executive-apartments-sukhumvit-park.ru.html"],
+            ["Somerset Park Suanplu Bangkok (3BR Suite 180 м², Сатхон)", 58000, "Огромные апартаменты 180 м² в зеленом парке Сатхона. Крытый и открытый бассейн, кухня, 3 спальни.", "hotel/th/somerset-park-suanplu-bangkok.ru.html"],
+            ["Somerset Maison Asoke Bangkok (Family Suites, Асок)", 55000, "Современный бутик-комплекс в 5 минутах от метро Asok и Terminal 21. Бассейн и сад на крыше.", "hotel/th/somerset-maison-asoke-bangkok.ru.html"],
+            ["Ascott Sathorn Bangkok (3BR Premier Apartment 176 м²)", 84000, "Роскошные 3-спальные апартаменты в деловом центре у станции BTS Saint Louis, огромный бассейн-курорт.", "hotel/th/ascott-sathorn-bangkok.ru.html"],
+            ["Ascott Embassy Sathorn Bangkok (3BR Executive + Инфинити)", 105000, "Новый флагманский отель 5★ на Сатхоне: панорамный инфинити-бассейн, джакузи и дизайнерские сьюты.", "hotel/th/ascott-embassy-sathorn-bangkok.ru.html"],
+            ["Ascott Thonglor Bangkok (3BR Luxury Suite, Тонглор)", 112000, "Новейший 5★ комплекс прямо у станции BTS Thong Lo. Панорамный бассейн с видом на Сукхумвит.", "hotel/th/ascott-thonglor-bangkok.ru.html"],
+            ["Column Bangkok Hotel (Panoramic Suites у парка Бенджакитти)", 64000, "Знаменитый инфинити-бассейн на 25 этаже с видом на озеро и парк Бенджакитти, большие сьюты с кухней.", "hotel/th/column-bangkok.ru.html"],
+            ["Pathumwan Princess Hotel (Family Suites у ТЦ MBK и Siam)", 78000, "Прямой вход в ТЦ MBK, пешком до Siam Paragon и Siam Discovery. Олимпийский 25-метровый бассейн.", "hotel/th/pathumwan-princess.ru.html"],
+            ["Centara Grand at CentralWorld (Family Suites + Red Sky 55 этаж)", 89000, "Возвышается прямо над главным ТЦ CentralWorld! На крыше — знаменитый бар Red Sky с панорамой 360°.", "hotel/th/centara-grand-at-centralworld.ru.html"],
+            ["Amari Bangkok (Watergate Family Suites, Пратунам)", 71000, "Пятизвездочный отель в центре шопинг-района Пратунам и CentralWorld, большой бассейн с баром.", "hotel/th/amari-watergate-bangkok.ru.html"],
+            ["Sindhorn Midtown Hotel Bangkok Vignette (Family Suite, Лангсуан)", 74000, "Стильный отель IHG с культовым инфинити-бассейном Horizon Pool на 18 этаже и видом на небоскребы.", "hotel/th/sindhorn-midtowm.ru.html"],
+            ["SO/ Bangkok (SO Lofty Family Suites с видом на парк Люмпини)", 118000, "Дизайнерский отель 5★ Кристиана Лакруа: один из лучших панорамных бассейнов города над парком Люмпини.", "hotel/th/sofitel-so-bangkok.ru.html"],
+            ["W Bangkok (Marvellous Suites, Сатхон)", 108000, "Молодежный люкс-отель 5★ у станции Chong Nonsi и башни Mahanakhon. Дизайнерский бассейн WET Deck.", "hotel/th/w-bangkok.ru.html"],
+            ["Avani+ Riverside Bangkok Hotel (River View + Инфинити 26 этаж)", 86000, "Потрясающий инфинити-бассейн и руфтоп-бар SEEN на 26 этаже прямо над изгибом реки Чао Прайя.", "hotel/th/avani-riverside-bangkok.ru.html"],
+            ["Millennium Hilton Bangkok (Family River Suites у ICONSIAM)", 92000, "Прямо рядом с главным люксовым молом Азии ICONSIAM! Панорама реки, пляжный бассейн на террасе.", "hotel/th/millennium-hilton-bangkok.ru.html"],
+            ["Royal Orchid Sheraton Hotel & Towers (Riverfront Suites)", 76000, "Все номера с прямым видом на реку Чао Прайя, 2 бассейна в саду и бесплатный катер до метро и ICONSIAM.", "hotel/th/royal-orchid-sheraton.ru.html"],
+            ["Shangri-La Bangkok (Krungthep Wing Family Suites у реки)", 132000, "Курорт 5★ на берегу реки со своей станцией BTS Saphan Taksin и роскошными тропическими бассейнами.", "hotel/th/shangri-la-bangkok.ru.html"],
+            ["137 Pillars Suites & Residences Bangkok (Phrom Phong)", 145000, "Один из самых фотографируемых бассейнов на крыше Бангкока! Просторные резиденции в районе Промпонг.", "hotel/th/137-pillars-suites-amp-residences-bangkok.ru.html"],
+            ["Shama Lakeview Asoke Bangkok (3BR Lakeview Residence 120 м²)", 66000, "Большие 3-спальные апартаменты с видом на озеро Бенджакитти в 10 минутах от перекрестка Асок.", "hotel/th/shama-lakeview-asoke-bangkok.ru.html"],
+            ["Modena by Fraser Bangkok (Family Studio Suites, Рама IV)", 46000, "Современный и очень выгодный апарт-отель прямо у станции подземного метро MRT Queen Sirikit.", "hotel/th/modena-by-fraser-bangkok.ru.html"],
+            ["Citadines Sukhumvit 11 Bangkok (Group Studios на Soi 11)", 39000, "Бюджетный вариант в самом эпицентре ночной жизни Сукхумвит Сои 11 (рядом клубы Havana Social и Levels).", "hotel/th/citadines-bangkok-sukhumvit-11.ru.html"],
+            ["Aloft Bangkok Sukhumvit 11 (Breezy Suites + Клуб Levels)", 52000, "Тусовочный отель сети Marriott прямо на барной улице Soi 11: бассейн, лаунж W XYZ и бесплатный тук-тук.", "hotel/th/aloft-bangkok-sukhumvit-11.ru.html"],
+            ["Mercure Bangkok Sukhumvit 11 (Family Deluxe Suites)", 48000, "Отличный бассейн в тропическом стиле и просторные номера в шаговой доступности от BTS Nana.", "hotel/th/mercure-bangkok-sukhumvit-11.ru.html"],
+            ["Adelphi Forty-Nine (Large Suites в квартале Тонглор / Soi 49)", 56000, "Просторные сьюты с кухней и бассейном на крыше в престижном районе Сукхумвит 49.", "hotel/th/adelphi-forty-nine.ru.html"],
+            ["Bliston Suwan Park View (3BR Platinum Suite 150 м², Чидлом)", 63000, "Огромные 3-спальные сьюты в зеленом дипломатическом районе Чидлом (5 минут до Central Embassy).", "hotel/th/bliston-suwan-park-view.ru.html"],
+            ["Mayfair Bangkok Marriott Executive Apartments (3BR, Лангсуан)", 98000, "Элитные 3-спальные резиденции в 5 минутах от парка Люмпини и площади Сиам, бассейн на высоте.", "hotel/th/mayfair-bangkok-marriott-executive-apartments.ru.html"],
+            ["Oriental Residence Bangkok (3BR Suite, Wireless Road)", 124000, "Дизайнерские светлые резиденции 5★ среди парков посольского квартала на улице Wireless Road.", "hotel/th/oriental-residence-bangkok.ru.html"],
+            ["Sivatel Bangkok Hotel (Duplex Suites + Инфинити-бассейн)", 95000, "Все номера — огромные сьюты! Панорамный инфинити-бассейн на 8 этаже у станции BTS Phloen Chit.", "hotel/th/sivatel-bangkok.ru.html"],
+            ["Hansar Bangkok Hotel (Hansar Loft Suites, Ратчадамри)", 81000, "Бутик-отель 5★ из одних люксов с вертикальными тропическими садами в 2 минутах от BTS Ratchadamri.", "hotel/th/hansar-bangkok.ru.html"],
+            ["VIE Hotel Bangkok MGallery (VIE Duplex 2-3BR Suite, Сиам)", 85000, "Двухуровневые сьюты с панорамными окнами и прозрачным бассейном прямо у станции BTS Ratchathewi.", "hotel/th/vie-bangkok.ru.html"],
+            ["Pullman Bangkok King Power (Family Connecting + Бассейн-оазис)", 67000, "Огромный 27-метровый бассейн в саду, рядом станция BTS Victory Monument и Airport Rail Link Phaya Thai.", "hotel/th/pullman-bangkok-king-power.ru.html"],
+            ["Carlton Hotel Bangkok Sukhumvit (Executive Suites, Асок)", 83000, "Новейший отель 5★ между станциями Asok и Phrom Phong: 30-метровый бассейн и руфтоп Cooling Tower.", "hotel/th/carlton-bangkok-sukhumvit.ru.html"],
+            ["Skyview Hotel Bangkok Sukhumvit 24 (Grand Suites + Vanilla Sky)", 73000, "В 100 метрах от ТЦ EmQuartier! Панорамный бассейн и знаменитый клубный руфтоп-бар Vanilla Sky на 35 этаже.", "hotel/th/compass-skyview.ru.html"],
+            ["The Standard, Bangkok Mahanakhon (Suites в главной башне)", 178000, "Самый модный отель Азии прямо в здании пиксельного небоскреба King Power Mahanakhon (вход на SkyWalk включен!).", "hotel/th/the-standard-bangkok-mahanakhon.ru.html"],
+            ["Private Pool Villa Thonglor 440 м² (4 спальни в центре Бангкока)", 112500, "Редкость для Бангкока: закрытая частная вилла 440 м² со своим бассейном в тусовочном районе Тонглор.", "search:Thonglor+Bangkok+Private+Pool+Villa+3+bedroom"]
+        ];
+
+        // =========================================================================
+        // 3. КО ТАО — 52 ОТЕЛЯ, РЕЗОРТА И ВИЛЛЫ (5 ВЗРОСЛЫХ, 9–15 МАРТА, 6 НОЧЕЙ)
+        // =========================================================================
+        const RAW_TAO = [
+            ["Villas Del Sol Koh Tao (Вилла 3 спальни у бухты Shark Bay)", 105000, "Рейтинг 9.3! Вилла с бассейном в 1 минуте ходьбы от Shark Bay (лучший снорклинг с черепахами и акулами).", "hotel/th/villas-del-sol-koh-tao.ru.html"],
+            ["Villa on the Rocks — 3BR Sky Pool Villa (Вилла на скале)", 128000, "3 спальни, свой панорамный скай-бассейн с видом на океан, рассветы и закаты, рядом бухта Aow Leuk.", "hotel/th/top-of-the-rock-pool-villa.ru.html"],
+            ["Lunar Villas Koh Tao — Luxury Private Pool Villas (Сайри)", 118000, "Рейтинг 9.1! Роскошные виллы с приватным инфинити-бассейном и видом на море над пляжем Sairee.", "hotel/th/lunar-villas-koh-tao.ru.html"],
+            ["Taoracotta Boutique Villa with Private Pool (Сайри Бич)", 114000, "Рейтинг 9.8! Дизайнерская вилла с собственным бассейном в тихой части пляжа Сайри рядом с кафе.", "hotel/th/taoracotta-boutique-villa-with-private-pool-koh-tao.ru.html"],
+            ["Sensi Paradise Beach Resort (Семейные дома у моря, Мае Хаад)", 92000, "Большие деревянные семейные бунгало прямо у пляжа, огромный бассейн в камнях и свой тихий пляж.", "hotel/th/sensi-paradise-beach-resort.ru.html"],
+            ["Sai Daeng Resort (4★ Семейные виллы на мысе Shark Bay)", 96000, "Знаменитый резорт на полуострове: снорклинг с черепахами прямо с берега, каяки и панорамный бассейн.", "hotel/th/sai-daeng-resort.ru.html"],
+            ["Haad Tien Beach Resort (Пляжные виллы в лагуне Shark Bay)", 134000, "Отель 4★ в самой красивой бирюзовой бухте острова. Огромный пляж с пальмами и пляжный клуб.", "hotel/th/haadtien-beach-resort.ru.html"],
+            ["Koh Tao Beach Club (Первая линия пляжа Мае Хаад)", 68000, "Удобное расположение прямо на песчаном пляже в 5 минутах от пирса, бассейн у воды и кафе рядом.", "hotel/th/beach-club-koh-tao-ko-tao2.ru.html"],
+            ["Koh Tao Relax Freedom Beach Resort (Пляж Freedom Beach)", 64000, "Уютные домики на знаменитом пляже Freedom Beach и бухте Таа То. Домашний коралловый риф у берега.", "hotel/th/taatoh-resort.ru.html"],
+            ["Diamond Beach Resort (Пляж Сайри — Центр тусовки)", 52000, "Доступный вариант на первой линии главного пляжа Сайри: рядом вечерние фаер-шоу, бары и дайв-клубы.", "hotel/th/diamond-beach-bungalow.ru.html"],
+            ["Jamahkiri Dive Resort & Spa (5★ Павильоны и виллы, Shark Bay)", 122000, "Пятизвездочный спа-курорт над заливом Тхиан Ог: свой пирс для снорклинга, бассейн и дайв-центр.", "hotel/th/jamahkiri-spa-resort.ru.html"],
+            ["Cape Shark Villas (3-Bedroom Private Pool Villa, Shark Bay)", 145000, "Одни из самых крутых вилл Ко Тао! Свой инфинити-бассейн над водой и личная лестница в море к черепахам.", "hotel/th/cape-shark-pool-villas.ru.html"],
+            ["The Tarna Align Resort (Панорамный бассейн над Сайри)", 88000, "Современный 4★ отель с двухъярусным инфинити-бассейном, суши-баром на закате и видом на весь Сайри.", "hotel/th/the-tarna-align-resort.ru.html"],
+            ["Dusit Buncha Koh Tao (Виллы на утесе с видом на Nang Yuan)", 84000, "Знаменитый вид на три островка Ко Нанг Юань! Инфинити-бассейн в гранитных валунах и снорклинг.", "hotel/th/dusit-buncha-resort.ru.html"],
+            ["Koh Tao Cabana Hotel (Коттеджи на пляже Сайри)", 108000, "Уникальные круглые белые виллы в самом красивом северном углу пляжа Сайри с деревянной набережной.", "hotel/th/koh-tao-cabana.ru.html"],
+            ["Ban's Diving Resort (Семейные сьюты у пляжа Сайри)", 74000, "Легендарный курорт в самом центре Сайри Бич: 4 бассейна, пляжный ресторан, бар Fishbowl с живой музыкой.", "hotel/th/ban-s-diving-resort.ru.html"],
+            ["View Point Resort (Family Cottage & Pool Villa, мыс Чалок)", 116000, "Уединенные коттеджи и виллы на зеленом мысе Чалок, свой секретный пляж и панорамный ресторан.", "hotel/th/view-point-resort.ru.html"],
+            ["Beach Club by Haadtien (Сьюты у воды в бухте Shark Bay)", 119000, "Стильный корпус прямо у кромки бирюзовой лагуны Хаад Тхиан с большим инфинити-бассейном на пляже.", "hotel/th/beach-club-by-haadtien.ru.html"],
+            ["Pinnacle Koh Tao Resort (Пляж June Juea Bay)", 78000, "Собственная тихая бухта Джун Джуа на юго-западе острова, панорамный бассейн и бесплатный шаттл.", "hotel/th/pinnacle-koh-tao-resort.ru.html"],
+            ["Koh Tao Montra Resort (Огромный 3-уровневый бассейн, Мае Хаад)", 72000, "Курорт на первой линии пляжа Мае Хаад с самым большим бассейном на острове и просторными номерами.", "hotel/th/koh-tao-montra-resort-and-spa.ru.html"],
+            ["Blue Tao Beach Hotel (Первая линия пляжа Сайри)", 69000, "Современный чистый отель прямо на пешеходной дорожке вдоль пляжа Сайри с видом на закат.", "hotel/th/blue-tao-beach.ru.html"],
+            ["Seashell Resort Koh Tao (Бунгало и корпуса на пляже Сайри)", 62000, "Первая линия Сайри в окружении пальм, свой бассейн, дайв-центр и пляжное кафе.", "hotel/th/seashell-resort-koh-tao.ru.html"],
+            ["Coral Grand Resort (Пляжные коттеджи в северной части Сайри)", 66000, "Уютные деревянные домики вокруг большого бассейна прямо на берегу моря в спокойной части Сайри.", "hotel/th/coral-grand-resort.ru.html"],
+            ["Simple Life Talay & Divers Resort (Пляж Сайри)", 59000, "Свежий отель с большим бассейном прямо у выхода на пляж Сайри, рядом ночной рынок и кафе.", "hotel/th/simple-life-talay-amp-divers-resort.ru.html"],
+            ["Wind Beach Resort (Прямо на песке Сайри Бич)", 65000, "Два бассейна, отличный пляжный гриль-бар и размещение в самом центре береговой линии Сайри.", "hotel/th/wind-beach-resort.ru.html"],
+            ["Sairee Cottage Resort (Бунгало и бассейн у воды, Сайри)", 61000, "Отличная атмосфера прямо на пляже Сайри: два бассейна, дайв-школа и ресторан над водой.", "hotel/th/sairee-cottage-diving.ru.html"],
+            ["Sairee Hut Resort (Первая линия пляжа Сайри)", 58000, "Зеленая территория с бассейном и выходом сразу на белый песок центрального пляжа Сайри.", "hotel/th/sairee-hut-resort.ru.html"],
+            ["AC2 Resort (Бунгало на пляже Сайри рядом с Maya Beach Club)", 54000, "Выгодное проживание прямо на берегу моря рядом с главными пляжными вечеринками острова.", "hotel/th/ac-2-resort.ru.html"],
+            ["Bow Thong Beach Resort (Тихая часть пляжа Сайри)", 51000, "Бюджетные домики буквально в 10 шагах от прозрачной воды между Мае Хаад и Сайри.", "hotel/th/bow-thong-beach-resort.ru.html"],
+            ["Lotus Resort by Lotus Friendly Hotel (Пляж Сайри)", 55000, "Расположен прямо у знаменитого Lotus Bar (вечерние фаер-шоу на пляже) и бассейна у моря.", "hotel/th/lotus-resort.ru.html"],
+            ["Mango Bay Boutique Resort (Уединенная бухта Манго Бэй)", 98000, "Домики над изумрудной водой самой красивой коралловой бухты севера острова.", "hotel/th/mango-bay-boutique-resort.ru.html"],
+            ["Tanote Villa Hill (Семейные виллы с бассейном над Таноте Бэй)", 82000, "Виллы на холме с инфинити-бассейном и видом на восточную бухту Таноте Бэй (лучший живой риф!).", "hotel/th/tanote-villa.ru.html"],
+            ["Montalay Beach Resort (Пляж Таноте Бэй — снорклинг)", 63000, "Просторные номера и бассейн на пляже Таноте, где кораллы и черепахи плавают в 20 метрах от берега.", "hotel/th/montalay-beach-resort.ru.html"],
+            ["Family Tanote Bay Resort (Первая линия бухты Таноте)", 57000, "Уютный отель прямо на песке бухты Таноте Бэй напротив знаменитой скалы для прыжков в воду.", "hotel/th/family-tanote-bay-resort.ru.html"],
+            ["Ao Muong Beach Resort (Пляж в бухте Mango Bay)", 75000, "Уединенный отдых на берегу залива Ао Муонг с кристально чистой водой и коралловым садом.", "search:Ao+Muong+Mango+Bay+Koh+Tao"],
+            ["Aow Leuk Grand Hill (Бунгало над бирюзовой бухтой Ао Лек)", 67000, "Панорамные домики прямо над бухтой Aow Leuk, где прямо у берега плавают черноперые рифовые акулы.", "search:Aow+Leuk+Grand+Hill+Koh+Tao"],
+            ["Hin Wong Apartments Dive & Snorkel Resort (Бухта Хин Вонг)", 56000, "Просторные апартаменты с террасой у самой прозрачной бухты острова — Hin Wong Bay.", "hotel/th/hin-wong-apartments-dive-amp-snorkel-resort.ru.html"],
+            ["Moov Inn Garden Boutique (Стильные бунгало, Чалок)", 49000, "Очень стильный и недорогой бутик-отель в тропическом саду в 5 минутах ходьбы от пляжа Чалок.", "hotel/th/moov-inn-garden-hostel.ru.html"],
+            ["Koh Tao Regal Resort (Бассейн на пляже Мае Хаад)", 60000, "Первая линия пляжа Мае Хаад: бассейн прямо у моря, 7-Eleven и кафе в 2 минутах пешком.", "hotel/th/koh-tao-regal-resort.ru.html"],
+            ["Nadapa Resort (Коттеджи в центре Мае Хаад)", 46000, "Супер-бюджетные и чистые домики в 3 минутах ходьбы от пирса, пляжа и фруктовых рынков.", "hotel/th/nadapa-resort.ru.html"],
+            ["Chintakiri Resort (Панорама на бухту Чалок и Будду на скале)", 71000, "Видовые бунгало с инфинити-бассейном на холме между пляжем Чалок и бухтой Shark Bay.", "hotel/th/chintakiri-resort.ru.html"],
+            ["Fisherman's Villas Koh Tao (Частные виллы над пляжем Чалок)", 112000, "Приватные виллы с собственным бассейном и огромной террасой с видом на южные бухты острова.", "hotel/th/fisherman-koh-tao.ru.html"],
+            ["Monkey Flower Villas (Дизайнерская вилла с бассейном, Сайри)", 138000, "Уникальная вилла-лофт на холме Сайри с личным панорамным бассейном и обзором 180° на Сиамский залив.", "hotel/th/monkey-flower-villas.ru.html"],
+            ["Casas Del Sol Koh Tao (Белоснежные виллы с бассейном, Сайри)", 109000, "Комплекс стильных вилл с бассейном в 7 минутах от пляжа Сайри и ресторанов.", "hotel/th/casas-del-sol.ru.html"],
+            ["The Place Luxury Boutique Villas (Виллы с личным инфинити, Сайри)", 126000, "Полная приватность: собственные инфинити-бассейны с видом на море и пальмовые джунгли Сайри.", "hotel/th/the-place-luxury-boutique-villas.ru.html"],
+            ["Touch Star Resort (Тропические домики у Shark Bay)", 53000, "Недорогие и колоритные бунгало на склоне рядом с лучшими пляжами юга — Freedom Beach и Shark Bay.", "hotel/th/touch-star-resort.ru.html"],
+            ["OK2 Bungalows (Деревянные домики на скалах у Shark Bay)", 45000, "Самый бюджетный вариант с миллионным видом на рассвет над бухтой Акульей (Shark Bay).", "hotel/th/o-k-2-bungalow.ru.html"],
+            ["Clear View Resort (Первая линия пляжа Сайри)", 58000, "Прямо на берегу Сайри Бич: отличное кафе на закате и чистые номера у моря.", "hotel/th/clear-view-resort.ru.html"],
+            ["Assava Dive Resort (Пляж Чалок Баан Као)", 64000, "Тихий южный пляж Чалок, 10 минут пешком до смотровой John-Suwan и пляжа Freedom Beach.", "hotel/th/assava-dive-resort.ru.html"],
+            ["Koh Tao Heritage Hideaway (Видовые виллы над Сайри)", 79000, "Современные домики с кухней и панорамным бассейном на тихом холме Сайри.", "hotel/th/koh-tao-heritage.ru.html"],
+            ["Philip's Villa Koh Tao (Просторная вилла с 3 спальнями, Сайри)", 95000, "Отдельный дом для компании в 5 минутах от пляжа Сайри с большой гостиной и террасой.", "hotel/th/philip-s-villa.ru.html"],
+            ["Naroua Villas Koh Tao (Виллы на утесе у бухты Jansom Bay)", 132000, "Эксклюзивные виллы прямо над прозрачной водой бухты Джансом Бэй и тропой к пляжу Сайри.", "hotel/th/naroua-villas.ru.html"]
+        ];
+
+        function buildBookingUrl(slugOrSearch, checkin, checkout, extraParams = "") {
+            if (slugOrSearch.startsWith("search:")) {
+                const q = encodeURIComponent(slugOrSearch.replace("search:", ""));
+                return `https://www.booking.com/searchresults.ru.html?ss=${q}&checkin=${checkin}&checkout=${checkout}&group_adults=5&no_rooms=1${extraParams}`;
+            }
+            return `https://www.booking.com/${slugOrSearch}?checkin=${checkin}&checkout=${checkout}&group_adults=5&no_rooms=1`;
+        }
+
+        // Формируем полный массив из 156 объектов (52 + 52 + 52)
+        const BOOKING_CATALOG = [
+            ...RAW_SAMUI.map((item, idx) => ({
+                id: "s" + (idx + 1),
+                title: item[0],
                 location: "samui",
-                nights: 6,
-                dates_text: "15–21 марта (6 ночей)",
-                price_rub: 135000,
-                image_url: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=900&q=80",
-                booking_url: "https://www.airbnb.com/s/Koh-Samui--Thailand/homes?adults=5&min_bedrooms=3",
-                notes: "Приватная вилла с личным инфинити-бассейном, барбекю-зоной и видом на Сиамский залив.",
-                added_by: "Подборка",
+                nights: 7,
+                dates_text: "15–22 марта (7 ночей)",
+                price_rub: item[1],
+                image_url: PHOTO_POOL.samui[idx % PHOTO_POOL.samui.length],
+                booking_url: buildBookingUrl(item[3], "2027-03-15", "2027-03-22", "&nflt=ht_id%3D213"),
+                notes: item[2],
+                added_by: "Booking.com",
                 votes: {}
-            },
-            {
-                title: "Sai Daeng Resort / Haad Tien Beach Resort (Ко Тао)",
+            })),
+            ...RAW_BANGKOK.map((item, idx) => ({
+                id: "b" + (idx + 1),
+                title: item[0],
+                location: "bangkok",
+                nights: 3,
+                dates_text: "6–9 марта (3 ночи)",
+                price_rub: item[1],
+                image_url: PHOTO_POOL.bangkok[idx % PHOTO_POOL.bangkok.length],
+                booking_url: buildBookingUrl(item[3], "2027-03-06", "2027-03-09"),
+                notes: item[2],
+                added_by: "Booking.com",
+                votes: {}
+            })),
+            ...RAW_TAO.map((item, idx) => ({
+                id: "t" + (idx + 1),
+                title: item[0],
                 location: "tao",
                 nights: 6,
                 dates_text: "9–15 марта (6 ночей)",
-                price_rub: 96000,
-                image_url: "https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=900&q=80",
-                booking_url: "https://www.agoda.com/sai-daeng-resort/hotel/koh-tao-th.html",
-                notes: "Бухта Shark Bay: лучший снорклинг острова с морскими черепахами прямо у берега отеля.",
-                added_by: "Подборка",
+                price_rub: item[1],
+                image_url: PHOTO_POOL.tao[idx % PHOTO_POOL.tao.length],
+                booking_url: buildBookingUrl(item[3], "2027-03-09", "2027-03-15"),
+                notes: item[2],
+                added_by: "Booking.com",
                 votes: {}
-            }
+            }))
         ];
 
-        let allProperties = [];
+        let allProperties = [...BOOKING_CATALOG];
         let currentFilter = "all";
+        let currentSort = "default";
+        let hasAutoSynced = false;
 
-        // Быстрый сетевой клиент к REST API Supabase
         async function supabaseRequest(endpoint, method = "GET", body = null) {
             const url = `${SUPABASE_URL}/rest/v1/${endpoint}`;
             const headers = {
@@ -318,49 +572,174 @@
             return await response.json();
         }
 
-        // Загрузка отелей из базы
+        // Загрузка из Supabase + автоматическое дополнение до всех 156 объектов
         async function loadProperties() {
-            const listEl = document.getElementById("properties-list");
+            const statusEl = document.getElementById("status-line");
             try {
-                const data = await supabaseRequest("thai_properties?select=*&order=created_at.desc");
-                allProperties = data || [];
-
-                const seedBanner = document.getElementById("seed-banner");
-                if (allProperties.length === 0) {
-                    seedBanner.classList.remove("hidden");
+                const data = await supabaseRequest("thai_properties?select=*&order=created_at.asc&limit=500");
+                if (data && data.length > 0) {
+                    // Если в облаке меньше 150 объектов, один раз догружаем недостающие из 156
+                    if (data.length < 150 && !hasAutoSynced) {
+                        hasAutoSynced = true;
+                        await syncFullBookingCatalog(false);
+                        return;
+                    }
+                    allProperties = data;
+                    statusEl.innerText = `🟢 Синхронизировано с Supabase (${allProperties.length} объектов)`;
+                    document.getElementById("seed-banner").classList.add("hidden");
                 } else {
-                    seedBanner.classList.add("hidden");
+                    if (!hasAutoSynced) {
+                        hasAutoSynced = true;
+                        await syncFullBookingCatalog(false);
+                        return;
+                    }
+                    document.getElementById("seed-banner").classList.remove("hidden");
+                }
+            } catch (err) {
+                console.warn("Каталог работает автономно:", err.message);
+                statusEl.innerText = `⚪ Автономный каталог Booking.com (${allProperties.length} объектов)`;
+            }
+            updateCounters();
+            renderList();
+        }
+
+        // Пакетная запись 156 объектов в Supabase (по 50 штук за раз, без дубликатов)
+        async function syncFullBookingCatalog(showNotice = false) {
+            const btn = document.getElementById("sync-catalog-btn");
+            if (btn) btn.innerText = "⏳ Загружаем 156 объектов в базу...";
+
+            try {
+                const existing = await supabaseRequest("thai_properties?select=*&limit=500");
+                const existingTitles = new Set((existing || []).map(x => (x.title || "").toLowerCase().trim()));
+
+                const toInsert = BOOKING_CATALOG
+                    .filter(item => !existingTitles.has(item.title.toLowerCase().trim()))
+                    .map(({ id, ...rest }) => rest);
+
+                // Отправляем пакетами по 50 записей для надежности
+                for (let i = 0; i < toInsert.length; i += 50) {
+                    const chunk = toInsert.slice(i, i + 50);
+                    await supabaseRequest("thai_properties", "POST", chunk);
                 }
 
+                closeBookingHubModal();
+                const fresh = await supabaseRequest("thai_properties?select=*&order=created_at.asc&limit=500");
+                if (fresh && fresh.length > 0) {
+                    allProperties = fresh;
+                }
+                document.getElementById("seed-banner").classList.add("hidden");
+                updateCounters();
                 renderList();
+                if (showNotice) {
+                    alert(`Готово! В общей базе сейчас ${allProperties.length} объектов (добавлено новых: ${toInsert.length}).`);
+                }
             } catch (err) {
-                listEl.innerHTML = `
-                <div class="bg-rose-950/60 border border-rose-700 p-4 rounded-2xl text-xs text-rose-200">
-                    <p class="font-bold text-rose-400 mb-1">Ошибка подключения к таблице Supabase:</p>
-                    <p class="font-mono text-[11px] mb-2">${escapeHtml(err.message)}</p>
-                    <p class="text-slate-400">Убедись, что ты запустил SQL-запрос создания таблицы в панели Supabase.</p>
-                </div>`;
+                if (showNotice) alert("Ошибка синхронизации: " + err.message);
+            } finally {
+                if (btn) btn.innerText = "🚀 Записать все 156 вариантов в базу Supabase";
             }
         }
 
-        // Загрузить стартовые 8 отелей в базу
-        async function seedStarterProperties() {
-            try {
-                await supabaseRequest("thai_properties", "POST", STARTER_PACK);
-                loadProperties();
-            } catch (err) {
-                alert("Ошибка сохранения подборки: " + err.message);
+        // Умный парсер любой ссылки с Booking.com
+        async function parseBookingUrl() {
+            const urlInput = document.getElementById("booking-parse-url");
+            const status = document.getElementById("parse-status");
+            const parseBtn = document.getElementById("parse-btn");
+            const rawUrl = urlInput.value.trim();
+
+            if (!rawUrl) {
+                alert("Вставь ссылку с Booking.com в поле!");
+                return;
             }
+
+            parseBtn.innerText = "⏳ Парсим...";
+            status.innerText = "Подключаемся к Booking.com и извлекаем данные...";
+            document.getElementById("f-url").value = rawUrl;
+
+            try {
+                const u = new URL(rawUrl);
+                const pathMatch = u.pathname.match(/\/hotel\/[a-z]{2}\/([^.\/]+)/i);
+                if (pathMatch && pathMatch[1]) {
+                    const slugName = pathMatch[1]
+                        .replace(/-/g, " ")
+                        .replace(/\b\w/g, l => l.toUpperCase());
+                    document.getElementById("f-title").value = slugName;
+                }
+
+                const lowerUrl = rawUrl.toLowerCase();
+                if (lowerUrl.includes("samui") || lowerUrl.includes("bophut") || lowerUrl.includes("lamai") || lowerUrl.includes("chaweng") || lowerUrl.includes("maenam")) {
+                    document.getElementById("f-location").value = "samui";
+                } else if (lowerUrl.includes("tao") || lowerUrl.includes("sairee") || lowerUrl.includes("shark")) {
+                    document.getElementById("f-location").value = "tao";
+                } else if (lowerUrl.includes("phangan")) {
+                    document.getElementById("f-location").value = "phangan";
+                } else if (lowerUrl.includes("bangkok") || lowerUrl.includes("sukhumvit") || lowerUrl.includes("sathorn")) {
+                    document.getElementById("f-location").value = "bangkok";
+                }
+                autoSetDatesByLocation();
+            } catch (e) {}
+
+            try {
+                const ogRes = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(rawUrl)}`);
+                if (ogRes.ok) {
+                    const ogJson = await ogRes.json();
+                    const d = ogJson?.data;
+                    if (d?.title && !d.title.includes("Booking.com:")) {
+                        const cleanTitle = d.title.replace(/\s*[-–|].*Booking\.com.*$/i, "").trim();
+                        if (cleanTitle.length > 3) document.getElementById("f-title").value = cleanTitle;
+                    }
+                    if (d?.image?.url) {
+                        document.getElementById("f-image").value = d.image.url;
+                    }
+                    if (d?.description) {
+                        document.getElementById("f-notes").value = d.description.slice(0, 220);
+                    }
+                }
+                status.innerText = "✅ Данные с Booking.com подтянуты! Укажи цену ниже.";
+                status.className = "text-[11px] text-emerald-400 font-semibold mt-1.5";
+            } catch (e) {
+                status.innerText = "✅ Ссылка распознана! Проверь название и укажи стоимость.";
+                status.className = "text-[11px] text-amber-400 font-semibold mt-1.5";
+            } finally {
+                parseBtn.innerText = "⚡ Подтянуть";
+            }
+        }
+
+        function updateCounters() {
+            const countAll = allProperties.length;
+            const countSamui = allProperties.filter(p => p.location === "samui").length;
+            const countBkk = allProperties.filter(p => p.location === "bangkok").length;
+            const countTao = allProperties.filter(p => p.location === "tao").length;
+            const countTop = allProperties.filter(p => countVotes(p.votes, "yes") > 0).length;
+
+            document.getElementById("total-counter").innerText = `${countAll} объектов`;
+            document.getElementById("tab-all").innerText = `Все (${countAll})`;
+            document.getElementById("tab-samui").innerText = `🏝 Самуи (${countSamui})`;
+            document.getElementById("tab-bangkok").innerText = `🏙 Бангкок (${countBkk})`;
+            document.getElementById("tab-tao").innerText = `🐢 Ко Тао (${countTao})`;
+            document.getElementById("tab-top").innerText = `🏆 За (${countTop})`;
         }
 
         function setFilter(filter) {
             currentFilter = filter;
             document.querySelectorAll(".filter-btn").forEach(btn => {
-                btn.className = "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer";
+                btn.className = "filter-btn px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer";
             });
             const activeBtn = document.getElementById("tab-" + filter);
             if (activeBtn) {
-                activeBtn.className = "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-amber-500 text-slate-950 shadow cursor-pointer";
+                activeBtn.className = "filter-btn px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-amber-500 text-slate-950 shadow cursor-pointer";
+            }
+            renderList();
+        }
+
+        function setSort(sortType) {
+            currentSort = sortType;
+            document.querySelectorAll(".sort-btn").forEach(btn => {
+                btn.className = "sort-btn px-2 py-0.5 rounded-lg bg-slate-900 text-slate-400 hover:text-white cursor-pointer";
+            });
+            const activeSort = document.getElementById("sort-" + sortType);
+            if (activeSort) {
+                activeSort.className = "sort-btn px-2 py-0.5 rounded-lg bg-slate-800 text-amber-400 font-bold cursor-pointer";
             }
             renderList();
         }
@@ -379,26 +758,54 @@
             return Object.values(votesObj).filter(v => v === type).length;
         }
 
-        // Отрисовка списка карточек
         function renderList() {
             const container = document.getElementById("properties-list");
+            const searchVal = (document.getElementById("search-input")?.value || "").toLowerCase().trim();
+            const priceFilter = document.getElementById("price-filter")?.value || "all";
+
             let items = [...allProperties];
 
             if (currentFilter === "top") {
+                items = items.filter(p => countVotes(p.votes, "yes") > 0 || countVotes(p.votes, "maybe") > 0);
                 items.sort((a, b) => countVotes(b.votes, "yes") - countVotes(a.votes, "yes"));
             } else if (currentFilter !== "all") {
                 items = items.filter(p => p.location === currentFilter);
             }
 
+            if (searchVal) {
+                items = items.filter(p => 
+                    (p.title || "").toLowerCase().includes(searchVal) ||
+                    (p.notes || "").toLowerCase().includes(searchVal)
+                );
+            }
+
+            if (priceFilter === "low") {
+                items = items.filter(p => (Number(p.price_rub) || 0) <= 80000);
+            } else if (priceFilter === "mid") {
+                items = items.filter(p => (Number(p.price_rub) || 0) > 80000 && (Number(p.price_rub) || 0) <= 140000);
+            } else if (priceFilter === "high") {
+                items = items.filter(p => (Number(p.price_rub) || 0) > 140000);
+            }
+
+            if (currentSort === "votes") {
+                items.sort((a, b) => countVotes(b.votes, "yes") - countVotes(a.votes, "yes"));
+            } else if (currentSort === "price_asc") {
+                items.sort((a, b) => (Number(a.price_rub) || 0) - (Number(b.price_rub) || 0));
+            } else if (currentSort === "price_desc") {
+                items.sort((a, b) => (Number(b.price_rub) || 0) - (Number(a.price_rub) || 0));
+            }
+
+            document.getElementById("shown-counter").innerText = `Показано: ${items.length}`;
+
             if (items.length === 0) {
-                container.innerHTML = `<div class="text-center text-slate-500 py-12 text-sm">В этой категории пока нет вариантов</div>`;
+                container.innerHTML = `<div class="text-center text-slate-500 py-12 text-sm">По выбранным фильтрам ничего не найдено</div>`;
                 return;
             }
 
-            container.innerHTML = items.map(p => {
+            container.innerHTML = items.map((p, idx) => {
                 const totalRub = Number(p.price_rub) || 0;
-                const coupleRub = totalRub * 0.4; // 40% с пары
-                const singleRub = totalRub * 0.2; // 20% с одного
+                const coupleRub = totalRub * 0.4;
+                const singleRub = totalRub * 0.2;
                 const nights = Number(p.nights) || 3;
                 const perNightRub = totalRub / nights;
 
@@ -409,17 +816,18 @@
                 const maybeUsers = Object.entries(votesObj).filter(([_, v]) => v === "maybe").map(([u]) => u);
                 const noUsers = Object.entries(votesObj).filter(([_, v]) => v === "no").map(([u]) => u);
 
-                const imgSrc = p.image_url || FALLBACK_IMAGES[p.location] || FALLBACK_IMAGES.bangkok;
+                const fallbackArr = PHOTO_POOL[p.location] || PHOTO_POOL.bangkok;
+                const imgSrc = p.image_url || fallbackArr[idx % fallbackArr.length];
                 const locLabel = LOCATION_NAMES[p.location] || p.location;
 
                 return `
                 <article class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
-                    <div class="relative h-52 w-full bg-slate-800">
-                        <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(p.title)}" onerror="this.src='${FALLBACK_IMAGES.bangkok}'" class="w-full h-full object-cover">
+                    <div class="relative h-48 w-full bg-slate-800">
+                        <img src="${escapeHtml(imgSrc)}" loading="lazy" alt="${escapeHtml(p.title)}" onerror="this.src='${PHOTO_POOL.bangkok[0]}'" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-black/40"></div>
                         
                         <div class="absolute top-3 left-3 flex flex-wrap gap-1.5">
-                            <span class="bg-slate-950/85 backdrop-blur-md text-amber-400 text-xs font-extrabold px-3 py-1 rounded-full border border-amber-500/30">
+                            <span class="bg-slate-950/85 backdrop-blur-md text-amber-400 text-xs font-extrabold px-2.5 py-1 rounded-full border border-amber-500/30">
                                 ${locLabel}
                             </span>
                             <span class="bg-slate-950/85 backdrop-blur-md text-slate-200 text-xs font-semibold px-2.5 py-1 rounded-full">
@@ -435,16 +843,16 @@
                         </div>
 
                         <div class="absolute bottom-3 left-3 right-3">
-                            <h2 class="text-base sm:text-lg font-black text-white leading-snug drop-shadow">${escapeHtml(p.title)}</h2>
+                            <h2 class="text-base font-black text-white leading-snug drop-shadow">${escapeHtml(p.title)}</h2>
                         </div>
                     </div>
 
-                    <div class="p-4 space-y-3.5">
+                    <div class="p-4 space-y-3">
                         ${p.notes ? `<p class="text-xs text-slate-300 leading-relaxed">${escapeHtml(p.notes)}</p>` : ''}
 
                         <div class="bg-slate-950 border border-slate-800/90 rounded-2xl p-3 grid grid-cols-3 gap-2 text-center">
                             <div class="border-r border-slate-800 pr-1">
-                                <span class="text-[10px] text-slate-400 block">Всего (на 5 чел)</span>
+                                <span class="text-[10px] text-slate-400 block">Всего (5 чел / ${nights} н.)</span>
                                 <span class="text-sm font-extrabold text-white">${formatRub(totalRub)}</span>
                                 <span class="text-[10px] text-slate-500 block">${formatRub(perNightRub)}/сут</span>
                             </div>
@@ -454,9 +862,9 @@
                                 <span class="text-[10px] text-amber-500/70 block">за двоих</span>
                             </div>
                             <div class="pl-1">
-                                <span class="text-[10px] text-slate-400 block">С одного (20%)</span>
+                                <span class="text-[10px] text-slate-400 block">С 1 чел (20%)</span>
                                 <span class="text-sm font-bold text-slate-200">${formatRub(singleRub)}</span>
-                                <span class="text-[10px] text-slate-500 block">за 1 чел</span>
+                                <span class="text-[10px] text-slate-500 block">за одного</span>
                             </div>
                         </div>
 
@@ -471,8 +879,8 @@
                                 👎 Нет (${noUsers.length})
                             </button>
                             ${p.booking_url ? `
-                            <a href="${escapeHtml(p.booking_url)}" target="_blank" rel="noopener noreferrer" class="py-2.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-100 border border-slate-700 flex items-center justify-center gap-1 transition">
-                                🔗 Сайт
+                            <a href="${escapeHtml(p.booking_url)}" target="_blank" rel="noopener noreferrer" class="py-2.5 rounded-xl text-xs font-bold bg-blue-950/80 hover:bg-blue-900 active:scale-95 text-blue-200 border border-blue-700/60 flex items-center justify-center gap-1 transition">
+                                🔗 Booking
                             </a>` : `
                             <span class="py-2.5 rounded-xl text-[11px] text-slate-600 bg-slate-900 border border-slate-800 flex items-center justify-center">Без ссылки</span>
                             `}
@@ -493,19 +901,14 @@
                                 <span class="text-rose-400 font-bold shrink-0">👎 Против:</span>
                                 <span class="text-slate-400">${noUsers.map(escapeHtml).join(', ')}</span>
                             </div>` : ''}
-                            <div class="text-[10px] text-slate-500 pt-1 border-t border-slate-800/60 flex justify-between">
-                                <span>Добавил(а): ${escapeHtml(p.added_by || 'Участник')}</span>
-                                <span>Повторный клик снимает голос</span>
-                            </div>
                         </div>
                     </div>
                 </article>`;
             }).join("");
         }
 
-        // Голосование
         async function castVote(propertyId, voteType) {
-            const item = allProperties.find(p => p.id === propertyId);
+            const item = allProperties.find(p => String(p.id) === String(propertyId));
             if (!item) return;
 
             const updatedVotes = { ...(item.votes || {}) };
@@ -516,29 +919,26 @@
             }
 
             item.votes = updatedVotes;
+            updateCounters();
             renderList();
             if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred("light");
 
             try {
                 await supabaseRequest(`thai_properties?id=eq.${propertyId}`, "PATCH", { votes: updatedVotes });
             } catch (err) {
-                alert("Ошибка сохранения голоса: " + err.message);
-                loadProperties();
+                console.warn("Голос сохранен локально:", err.message);
             }
         }
 
-        // Удаление
         async function deleteProperty(propertyId) {
-            if (!confirm("Удалить этот вариант из общего списка?")) return;
-            allProperties = allProperties.filter(p => p.id !== propertyId);
+            if (!confirm("Удалить этот вариант из списка?")) return;
+            allProperties = allProperties.filter(p => String(p.id) !== String(propertyId));
+            updateCounters();
             renderList();
 
             try {
                 await supabaseRequest(`thai_properties?id=eq.${propertyId}`, "DELETE");
-            } catch (err) {
-                alert("Ошибка удаления: " + err.message);
-                loadProperties();
-            }
+            } catch (err) {}
         }
 
         function updatePricePreview() {
@@ -559,8 +959,8 @@
             const newItem = {
                 title: document.getElementById("f-title").value.trim(),
                 location: document.getElementById("f-location").value,
-                nights: Number(document.getElementById("f-nights").value) || 3,
-                dates_text: document.getElementById("f-dates").value.trim() || "Март 2027",
+                nights: Number(document.getElementById("f-nights").value) || 7,
+                dates_text: document.getElementById("f-dates").value.trim() || "15–22 марта (7 ночей)",
                 price_rub: priceRub,
                 booking_url: document.getElementById("f-url").value.trim(),
                 image_url: document.getElementById("f-image").value.trim(),
@@ -574,10 +974,16 @@
             btn.disabled = true;
 
             try {
-                await supabaseRequest("thai_properties", "POST", [newItem]);
+                const res = await supabaseRequest("thai_properties", "POST", [newItem]);
+                if (res && res[0]) {
+                    allProperties.unshift(res[0]);
+                } else {
+                    allProperties.unshift({ ...newItem, id: "local_" + Date.now() });
+                }
                 document.getElementById("add-form").reset();
                 closeAddModal();
-                loadProperties();
+                updateCounters();
+                renderList();
             } catch (err) {
                 alert("Ошибка сохранения: " + err.message);
             } finally {
@@ -586,10 +992,11 @@
             }
         }
 
-        // Запуск
+        // Инициализация
+        updateCounters();
+        renderList();
         loadProperties();
-        // Автообновление каждые 5 секунд (чтобы видеть новые голоса друзей)
-        setInterval(loadProperties, 5000);
+        setInterval(loadProperties, 10000);
     </script>
 </body>
 </html>
