@@ -8,8 +8,6 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase JS Client v2 -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -18,7 +16,7 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen pb-28">
 
-    <!-- Верхняя панель (Хедер) -->
+    <!-- Верхняя панель -->
     <header class="sticky top-0 z-30 bg-slate-950/90 backdrop-blur-md border-b border-slate-800 px-4 py-3">
         <div class="max-w-xl mx-auto flex items-center justify-between">
             <div>
@@ -29,21 +27,21 @@
                 <p class="text-xs text-slate-400">Бангкок • Ко Тао / Пханган • Самуи</p>
             </div>
             <!-- Кнопка смены имени -->
-            <button onclick="changeUserName()" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-200 transition">
+            <button type="button" onclick="changeUserName()" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 border border-slate-700 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-200 transition cursor-pointer">
                 <span>👤</span>
-                <span id="current-user-label">Гость</span>
+                <span id="current-user-label">Алексей</span>
                 <span class="text-slate-500 text-[10px]">✎</span>
             </button>
         </div>
 
         <!-- Фильтры категорий -->
         <div class="max-w-xl mx-auto mt-3 flex gap-2 overflow-x-auto no-scrollbar pb-1">
-            <button onclick="setFilter('all')" id="tab-all" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-amber-500 text-slate-950 shadow">Все варианты</button>
-            <button onclick="setFilter('top')" id="tab-top" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700">🏆 Фавориты</button>
-            <button onclick="setFilter('bangkok')" id="tab-bangkok" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700">🏙 Бангкок</button>
-            <button onclick="setFilter('samui')" id="tab-samui" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700">🏝 Самуи (Виллы)</button>
-            <button onclick="setFilter('tao')" id="tab-tao" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700">🐢 Ко Тао</button>
-            <button onclick="setFilter('phangan')" id="tab-phangan" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700">🌕 Пханган</button>
+            <button type="button" onclick="setFilter('all')" id="tab-all" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-amber-500 text-slate-950 shadow">Все варианты</button>
+            <button type="button" onclick="setFilter('top')" id="tab-top" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700">🏆 Фавориты</button>
+            <button type="button" onclick="setFilter('bangkok')" id="tab-bangkok" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700">🏙 Бангкок</button>
+            <button type="button" onclick="setFilter('samui')" id="tab-samui" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700">🏝 Самуи (Виллы)</button>
+            <button type="button" onclick="setFilter('tao')" id="tab-tao" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700">🐢 Ко Тао</button>
+            <button type="button" onclick="setFilter('phangan')" id="tab-phangan" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700">🌕 Пханган</button>
         </div>
     </header>
 
@@ -51,23 +49,386 @@
     <main class="max-w-xl mx-auto px-4 pt-4">
         <!-- Блок подсказки, если в базе ещё нет данных -->
         <div id="seed-banner" class="hidden mb-4 bg-slate-900 border border-amber-500/40 rounded-2xl p-4 text-center">
-            <p class="text-sm font-bold text-amber-400">В базе пока пусто!</p>
-            <p class="text-xs text-slate-400 mt-1 mb-3">Загрузить готовую подборку из 6 пентхаусов Бангкока (6–9 марта) + виллы на Самуи и Ко Тао с расчетом в рублях?</p>
-            <button onclick="seedStarterProperties()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold px-5 py-2.5 rounded-xl text-xs shadow-lg transition">
-                🚀 Загрузить стартовую подборку (8 объектов)
+            <p class="text-sm font-bold text-amber-400">В базе пока нет отелей!</p>
+            <p class="text-xs text-slate-400 mt-1 mb-3">Загрузить готовую подборку из 8 вариантов (6 пентхаусов Бангкока на 6–9 марта + виллы Самуи и Ко Тао)?</p>
+            <button type="button" onclick="seedStarterProperties()" class="bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 font-extrabold px-5 py-2.5 rounded-xl text-xs shadow-lg transition cursor-pointer">
+                🚀 Загрузить подборку (8 объектов)
             </button>
         </div>
 
         <!-- Список карточек -->
         <div id="properties-list" class="space-y-5">
-            <div class="text-center text-slate-500 py-14 text-sm">Загружаем виллы и отели...</div>
+            <div class="text-center text-slate-500 py-14 text-sm">Подключаемся к базе...</div>
         </div>
     </main>
 
     <!-- Плавающая нижняя панель -->
     <div class="fixed bottom-0 left-0 right-0 z-30 bg-slate-950/90 backdrop-blur-md border-t border-slate-800 p-3">
         <div class="max-w-xl mx-auto flex gap-2">
-            <button onclick="openAddModal()" class="flex-1 bg-amber-500 hover:bg-amber-400 active:scale-[0.99] text-slate-950 font-black py-3 rounded-2xl text-sm shadow-lg shadow-amber-500/10 flex items-center justify-center gap-2 transition">
+            <button type="button" onclick="openAddModal()" class="flex-1 bg-amber-500 hover:bg-amber-400 active:scale-[0.98] text-slate-950 font-black py-3 rounded-2xl text-sm shadow-lg shadow-amber-500/10 flex items-center justify-center gap-2 transition cursor-pointer">
                 <span class="text-lg leading-none">＋</span> Добавить свой вариант
             </button>
-            <button onclick="loadProperties()" class="bg-slate-800 hover:
+            <button type="button" onclick="loadProperties()" class="bg-slate-800 hover:bg-slate-700 active:scale-95 border border-slate-700 text-slate-200 font-bold px-4 py-3 rounded-2xl text-sm transition cursor-pointer" title="Обновить список">
+                🔄
+            </button>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО: Добавление нового жилья -->
+    <div id="add-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-slate-900 border border-slate-700 w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 max-h-[92vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-black text-white">➕ Новый вариант жилья</h2>
+                <button type="button" onclick="closeAddModal()" class="text-slate-400 hover:text-white text-xl font-bold p-1 cursor-pointer">✕</button>
+            </div>
+
+            <form id="add-form" onsubmit="submitNewProperty(event)" class="space-y-3.5 text-sm">
+                <div>
+                    <label class="text-xs text-slate-400 font-semibold block mb-1">Название отеля или виллы *</label>
+                    <input id="f-title" type="text" required placeholder="Напр.: Samui Sunset Pool Villa (3 спальни)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white focus:border-amber-400 outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs text-slate-400 font-semibold block mb-1">Локация *</label>
+                        <select id="f-location" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white outline-none">
+                            <option value="bangkok">🏙 Бангкок</option>
+                            <option value="samui">🏝 Самуи</option>
+                            <option value="tao">🐢 Ко Тао</option>
+                            <option value="phangan">🌕 Пханган</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400 font-semibold block mb-1">Даты / ночи</label>
+                        <div class="flex gap-1.5">
+                            <input id="f-nights" type="number" min="1" max="30" value="3" required class="w-16 bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-2.5 text-white text-center outline-none" title="Количество ночей">
+                            <input id="f-dates" type="text" placeholder="6–9 марта" value="6–9 марта" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-3">
+                    <label class="text-xs text-amber-400 font-bold block mb-1.5">Общая цена на всех 5 человек (за весь срок) *</label>
+                    <div class="flex gap-2">
+                        <input id="f-price" type="number" min="100" required placeholder="Например: 120000" oninput="updatePricePreview()" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-white font-bold outline-none">
+                        <select id="f-currency" onchange="updatePricePreview()" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-amber-400 font-bold outline-none">
+                            <option value="RUB">₽ (Рубли)</option>
+                            <option value="THB">฿ (Баты × 2.5)</option>
+                        </select>
+                    </div>
+                    <p id="price-preview" class="text-[11px] text-slate-400 mt-2">Доля пары (40%): 0 ₽ • Доля 1 чел (20%): 0 ₽</p>
+                </div>
+
+                <div>
+                    <label class="text-xs text-slate-400 font-semibold block mb-1">Ссылка на Booking / Airbnb / Trip.com</label>
+                    <input id="f-url" type="url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white outline-none">
+                </div>
+
+                <div>
+                    <label class="text-xs text-slate-400 font-semibold block mb-1">Ссылка на фото (необязательно)</label>
+                    <input id="f-image" type="url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white outline-none">
+                </div>
+
+                <div>
+                    <label class="text-xs text-slate-400 font-semibold block mb-1">Описание и особенности (бассейн, терраса, район)</label>
+                    <textarea id="f-notes" rows="2" placeholder="Напр.: 3 спальни, приватный бассейн на террасе, 10 мин до метро" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white outline-none"></textarea>
+                </div>
+
+                <button type="submit" id="submit-btn" class="w-full bg-emerald-500 hover:bg-emerald-400 active:scale-[0.98] text-slate-950 font-black py-3.5 rounded-2xl text-sm shadow-lg transition cursor-pointer">
+                    ✅ Сохранить в общую базу
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Конфигурация Supabase (прямое обращение без сторонних библиотек)
+        const SUPABASE_URL = "https://ezlxpcbyxxduigbtbvso.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_ImsCFPDEuLHSiLqKEL08SQ_Ef_a1f9F";
+
+        // Telegram WebApp
+        const tg = window.Telegram?.WebApp;
+        if (tg) {
+            try { tg.expand(); tg.ready(); } catch (e) {}
+        }
+
+        let currentUser = tg?.initDataUnsafe?.user?.first_name 
+                          || localStorage.getItem("thai_user_name") 
+                          || "Алексей";
+
+        document.getElementById("current-user-label").innerText = currentUser;
+
+        function changeUserName() {
+            const newName = prompt("Введи свое имя для голосования:", currentUser);
+            if (newName && newName.trim()) {
+                currentUser = newName.trim();
+                localStorage.setItem("thai_user_name", currentUser);
+                document.getElementById("current-user-label").innerText = currentUser;
+                renderList();
+            }
+        }
+
+        function openAddModal() {
+            document.getElementById("add-modal").classList.remove("hidden");
+        }
+        function closeAddModal() {
+            document.getElementById("add-modal").classList.add("hidden");
+        }
+
+        const FALLBACK_IMAGES = {
+            bangkok: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=900&q=80",
+            samui: "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=900&q=80",
+            tao: "https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=900&q=80",
+            phangan: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=900&q=80"
+        };
+
+        const LOCATION_NAMES = {
+            bangkok: "🏙 Бангкок",
+            samui: "🏝 Самуи",
+            tao: "🐢 Ко Тао",
+            phangan: "🌕 Пханган"
+        };
+
+        const STARTER_PACK = [
+            {
+                title: "The Bazaar Hotel Bangkok (Rooftop Penthouse 3BR)",
+                location: "bangkok",
+                nights: 3,
+                dates_text: "6–9 марта",
+                price_rub: 135000,
+                image_url: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=900&q=80",
+                booking_url: "https://www.booking.com/hotel/th/the-bazaar.html?checkin=2027-03-06&checkout=2027-03-09&group_adults=5&no_rooms=1",
+                notes: "850 м² на крыше! 3 спальни, свой приватный бассейн и газон только для вашей компании.",
+                added_by: "Подборка",
+                votes: {}
+            },
+            {
+                title: "Fraser Suites Sukhumvit 11 (Three-Bedroom Penthouse)",
+                location: "bangkok",
+                nights: 3,
+                dates_text: "6–9 марта",
+                price_rub: 120000,
+                image_url: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=900&q=80",
+                booking_url: "https://www.booking.com/hotel/th/fraser-suites-sukhumvit-bangkok.html?checkin=2027-03-06&checkout=2027-03-09&group_adults=5&no_rooms=1",
+                notes: "226 м², двухуровневый пентхаус на барной улице Soi 11. Частная терраса с джакузи + бассейн отеля.",
+                added_by: "Подборка",
+                votes: {}
+            },
+            {
+                title: "Private Pool Villa Thonglor 440 м² (Airbnb)",
+                location: "bangkok",
+                nights: 3,
+                dates_text: "6–9 марта",
+                price_rub: 112500,
+                image_url: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=900&q=80",
+                booking_url: "https://www.airbnb.com/rooms/1091122719914950727?check_in=2027-03-06&check_out=2027-03-09&adults=5",
+                notes: "Закрытая частная вилла 440 м² в тусовочном районе Тонглор. 4 спальни, свой бассейн с морской водой.",
+                added_by: "Подборка",
+                votes: {}
+            },
+            {
+                title: "Amanta Hotel & Residence Sathorn (3BR Executive)",
+                location: "bangkok",
+                nights: 3,
+                dates_text: "6–9 марта",
+                price_rub: 72500,
+                image_url: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=900&q=80",
+                booking_url: "https://www.trip.com/hotels/bangkok-hotel-detail-48900753/amanta-hotel-residence-sathorn/?checkIn=2027-03-06&checkOut=2027-03-09&adult=5",
+                notes: "Топ по цене/качеству! 169 м², 3 спальни, 3 ванные, окна в пол и видовой бассейн в Сатхоне.",
+                added_by: "Подборка",
+                votes: {}
+            },
+            {
+                title: "Emporium Suites by Chatrium (3BR Premier 200 м²)",
+                location: "bangkok",
+                nights: 3,
+                dates_text: "6–9 марта",
+                price_rub: 128000,
+                image_url: "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=900&q=80",
+                booking_url: "https://www.booking.com/hotel/th/emporium-suites.html?checkin=2027-03-06&checkout=2027-03-09&group_adults=5&no_rooms=1",
+                notes: "Люкс 200 м² на 25–42 этажах над ТЦ EmQuartier и метро Phrom Phong. Бассейн в тропическом саду.",
+                added_by: "Подборка",
+                votes: {}
+            },
+            {
+                title: "Bangkok Marriott Hotel The Surawongse (3BR Suite)",
+                location: "bangkok",
+                nights: 3,
+                dates_text: "6–9 марта",
+                price_rub: 185000,
+                image_url: "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?auto=format&fit=crop&w=900&q=80",
+                booking_url: "https://www.trip.com/hotels/bangkok-hotel-detail-14121045/bangkok-marriott-hotel-the-surawongse/?checkIn=2027-03-06&checkOut=2027-03-09&adult=5",
+                notes: "Культовый панорамный инфинити-бассейн на 18 этаже с видом на башню Mahanakhon + руфтоп-бар.",
+                added_by: "Подборка",
+                votes: {}
+            },
+            {
+                title: "Samui Panoramic Pool Villa (3 спальни, Бопут / Чавенг)",
+                location: "samui",
+                nights: 6,
+                dates_text: "15–21 марта (6 ночей)",
+                price_rub: 135000,
+                image_url: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=900&q=80",
+                booking_url: "https://www.airbnb.com/s/Koh-Samui--Thailand/homes?adults=5&min_bedrooms=3",
+                notes: "Приватная вилла с личным инфинити-бассейном, барбекю-зоной и видом на Сиамский залив.",
+                added_by: "Подборка",
+                votes: {}
+            },
+            {
+                title: "Sai Daeng Resort / Haad Tien Beach Resort (Ко Тао)",
+                location: "tao",
+                nights: 6,
+                dates_text: "9–15 марта (6 ночей)",
+                price_rub: 96000,
+                image_url: "https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=900&q=80",
+                booking_url: "https://www.agoda.com/sai-daeng-resort/hotel/koh-tao-th.html",
+                notes: "Бухта Shark Bay: лучший снорклинг острова с морскими черепахами прямо у берега отеля.",
+                added_by: "Подборка",
+                votes: {}
+            }
+        ];
+
+        let allProperties = [];
+        let currentFilter = "all";
+
+        // Быстрый сетевой клиент к REST API Supabase
+        async function supabaseRequest(endpoint, method = "GET", body = null) {
+            const url = `${SUPABASE_URL}/rest/v1/${endpoint}`;
+            const headers = {
+                "apikey": SUPABASE_KEY,
+                "Authorization": `Bearer ${SUPABASE_KEY}`,
+                "Content-Type": "application/json"
+            };
+            if (method === "POST" || method === "PATCH") {
+                headers["Prefer"] = "return=representation";
+            }
+
+            const response = await fetch(url, {
+                method,
+                headers,
+                body: body ? JSON.stringify(body) : null
+            });
+
+            if (!response.ok) {
+                const errText = await response.text();
+                throw new Error(errText || `HTTP ${response.status}`);
+            }
+
+            if (response.status === 204) return [];
+            return await response.json();
+        }
+
+        // Загрузка отелей из базы
+        async function loadProperties() {
+            const listEl = document.getElementById("properties-list");
+            try {
+                const data = await supabaseRequest("thai_properties?select=*&order=created_at.desc");
+                allProperties = data || [];
+
+                const seedBanner = document.getElementById("seed-banner");
+                if (allProperties.length === 0) {
+                    seedBanner.classList.remove("hidden");
+                } else {
+                    seedBanner.classList.add("hidden");
+                }
+
+                renderList();
+            } catch (err) {
+                listEl.innerHTML = `
+                <div class="bg-rose-950/60 border border-rose-700 p-4 rounded-2xl text-xs text-rose-200">
+                    <p class="font-bold text-rose-400 mb-1">Ошибка подключения к таблице Supabase:</p>
+                    <p class="font-mono text-[11px] mb-2">${escapeHtml(err.message)}</p>
+                    <p class="text-slate-400">Убедись, что ты запустил SQL-запрос создания таблицы в панели Supabase.</p>
+                </div>`;
+            }
+        }
+
+        // Загрузить стартовые 8 отелей в базу
+        async function seedStarterProperties() {
+            try {
+                await supabaseRequest("thai_properties", "POST", STARTER_PACK);
+                loadProperties();
+            } catch (err) {
+                alert("Ошибка сохранения подборки: " + err.message);
+            }
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll(".filter-btn").forEach(btn => {
+                btn.className = "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer";
+            });
+            const activeBtn = document.getElementById("tab-" + filter);
+            if (activeBtn) {
+                activeBtn.className = "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-amber-500 text-slate-950 shadow cursor-pointer";
+            }
+            renderList();
+        }
+
+        function formatRub(num) {
+            return Math.round(num).toLocaleString("ru-RU") + " ₽";
+        }
+
+        function escapeHtml(str) {
+            if (!str) return "";
+            return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+        }
+
+        function countVotes(votesObj, type) {
+            if (!votesObj) return 0;
+            return Object.values(votesObj).filter(v => v === type).length;
+        }
+
+        // Отрисовка списка карточек
+        function renderList() {
+            const container = document.getElementById("properties-list");
+            let items = [...allProperties];
+
+            if (currentFilter === "top") {
+                items.sort((a, b) => countVotes(b.votes, "yes") - countVotes(a.votes, "yes"));
+            } else if (currentFilter !== "all") {
+                items = items.filter(p => p.location === currentFilter);
+            }
+
+            if (items.length === 0) {
+                container.innerHTML = `<div class="text-center text-slate-500 py-12 text-sm">В этой категории пока нет вариантов</div>`;
+                return;
+            }
+
+            container.innerHTML = items.map(p => {
+                const totalRub = Number(p.price_rub) || 0;
+                const coupleRub = totalRub * 0.4; // 40% с пары
+                const singleRub = totalRub * 0.2; // 20% с одного
+                const nights = Number(p.nights) || 3;
+                const perNightRub = totalRub / nights;
+
+                const votesObj = p.votes || {};
+                const myVote = votesObj[currentUser] || null;
+
+                const yesUsers = Object.entries(votesObj).filter(([_, v]) => v === "yes").map(([u]) => u);
+                const maybeUsers = Object.entries(votesObj).filter(([_, v]) => v === "maybe").map(([u]) => u);
+                const noUsers = Object.entries(votesObj).filter(([_, v]) => v === "no").map(([u]) => u);
+
+                const imgSrc = p.image_url || FALLBACK_IMAGES[p.location] || FALLBACK_IMAGES.bangkok;
+                const locLabel = LOCATION_NAMES[p.location] || p.location;
+
+                return `
+                <article class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
+                    <div class="relative h-52 w-full bg-slate-800">
+                        <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(p.title)}" onerror="this.src='${FALLBACK_IMAGES.bangkok}'" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-black/40"></div>
+                        
+                        <div class="absolute top-3 left-3 flex flex-wrap gap-1.5">
+                            <span class="bg-slate-950/85 backdrop-blur-md text-amber-400 text-xs font-extrabold px-3 py-1 rounded-full border border-amber-500/30">
+                                ${locLabel}
+                            </span>
+                            <span class="bg-slate-950/85 backdrop-blur-md text-slate-200 text-xs font-semibold px-2.5 py-1 rounded-full">
+                                🗓 ${escapeHtml(p.dates_text || (nights + ' ночей'))}
+                            </span>
+                        </div>
+
+                        <div class="absolute top-3 right-3 flex items-center gap-1.5">
+                            <span class="bg-emerald-500/90 text-slate-950 text-xs font-black px-2.5 py-1 rounded-full shadow">
+                                🔥 За: ${yesUsers.length}/5
+                            </span>
+                            <button type="button"
