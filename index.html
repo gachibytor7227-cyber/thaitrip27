@@ -431,4 +431,165 @@
                             <span class="bg-emerald-500/90 text-slate-950 text-xs font-black px-2.5 py-1 rounded-full shadow">
                                 🔥 За: ${yesUsers.length}/5
                             </span>
-                            <button type="button"
+                            <button type="button" onclick="deleteProperty('${p.id}')" class="bg-slate-950/70 hover:bg-rose-600 active:scale-90 text-slate-300 hover:text-white text-xs px-2.5 py-1 rounded-full transition cursor-pointer" title="Удалить карточку">🗑</button>
+                        </div>
+
+                        <div class="absolute bottom-3 left-3 right-3">
+                            <h2 class="text-base sm:text-lg font-black text-white leading-snug drop-shadow">${escapeHtml(p.title)}</h2>
+                        </div>
+                    </div>
+
+                    <div class="p-4 space-y-3.5">
+                        ${p.notes ? `<p class="text-xs text-slate-300 leading-relaxed">${escapeHtml(p.notes)}</p>` : ''}
+
+                        <div class="bg-slate-950 border border-slate-800/90 rounded-2xl p-3 grid grid-cols-3 gap-2 text-center">
+                            <div class="border-r border-slate-800 pr-1">
+                                <span class="text-[10px] text-slate-400 block">Всего (на 5 чел)</span>
+                                <span class="text-sm font-extrabold text-white">${formatRub(totalRub)}</span>
+                                <span class="text-[10px] text-slate-500 block">${formatRub(perNightRub)}/сут</span>
+                            </div>
+                            <div class="border-r border-slate-800 px-1">
+                                <span class="text-[10px] text-amber-400 font-bold block">С пары (40%)</span>
+                                <span class="text-base font-black text-amber-400">${formatRub(coupleRub)}</span>
+                                <span class="text-[10px] text-amber-500/70 block">за двоих</span>
+                            </div>
+                            <div class="pl-1">
+                                <span class="text-[10px] text-slate-400 block">С одного (20%)</span>
+                                <span class="text-sm font-bold text-slate-200">${formatRub(singleRub)}</span>
+                                <span class="text-[10px] text-slate-500 block">за 1 чел</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-4 gap-2">
+                            <button type="button" onclick="castVote('${p.id}', 'yes')" class="py-2.5 rounded-xl text-xs font-extrabold transition active:scale-95 cursor-pointer ${myVote === 'yes' ? 'bg-emerald-500 text-slate-950 ring-2 ring-white shadow-lg' : 'bg-emerald-950/70 text-emerald-300 border border-emerald-700/60 hover:bg-emerald-800/50'}">
+                                👍 За (${yesUsers.length})
+                            </button>
+                            <button type="button" onclick="castVote('${p.id}', 'maybe')" class="py-2.5 rounded-xl text-xs font-extrabold transition active:scale-95 cursor-pointer ${myVote === 'maybe' ? 'bg-amber-400 text-slate-950 ring-2 ring-white shadow-lg' : 'bg-amber-950/60 text-amber-300 border border-amber-700/50 hover:bg-amber-800/40'}">
+                                🤔 Думаю (${maybeUsers.length})
+                            </button>
+                            <button type="button" onclick="castVote('${p.id}', 'no')" class="py-2.5 rounded-xl text-xs font-extrabold transition active:scale-95 cursor-pointer ${myVote === 'no' ? 'bg-rose-500 text-white ring-2 ring-white shadow-lg' : 'bg-rose-950/60 text-rose-300 border border-rose-700/50 hover:bg-rose-800/40'}">
+                                👎 Нет (${noUsers.length})
+                            </button>
+                            ${p.booking_url ? `
+                            <a href="${escapeHtml(p.booking_url)}" target="_blank" rel="noopener noreferrer" class="py-2.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-100 border border-slate-700 flex items-center justify-center gap-1 transition">
+                                🔗 Сайт
+                            </a>` : `
+                            <span class="py-2.5 rounded-xl text-[11px] text-slate-600 bg-slate-900 border border-slate-800 flex items-center justify-center">Без ссылки</span>
+                            `}
+                        </div>
+
+                        <div class="bg-slate-950/60 rounded-xl p-2.5 text-[11px] space-y-1 border border-slate-800/60">
+                            <div class="flex items-start gap-1.5">
+                                <span class="text-emerald-400 font-bold shrink-0">👍 За:</span>
+                                <span class="text-slate-200">${yesUsers.length ? yesUsers.map(escapeHtml).join(', ') : '<span class="text-slate-600">пока никто</span>'}</span>
+                            </div>
+                            ${maybeUsers.length ? `
+                            <div class="flex items-start gap-1.5">
+                                <span class="text-amber-400 font-bold shrink-0">🤔 Думают:</span>
+                                <span class="text-slate-300">${maybeUsers.map(escapeHtml).join(', ')}</span>
+                            </div>` : ''}
+                            ${noUsers.length ? `
+                            <div class="flex items-start gap-1.5">
+                                <span class="text-rose-400 font-bold shrink-0">👎 Против:</span>
+                                <span class="text-slate-400">${noUsers.map(escapeHtml).join(', ')}</span>
+                            </div>` : ''}
+                            <div class="text-[10px] text-slate-500 pt-1 border-t border-slate-800/60 flex justify-between">
+                                <span>Добавил(а): ${escapeHtml(p.added_by || 'Участник')}</span>
+                                <span>Повторный клик снимает голос</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>`;
+            }).join("");
+        }
+
+        // Голосование
+        async function castVote(propertyId, voteType) {
+            const item = allProperties.find(p => p.id === propertyId);
+            if (!item) return;
+
+            const updatedVotes = { ...(item.votes || {}) };
+            if (updatedVotes[currentUser] === voteType) {
+                delete updatedVotes[currentUser];
+            } else {
+                updatedVotes[currentUser] = voteType;
+            }
+
+            item.votes = updatedVotes;
+            renderList();
+            if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred("light");
+
+            try {
+                await supabaseRequest(`thai_properties?id=eq.${propertyId}`, "PATCH", { votes: updatedVotes });
+            } catch (err) {
+                alert("Ошибка сохранения голоса: " + err.message);
+                loadProperties();
+            }
+        }
+
+        // Удаление
+        async function deleteProperty(propertyId) {
+            if (!confirm("Удалить этот вариант из общего списка?")) return;
+            allProperties = allProperties.filter(p => p.id !== propertyId);
+            renderList();
+
+            try {
+                await supabaseRequest(`thai_properties?id=eq.${propertyId}`, "DELETE");
+            } catch (err) {
+                alert("Ошибка удаления: " + err.message);
+                loadProperties();
+            }
+        }
+
+        function updatePricePreview() {
+            const rawPrice = Number(document.getElementById("f-price").value) || 0;
+            const currency = document.getElementById("f-currency").value;
+            const totalRub = currency === "THB" ? Math.round(rawPrice * 2.5) : rawPrice;
+            document.getElementById("price-preview").innerText = 
+                `Итого: ${formatRub(totalRub)} • С пары (40%): ${formatRub(totalRub * 0.4)} • С 1 чел (20%): ${formatRub(totalRub * 0.2)}`;
+        }
+
+        async function submitNewProperty(e) {
+            e.preventDefault();
+
+            const rawPrice = Number(document.getElementById("f-price").value) || 0;
+            const currency = document.getElementById("f-currency").value;
+            const priceRub = currency === "THB" ? Math.round(rawPrice * 2.5) : Math.round(rawPrice);
+
+            const newItem = {
+                title: document.getElementById("f-title").value.trim(),
+                location: document.getElementById("f-location").value,
+                nights: Number(document.getElementById("f-nights").value) || 3,
+                dates_text: document.getElementById("f-dates").value.trim() || "Март 2027",
+                price_rub: priceRub,
+                booking_url: document.getElementById("f-url").value.trim(),
+                image_url: document.getElementById("f-image").value.trim(),
+                notes: document.getElementById("f-notes").value.trim(),
+                added_by: currentUser,
+                votes: { [currentUser]: "yes" }
+            };
+
+            const btn = document.getElementById("submit-btn");
+            btn.innerText = "Сохраняем...";
+            btn.disabled = true;
+
+            try {
+                await supabaseRequest("thai_properties", "POST", [newItem]);
+                document.getElementById("add-form").reset();
+                closeAddModal();
+                loadProperties();
+            } catch (err) {
+                alert("Ошибка сохранения: " + err.message);
+            } finally {
+                btn.innerText = "✅ Сохранить в общую базу";
+                btn.disabled = false;
+            }
+        }
+
+        // Запуск
+        loadProperties();
+        // Автообновление каждые 5 секунд (чтобы видеть новые голоса друзей)
+        setInterval(loadProperties, 5000);
+    </script>
+</body>
+</html>
