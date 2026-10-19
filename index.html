@@ -28,7 +28,7 @@
             <div>
                 <div class="flex items-center gap-1.5 flex-wrap">
                     <h1 class="text-sm sm:text-base font-black tracking-tight text-amber-400">🌴 Thai Trip 2027</h1>
-                    <span id="total-counter" class="text-[11px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-bold">75</span>
+                    <span id="total-counter" class="text-[11px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-bold">0</span>
                     <button type="button" onclick="changeExchangeRate()" id="rate-badge" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 px-1.5 py-0.5 rounded-lg font-bold cursor-pointer" title="Изменить курс бата к рублю">
                         1฿ = 2.75₽ ✎
                     </button>
@@ -36,20 +36,26 @@
                 <p id="status-line" class="text-[10px] text-emerald-400 font-medium mt-0.5">⚡ Подключение к базе Supabase...</p>
             </div>
 
-            <!-- Смена имени -->
-            <button type="button" onclick="changeUserName()" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 border border-slate-700 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-200 cursor-pointer shrink-0">
-                <span>👤</span>
-                <span id="current-user-label">Алексей</span>
-                <span class="text-slate-500 text-[10px]">✎</span>
-            </button>
+            <div class="flex items-center gap-1.5 shrink-0">
+                <!-- Кнопка полной очистки базы в 2 клика -->
+                <button type="button" id="wipe-all-btn" onclick="handleWipeAllClick()" class="bg-slate-900 hover:bg-rose-950 border border-slate-700 hover:border-rose-600 text-slate-400 hover:text-rose-300 px-2 py-1.5 rounded-xl text-[11px] font-bold cursor-pointer transition" title="Очистить всю базу">
+                    🗑 Очистить
+                </button>
+                <!-- Смена имени -->
+                <button type="button" onclick="changeUserName()" class="flex items-center gap-1 bg-slate-800 hover:bg-slate-700 active:scale-95 border border-slate-700 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-200 cursor-pointer">
+                    <span>👤</span>
+                    <span id="current-user-label">Алексей</span>
+                    <span class="text-slate-500 text-[10px]">✎</span>
+                </button>
+            </div>
         </div>
 
-        <!-- Вкладки локаций и Карта (6 кнопок в адаптивной сетке) -->
+        <!-- Вкладки локаций и Карта -->
         <div class="max-w-xl mx-auto mt-2 grid grid-cols-3 sm:grid-cols-6 gap-1.5">
-            <button type="button" onclick="setFilter('all')" id="tab-all" class="filter-btn py-1.5 px-1 rounded-xl text-[11px] font-bold text-center truncate bg-amber-500 text-slate-950 cursor-pointer shadow">Все (75)</button>
-            <button type="button" onclick="setFilter('bangkok')" id="tab-bangkok" class="filter-btn py-1.5 px-1 rounded-xl text-[11px] font-bold text-center truncate bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">🏙 Бангкок (25)</button>
-            <button type="button" onclick="setFilter('tao')" id="tab-tao" class="filter-btn py-1.5 px-1 rounded-xl text-[11px] font-bold text-center truncate bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">🐢 Ко Тао (25)</button>
-            <button type="button" onclick="setFilter('samui')" id="tab-samui" class="filter-btn py-1.5 px-1 rounded-xl text-[11px] font-bold text-center truncate bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">🏝 Самуи (25)</button>
+            <button type="button" onclick="setFilter('all')" id="tab-all" class="filter-btn py-1.5 px-1 rounded-xl text-[11px] font-bold text-center truncate bg-amber-500 text-slate-950 cursor-pointer shadow">Все (0)</button>
+            <button type="button" onclick="setFilter('bangkok')" id="tab-bangkok" class="filter-btn py-1.5 px-1 rounded-xl text-[11px] font-bold text-center truncate bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">🏙 Бангкок (0)</button>
+            <button type="button" onclick="setFilter('tao')" id="tab-tao" class="filter-btn py-1.5 px-1 rounded-xl text-[11px] font-bold text-center truncate bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">🐢 Ко Тао (0)</button>
+            <button type="button" onclick="setFilter('samui')" id="tab-samui" class="filter-btn py-1.5 px-1 rounded-xl text-[11px] font-bold text-center truncate bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">🏝 Самуи (0)</button>
             <button type="button" onclick="setFilter('top')" id="tab-top" class="filter-btn py-1.5 px-1 rounded-xl text-[11px] font-bold text-center truncate bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">🏆 Топ (0)</button>
             <button type="button" onclick="setFilter('map')" id="tab-map" class="filter-btn py-1.5 px-1 rounded-xl text-[11px] font-bold text-center truncate bg-blue-600 text-white border border-blue-500 cursor-pointer shadow">🗺 Карта</button>
         </div>
@@ -70,7 +76,7 @@
         <!-- Поиск и фильтр бюджета -->
         <div id="filter-bar" class="max-w-xl mx-auto mt-2 flex gap-1.5">
             <div class="relative flex-1">
-                <input id="search-input" type="text" oninput="renderList()" placeholder="🔍 Поиск: инфинити, Сиам, Shark Bay, Бопут..." class="w-full bg-slate-900 border border-slate-800 focus:border-amber-500 rounded-xl pl-3 pr-7 py-1.5 text-xs text-white outline-none">
+                <input id="search-input" type="text" oninput="renderList()" placeholder="🔍 Поиск по вашим отелям и виллам..." class="w-full bg-slate-900 border border-slate-800 focus:border-amber-500 rounded-xl pl-3 pr-7 py-1.5 text-xs text-white outline-none">
                 <button type="button" onclick="clearSearch()" class="absolute right-2 top-1.5 text-slate-500 hover:text-white text-xs cursor-pointer">✕</button>
             </div>
             <select id="price-filter" onchange="renderList()" class="bg-slate-900 border border-slate-800 rounded-xl px-2 py-1.5 text-xs text-slate-200 outline-none">
@@ -81,16 +87,11 @@
             </select>
         </div>
 
-        <!-- Сортировка + Пакетное обновление цен с Booking -->
+        <!-- Сортировка -->
         <div id="sort-bar" class="max-w-xl mx-auto mt-1.5 flex items-center justify-between text-[11px] text-slate-400 pt-1 border-t border-slate-900">
-            <div class="flex items-center gap-2">
-                <span id="shown-counter">Показано: 75</span>
-                <button type="button" onclick="batchSyncVisiblePrices()" id="batch-sync-btn" class="text-[10px] bg-blue-950/90 hover:bg-blue-900 text-blue-300 border border-blue-700/60 px-2 py-0.5 rounded-lg font-bold cursor-pointer">
-                    ⚡ Обновить цены вкладки с Booking
-                </button>
-            </div>
+            <span id="shown-counter">Показано: 0</span>
             <div class="flex gap-1">
-                <button type="button" onclick="setSort('default')" id="sort-default" class="sort-btn px-1.5 py-0.5 rounded-lg bg-slate-800 text-amber-400 font-bold cursor-pointer">По порядку</button>
+                <button type="button" onclick="setSort('default')" id="sort-default" class="sort-btn px-1.5 py-0.5 rounded-lg bg-slate-800 text-amber-400 font-bold cursor-pointer">По дате</button>
                 <button type="button" onclick="setSort('votes')" id="sort-votes" class="sort-btn px-1.5 py-0.5 rounded-lg bg-slate-900 text-slate-400 hover:text-white cursor-pointer">🔥 Голоса</button>
                 <button type="button" onclick="setSort('price_asc')" id="sort-price_asc" class="sort-btn px-1.5 py-0.5 rounded-lg bg-slate-900 text-slate-400 hover:text-white cursor-pointer">💰 Дешевле</button>
                 <button type="button" onclick="setSort('price_desc')" id="sort-price_desc" class="sort-btn px-1.5 py-0.5 rounded-lg bg-slate-900 text-slate-400 hover:text-white cursor-pointer">💎 Дороже</button>
@@ -103,12 +104,12 @@
         <!-- Блок Интерактивной Карты -->
         <div id="map-section" class="hidden space-y-2.5 pb-4">
             <div class="grid grid-cols-3 gap-2 text-xs">
-                <button type="button" onclick="focusMapLocation('bangkok')" class="bg-slate-900 hover:bg-slate-800 border border-slate-700 py-2 rounded-xl font-bold text-amber-400 cursor-pointer">🏙 Бангкок (25)</button>
-                <button type="button" onclick="focusMapLocation('tao')" class="bg-slate-900 hover:bg-slate-800 border border-slate-700 py-2 rounded-xl font-bold text-emerald-400 cursor-pointer">🐢 Ко Тао (25)</button>
-                <button type="button" onclick="focusMapLocation('samui')" class="bg-slate-900 hover:bg-slate-800 border border-slate-700 py-2 rounded-xl font-bold text-blue-400 cursor-pointer">🏝 Самуи (25)</button>
+                <button type="button" onclick="focusMapLocation('bangkok')" class="bg-slate-900 hover:bg-slate-800 border border-slate-700 py-2 rounded-xl font-bold text-amber-400 cursor-pointer">🏙 Бангкок</button>
+                <button type="button" onclick="focusMapLocation('tao')" class="bg-slate-900 hover:bg-slate-800 border border-slate-700 py-2 rounded-xl font-bold text-emerald-400 cursor-pointer">🐢 Ко Тао</button>
+                <button type="button" onclick="focusMapLocation('samui')" class="bg-slate-900 hover:bg-slate-800 border border-slate-700 py-2 rounded-xl font-bold text-blue-400 cursor-pointer">🏝 Самуи</button>
             </div>
             <div id="map"></div>
-            <p class="text-[11px] text-slate-400 text-center">Нажми на маркер цены на карте, чтобы открыть карточку отеля на Booking / Trip.com / Agoda</p>
+            <p class="text-[11px] text-slate-400 text-center">Все добавленные вами по ссылкам отели и виллы автоматически отмечаются на этой карте</p>
         </div>
 
         <!-- Список карточек -->
@@ -119,34 +120,34 @@
     <div class="fixed bottom-0 left-0 right-0 z-20 bg-slate-950/95 backdrop-blur border-t border-slate-800 p-3">
         <div class="max-w-xl mx-auto flex gap-2">
             <button type="button" onclick="openAddModal()" class="flex-1 bg-amber-500 hover:bg-amber-400 active:scale-[0.98] text-slate-950 font-black py-3 rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-1.5 cursor-pointer shadow-lg">
-                <span class="text-base leading-none">＋</span> Добавить свой отель / виллу по ссылке Booking
+                <span class="text-base leading-none">＋</span> Добавить отель или виллу по ссылке Booking
             </button>
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО 1: Добавление + Авто-парсер карточки Booking.com -->
+    <!-- МОДАЛЬНОЕ ОКНО 1: Добавление + Умный парсер Booking.com (Название, Описание, Карта, Фото, Цена) -->
     <div id="add-modal" style="display: none !important;" class="fixed inset-0 z-50 bg-black/80 items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-slate-900 border border-slate-700 w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 max-h-[92vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-3">
-                <h2 class="text-base font-black text-white">➕ Добавить свой вариант</h2>
+                <h2 class="text-base font-black text-white">➕ Добавить вариант по ссылке</h2>
                 <button type="button" onclick="closeAddModal()" class="text-slate-400 hover:text-white text-2xl font-bold px-2 py-1 cursor-pointer">✕</button>
             </div>
 
-            <div class="bg-blue-950/50 border border-blue-600/40 rounded-2xl p-3 mb-4">
-                <label class="text-xs font-extrabold text-blue-300 block mb-1.5">⚡ Вставь прямую ссылку на отель с Booking.com:</label>
+            <div class="bg-blue-950/60 border border-blue-500/40 rounded-2xl p-3 mb-4">
+                <label class="text-xs font-extrabold text-blue-300 block mb-1.5">⚡ Вставь ссылку на отель или виллу с Booking.com:</label>
                 <div class="flex gap-2">
                     <input id="booking-parse-url" type="url" oninput="autoParseOnPaste()" placeholder="https://www.booking.com/hotel/th/..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-blue-400">
                     <button type="button" onclick="parseBookingUrl()" id="parse-btn" class="bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-bold px-3.5 py-2 rounded-xl text-xs whitespace-nowrap cursor-pointer">
-                        ⚡ Спарсить
+                        ⚡ Подтянуть
                     </button>
                 </div>
-                <p id="parse-status" class="text-[11px] text-slate-400 mt-1.5">Сервер сам вытащит из карточки название, фото и цену на ваши даты</p>
+                <p id="parse-status" class="text-[11px] text-slate-400 mt-1.5">Автоматически создаст описание, определит точку на карте, подтянет фото и даты</p>
             </div>
 
             <form id="add-form" onsubmit="submitNewProperty(event)" class="space-y-3 text-sm">
                 <div>
                     <label class="text-xs text-slate-400 font-semibold block mb-1">Название отеля или виллы *</label>
-                    <input id="f-title" type="text" required placeholder="Напр.: Eastin Grand Hotel Sathorn" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white focus:border-amber-400 outline-none">
+                    <input id="f-title" type="text" required placeholder="Подтянется из ссылки или введи вручную" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white focus:border-amber-400 outline-none">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
@@ -162,7 +163,7 @@
                         <label class="text-xs text-slate-400 font-semibold block mb-1">Ночей и даты</label>
                         <div class="flex gap-1.5">
                             <input id="f-nights" type="number" min="1" max="30" value="3" required oninput="updatePricePreview()" class="w-14 bg-slate-950 border border-slate-700 rounded-xl px-2 py-2 text-white text-center outline-none">
-                            <input id="f-dates" type="text" value="6–9 марта" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-2 text-white text-xs outline-none">
+                            <input id="f-dates" type="text" value="6–9 марта (3 ночи)" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-2 text-white text-xs outline-none">
                         </div>
                     </div>
                 </div>
@@ -176,32 +177,40 @@
                         </select>
                     </div>
                     <div class="flex gap-2">
-                        <input id="f-price" type="number" min="100" required placeholder="Подтянется автоматически или введи" oninput="updatePricePreview()" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-white font-bold outline-none">
+                        <input id="f-price" type="number" min="100" required placeholder="Например: 35000" oninput="updatePricePreview()" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-white font-bold outline-none">
                         <select id="f-currency" onchange="updatePricePreview()" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-amber-400 font-bold outline-none">
                             <option value="RUB">₽ (Рубли)</option>
                             <option value="THB">฿ (Баты)</option>
                         </select>
                     </div>
-                    <p id="price-preview" class="text-[11px] text-slate-400">Расчет появится автоматически</p>
+                    <p id="price-preview" class="text-[11px] text-slate-400">Расчет появится после ввода суммы</p>
                 </div>
 
                 <div>
-                    <label class="text-xs text-slate-400 font-semibold block mb-1">Прямая ссылка на карточку Booking.com</label>
-                    <input id="f-url" type="url" placeholder="https://www.booking.com/hotel/th/..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs outline-none">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-xs text-slate-400 font-semibold">Описание (формируется автоматически при вставке ссылки)</label>
+                        <span id="coords-preview" class="text-[10px] text-emerald-400 font-bold">📍 Координаты определятся сами</span>
+                    </div>
+                    <textarea id="f-notes" rows="3" placeholder="Район, пляж, бассейн, рейтинг и особенности подтянутся автоматически..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs outline-none leading-relaxed"></textarea>
                 </div>
 
-                <div>
-                    <label class="text-xs text-slate-400 font-semibold block mb-1">Ссылка на фото (если пусто — найдет автоматически)</label>
-                    <input id="f-image" type="url" placeholder="Оставь пустым для автопоиска фото отеля" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs outline-none">
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-[11px] text-slate-400 font-semibold block mb-1">Прямая ссылка Booking</label>
+                        <input id="f-url" type="url" placeholder="https://www.booking.com/..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-white text-xs outline-none">
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-slate-400 font-semibold block mb-1">Фото (необязательно)</label>
+                        <input id="f-image" type="url" placeholder="Автопоиск по названию" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-white text-xs outline-none">
+                    </div>
                 </div>
 
-                <div>
-                    <label class="text-xs text-slate-400 font-semibold block mb-1">Описание (этажность, бассейн, пляж)</label>
-                    <textarea id="f-notes" rows="2" placeholder="Напр.: Башня 33 этажа, панорамный инфинити-бассейн на 14 этаже" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs outline-none"></textarea>
-                </div>
+                <!-- Скрытые поля для точных GPS-координат отеля на карте -->
+                <input id="f-lat" type="hidden" value="">
+                <input id="f-lng" type="hidden" value="">
 
-                <button type="submit" id="submit-btn" class="w-full bg-emerald-500 hover:bg-emerald-400 active:scale-[0.98] text-slate-950 font-black py-3 rounded-2xl text-sm cursor-pointer">
-                    ✅ Сохранить в общую базу
+                <button type="submit" id="submit-btn" class="w-full bg-emerald-500 hover:bg-emerald-400 active:scale-[0.98] text-slate-950 font-black py-3 rounded-2xl text-sm cursor-pointer shadow-lg">
+                    ✅ Сохранить отель и отметить на карте
                 </button>
             </form>
         </div>
@@ -237,7 +246,6 @@
                           || "Алексей";
         document.getElementById("current-user-label").innerText = currentUser;
 
-        // Режим для отелей: 2 = Пара (1 номер на 2 взрослых), 1 = Один (1 номер на 1 взрослого)
         let hotelGuestMode = Number(localStorage.getItem("thai_guest_mode")) || 2;
 
         function setGuestMode(mode) {
@@ -337,10 +345,86 @@
             updatePricePreview();
         }
 
-        // Проверка: является ли строка валидным UUID базы Supabase
         function isValidUuid(str) {
             return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(str || ""));
         }
+
+        // =========================================================================
+        // БАЗА КООРДИНАТ РАЙОНОВ И ПЛЯЖЕЙ (ДЛЯ ТОЧНОЙ ПОСТАНОВКИ НА КАРТУ)
+        // =========================================================================
+        const DISTRICT_COORDS = {
+            // Бангкок
+            "sathorn": { lat: 13.7195, lng: 100.5260, ru: "район Сатхон" },
+            "surasak": { lat: 13.7192, lng: 100.5215, ru: "у станции BTS Surasak (Сатхон)" },
+            "silom": { lat: 13.7260, lng: 100.5280, ru: "район Силом" },
+            "surawong": { lat: 13.7275, lng: 100.5235, ru: "район Суравонг / Силом" },
+            "mahanakhon": { lat: 13.7238, lng: 100.5289, ru: "рядом с башней Mahanakhon" },
+            "sukhumvit": { lat: 13.7355, lng: 100.5625, ru: "район Сукхумвит" },
+            "asok": { lat: 13.7375, lng: 100.5605, ru: "перекресток Асок (BTS Asok / MRT)" },
+            "terminal 21": { lat: 13.7379, lng: 100.5604, ru: "у ТЦ Terminal 21 (Асок)" },
+            "nana": { lat: 13.7405, lng: 100.5555, ru: "район Сукхумвит / BTS Nana" },
+            "phrom phong": { lat: 13.7305, lng: 100.5695, ru: "район Промпонг (у ТЦ EmQuartier)" },
+            "thonglor": { lat: 13.7240, lng: 100.5795, ru: "тусовочный район Тонглор" },
+            "thong lo": { lat: 13.7240, lng: 100.5795, ru: "тусовочный район Тонглор" },
+            "ekamai": { lat: 13.7195, lng: 100.5850, ru: "район Эккамай" },
+            "siam": { lat: 13.7460, lng: 100.5340, ru: "центр Сиам (у ТЦ Siam Paragon)" },
+            "centralworld": { lat: 13.7475, lng: 100.5388, ru: "у ТЦ CentralWorld (Сиам)" },
+            "ratchadamri": { lat: 13.7420, lng: 100.5400, ru: "район Ратчадамри / Сиам" },
+            "pratunam": { lat: 13.7535, lng: 100.5405, ru: "район Пратунам" },
+            "baiyoke": { lat: 13.7544, lng: 100.5404, ru: "Пратунам (башня Байок Скай)" },
+            "phayathai": { lat: 13.7568, lng: 100.5349, ru: "район Пхая Тхай (прямой поезд в аэропорт)" },
+            "phaya thai": { lat: 13.7568, lng: 100.5349, ru: "район Пхая Тхай" },
+            "wireless": { lat: 13.7398, lng: 100.5476, ru: "улица Wireless Road / Пленчит" },
+            "ploenchit": { lat: 13.7430, lng: 100.5490, ru: "район Пленчит" },
+            "lumpini": { lat: 13.7263, lng: 100.5432, ru: "у парка Люмпини" },
+            "riverside": { lat: 13.7220, lng: 100.5100, ru: "набережная реки Чао Прайя (Риверсайд)" },
+            "iconsiam": { lat: 13.7268, lng: 100.5105, ru: "на берегу реки у ТЦ ICONSIAM" },
+            "khaosan": { lat: 13.7588, lng: 100.4972, ru: "Старый город / Каосан Роуд" },
+            "chinatown": { lat: 13.7402, lng: 100.5098, ru: "Чайнатаун (Яоварат)" },
+
+            // Ко Тао
+            "sairee": { lat: 10.0975, lng: 99.8282, ru: "главный пляж Сайри (Sairee Beach)" },
+            "mae haad": { lat: 10.0852, lng: 99.8255, ru: "пляж и пирс Мае Хаад (Mae Haad)" },
+            "shark bay": { lat: 10.0652, lng: 99.8375, ru: "бухта Shark Bay (снорклинг с черепахами и акулами)" },
+            "haad tien": { lat: 10.0655, lng: 99.8362, ru: "лагуна Хаад Тхиан (Shark Bay)" },
+            "haadtien": { lat: 10.0655, lng: 99.8362, ru: "лагуна Хаад Тхиан (Shark Bay)" },
+            "sai daeng": { lat: 10.0652, lng: 99.8408, ru: "мыс Сай Дэнг (Shark Bay)" },
+            "chalok": { lat: 10.0645, lng: 99.8235, ru: "южная бухта Чалок (Chalok Baan Kao)" },
+            "freedom": { lat: 10.0628, lng: 99.8265, ru: "пляж Freedom Beach" },
+            "taatoh": { lat: 10.0632, lng: 99.8275, ru: "бухта Таа То у Freedom Beach" },
+            "tanote": { lat: 10.0882, lng: 99.8495, ru: "коралловая бухта Таноте Бэй (Tanote Bay)" },
+            "aow leuk": { lat: 10.0725, lng: 99.8435, ru: "бирюзовая бухта Ао Лек (Aow Leuk)" },
+            "ao leuk": { lat: 10.0725, lng: 99.8435, ru: "бухта Ао Лек" },
+            "mango bay": { lat: 10.1215, lng: 99.8392, ru: "северная бухта Манго Бэй" },
+            "nang yuan": { lat: 10.1182, lng: 99.8142, ru: "остров Ко Нанг Юань" },
+            "nangyuan": { lat: 10.1182, lng: 99.8142, ru: "остров Ко Нанг Юань" },
+            "june juea": { lat: 10.0672, lng: 99.8212, ru: "бухта Джун Джуа (June Juea Bay)" },
+            "jansom": { lat: 10.0785, lng: 99.8210, ru: "приватная бухта Джансом Бэй" },
+            "hin wong": { lat: 10.1035, lng: 99.8485, ru: "бухта Хин Вонг (Hin Wong Bay)" },
+
+            // Самуи
+            "chaweng noi": { lat: 9.5050, lng: 100.0565, ru: "пляж Чавенг Ной (лучший песок)" },
+            "chaweng": { lat: 9.5315, lng: 100.0635, ru: "центральный пляж Чавенг" },
+            "bophut": { lat: 9.5565, lng: 100.0285, ru: "район Бопут / Fisherman's Village" },
+            "bo phut": { lat: 9.5565, lng: 100.0285, ru: "район Бопут / Fisherman's Village" },
+            "fisherman": { lat: 9.5582, lng: 100.0258, ru: "Бопут (у набережной Fisherman's Village)" },
+            "lamai": { lat: 9.4665, lng: 100.0425, ru: "пляж Ламаи" },
+            "maret": { lat: 9.4685, lng: 100.0412, ru: "район Марет / пляж Ламаи" },
+            "maenam": { lat: 9.5675, lng: 99.9985, ru: "спокойный пляж Маенам" },
+            "mae nam": { lat: 9.5675, lng: 99.9985, ru: "пляж Маенам" },
+            "choeng mon": { lat: 9.5725, lng: 100.0695, ru: "уютная бухта Чонг Мон" },
+            "chong mon": { lat: 9.5725, lng: 100.0695, ru: "бухта Чонг Мон" },
+            "plai laem": { lat: 9.5795, lng: 100.0645, ru: "мыс Плай Лаем" },
+            "bangrak": { lat: 9.5642, lng: 100.0548, ru: "пляж Банграк (у Большого Будды)" },
+            "bang rak": { lat: 9.5642, lng: 100.0548, ru: "пляж Банграк" },
+            "bang po": { lat: 9.5785, lng: 99.9542, ru: "панорамный пляж Банг По" },
+            "lipa noi": { lat: 9.4892, lng: 99.9345, ru: "закатный пляж Липа Ной" },
+            "taling ngam": { lat: 9.4425, lng: 99.9412, ru: "побережье Талинг Нгам" },
+            "crystal bay": { lat: 9.4852, lng: 100.0672, ru: "бухта Crystal Bay (Серебряный пляж)" },
+            "silver beach": { lat: 9.4852, lng: 100.0672, ru: "бухта Silver Beach" },
+            "samrong": { lat: 9.5842, lng: 100.0735, ru: "закрытая бухта Самронг Бэй" },
+            "tongsai": { lat: 9.5762, lng: 100.0645, ru: "приватная бухта Тонгсай Бэй" }
+        };
 
         // =========================================================================
         // ВИРТУАЛЬНАЯ КАРУСЕЛЬ НА 5 РАКУРСОВ (В ОДНОМ ТЕГЕ <img>)
@@ -379,8 +463,7 @@
                 return { url: p.image_url, label: angle.label, slideIdx };
             }
 
-            const baseQuery = CATALOG_QUERY_MAP[(p.title || "").toLowerCase().trim()] || `${cleanName} ${cityWord}`;
-            const fullQuery = slideIdx === 0 ? baseQuery : `${cleanName} ${cityWord} ${angle.suffix}`;
+            const fullQuery = `${cleanName} ${cityWord} ${angle.suffix}`;
             return {
                 url: buildRealHotelPhotoUrl(fullQuery, idx + slideIdx),
                 label: angle.label,
@@ -407,7 +490,7 @@
         }
 
         // =========================================================================
-        // ПРЯМЫЕ ССЫЛКИ ИМЕННО НА КАРТОЧКИ ОТЕЛЕЙ НА BOOKING.COM (/hotel/th/...ru.html)
+        // ПРЯМЫЕ ССЫЛКИ НА КАРТОЧКУ ОТЕЛЯ НА BOOKING.COM + TRIP.COM + AGODA
         // =========================================================================
         function getDirectHotelBookingUrl(p, adultsCount) {
             const isVilla = p.location === "samui";
@@ -415,21 +498,11 @@
             const checkout = isVilla ? "2027-03-22" : (p.location === "bangkok" ? "2027-03-09" : "2027-03-15");
             const adults = isVilla ? 5 : (adultsCount || hotelGuestMode || 2);
 
-            const key = (p.title || "").toLowerCase().trim();
-            const catalogSlug = CATALOG_SLUG_MAP[key];
-
-            // 1. Если отель из нашего каталога — всегда открываем его прямой URL /hotel/th/...ru.html
-            if (catalogSlug) {
-                return `https://www.booking.com/${catalogSlug}?checkin=${checkin}&checkout=${checkout}&group_adults=${adults}&no_rooms=1&selected_currency=RUB`;
-            }
-
-            // 2. Если отель добавлен вручную и в базе есть прямая ссылка /hotel/
             if (p.booking_url && p.booking_url.includes("/hotel/")) {
                 const base = p.booking_url.split("?")[0];
                 return `${base}?checkin=${checkin}&checkout=${checkout}&group_adults=${adults}&no_rooms=1&selected_currency=RUB`;
             }
 
-            // 3. Запасной вариант для сторонних ссылок
             const cleanName = getCleanHotelName(p.title);
             return `https://www.booking.com/searchresults.ru.html?ss=${encodeURIComponent(cleanName)}&checkin=${checkin}&checkout=${checkout}&group_adults=${adults}&no_rooms=1&selected_currency=RUB`;
         }
@@ -452,146 +525,16 @@
         }
 
         const LOCATION_NAMES = {
-            bangkok: "🏙 Бангкок • Башня",
+            bangkok: "🏙 Бангкок • Отель",
             tao: "🐢 Ко Тао • Отель",
             samui: "🏝 Самуи • Вилла"
         };
 
-        // =========================================================================
-        // КАТАЛОГ 75 ОБЪЕКТОВ С ПРЯМЫМИ ССЫЛКАМИ НА КАРТОЧКИ ОТЕЛЕЙ (/hotel/th/...ru.html)
-        // Формат: [Название, Базовая_Цена_РУБ_на_5_чел, Описание, Прямой_Booking_Slug, Фото_Запрос, Lat, Lng]
-        // =========================================================================
-        const RAW_BANGKOK = [
-            ["Baiyoke Sky Hotel 4★ (Башня 84 этажа + Бассейн)", 58000, "Знаменитый небоскреб 84 этажа в Пратунаме! Открытый бассейн на 20 этаже + бесплатный вход на вращающуюся смотровую на крыше.", "hotel/th/baiyoke-sky.ru.html", "Baiyoke Sky Hotel Bangkok tower exterior pool", 13.7544, 100.5404],
-            ["Mode Sathorn Hotel 4★ (Башня 38 этажей + Инфинити)", 69000, "Стильная башня у ступенек BTS Surasak: панорамный инфинити-бассейн на 11 этаже и видовой руфтоп на 38 этаже.", "hotel/th/mode-sathorn-hotel-manage-by-siam-siam.ru.html", "Mode Sathorn Hotel Bangkok infinity pool", 13.7192, 100.5215],
-            ["JC Kevin Sathorn Bangkok Hotel 5★ (Башня 40 этажей + Бассейн)", 72000, "Высотная башня 5★ на Сатхоне: огромный бассейн-лагуна на террасе и панорамный руфтоп Zoom на 40 этаже.", "hotel/th/anantara-baansathorn-bangkok.ru.html", "JC Kevin Sathorn Bangkok Hotel pool", 13.7180, 100.5342],
-            ["Novotel Bangkok Sukhumvit 20 4★ (Башня 26 этажей + Инфинити)", 86000, "Высотный отель с панорамным инфинити-бассейном на 9 этаже и руфтоп-баром Sky on 20 на 26 этаже.", "hotel/th/novotel-bangkok-sukhumvit-20.ru.html", "Novotel Bangkok Sukhumvit 20 infinity pool", 13.7318, 100.5635],
-            ["Pullman Bangkok Hotel G 5★ (Башня 38 этажей + Бассейн)", 89000, "Белоснежная башня в районе Силом с панорамными окнами в пол, открытым бассейном и баром Scarlett на 37 этаже.", "hotel/th/pullman-bangkok-g.ru.html", "Pullman Bangkok Hotel G Silom exterior pool", 13.7256, 100.5262],
-            ["Siam@Siam Design Hotel 4.5★ (Башня 25 этажей + Инфинити)", 92000, "Дизайнерская башня в центре Сиама: открытый панорамный инфинити-бассейн на 11 этаже и руфтоп на 25 этаже.", "hotel/th/siam-siam-design-hotel-bangkok.ru.html", "Siam at Siam Design Hotel Bangkok infinity pool", 13.7468, 100.5269],
-            ["The Continent Hotel Asok BTS 5★ (Башня 39 этажей + Бассейн)", 94000, "Небоскреб прямо на перекрестке Асок и Сукхумвит: панорамный бассейн на 37 этаже с видом на весь город.", "hotel/th/the-continent-bangkok.ru.html", "The Continent Hotel Bangkok Sukhumvit pool", 13.7368, 100.5615],
-            ["Skyview Hotel Bangkok Sukhumvit 24 5★ (Башня 35 этажей + Инфинити)", 98000, "Небоскреб в 100 м от ТЦ EmQuartier: инфинити-бассейн на 8 этаже и клубный руфтоп-бар Vanilla Sky на 35 этаже.", "hotel/th/compass-skyview.ru.html", "Skyview Hotel Bangkok Sukhumvit 24 pool", 13.7295, 100.5692],
-            ["Amari Bangkok 5★ (Башня 34 этажа + Большой бассейн)", 105000, "Башня 5★ в центре Пратунама (пешком до CentralWorld и Сиама) с большим панорамным бассейном и баром.", "hotel/th/amari-watergate-bangkok.ru.html", "Amari Bangkok hotel swimming pool", 13.7512, 100.5401],
-            ["Radisson Blu Plaza Bangkok 5★ (Башня 30 этажей, Асок)", 108000, "Небоскреб 5★ в 4 минутах от BTS Asok: открытый бассейн на высоком этаже и панорамный бар на 30 этаже.", "hotel/th/radisson-blu-plaza-bangkok.ru.html", "Radisson Blu Plaza Bangkok rooftop pool", 13.7351, 100.5632],
-            ["Avani+ Riverside Bangkok Hotel 5★ (Башня 26 этажей + Инфинити)", 118000, "Потрясающий панорамный инфинити-бассейн на самой крыше башни (26 этаж) с видом на реку Чао Прайя и скайлайн.", "hotel/th/avani-riverside-bangkok.ru.html", "Avani+ Riverside Bangkok Hotel rooftop infinity pool", 13.7048, 100.4922],
-            ["Sindhorn Midtown Hotel Bangkok 5★ (Башня 31 этаж + Инфинити)", 119000, "Современная башня IHG со знаменитым панорамным бассейном Horizon Pool на 18 этаже и баром у воды.", "hotel/th/sindhorn-midtowm.ru.html", "Sindhorn Midtown Hotel Bangkok Horizon infinity pool", 13.7392, 100.5418],
-            ["Eastin Grand Hotel Sathorn 5★ (Башня 33 этажа + Инфинити)", 124000, "Небоскреб с прямым переходом на станцию BTS Surasak! Культовый панорамный инфинити-бассейн на 14 этаже над городом.", "hotel/th/eastin-grand-sathorn.ru.html", "Eastin Grand Hotel Sathorn Bangkok infinity pool", 13.7190, 100.5210],
-            ["Carlton Hotel Bangkok Sukhumvit 5★ (Башня 34 этажа + Бассейн)", 128000, "Флагманская стеклянная башня 5★ на Сукхумвите: 30-метровый открытый бассейн на 10 этаже и руфтоп на 34 этаже.", "hotel/th/carlton-bangkok-sukhumvit.ru.html", "Carlton Hotel Bangkok Sukhumvit swimming pool", 13.7335, 100.5648],
-            ["Eastin Grand Hotel Phayathai 5★ (Башня 51 этаж + 2 бассейна)", 132000, "Новейший небоскреб! 2 панорамных инфинити-бассейна на высоте (22 и 37 этаж) и прямой переход на поезд из аэропорта.", "hotel/th/eastin-grand-phayathai.ru.html", "Eastin Grand Hotel Phayathai Bangkok infinity pool", 13.7568, 100.5349],
-            ["Centara Grand at CentralWorld 5★ (Башня 55 этажей + Бассейн)", 136000, "Небоскреб прямо над ТЦ CentralWorld! Большой бассейн с джакузи на 26 этаже + знаменитый бар Red Sky на 55 этаже.", "hotel/th/centara-grand-at-centralworld.ru.html", "Centara Grand at CentralWorld Bangkok hotel pool", 13.7475, 100.5388],
-            ["Grande Centre Point Terminal 21 5★ (Башня 32 этажа + Инфинити)", 139000, "Башня прямо над ТЦ Terminal 21 (пересечение BTS Asok и MRT). Огромный панорамный инфинити-бассейн на высоте.", "hotel/th/grande-centre-point-sukhumvit-terminal-21.ru.html", "Grande Centre Point Terminal 21 Bangkok pool", 13.7379, 100.5604],
-            ["Millennium Hilton Bangkok 5★ (Башня 32 этажа у ICONSIAM)", 142000, "Небоскреб на берегу реки рядом с ТЦ ICONSIAM: панорамный инфинити-бассейн с шезлонгами в воде и бар на 32 этаже.", "hotel/th/millennium-hilton-bangkok.ru.html", "Millennium Hilton Bangkok hotel pool river", 13.7290, 100.5105],
-            ["Hotel Indigo Bangkok Wireless Road 5★ (Башня 26 этажей + Инфинити)", 145000, "Открытый панорамный инфинити-бассейн на 24 этаже на самом краю башни с видом на небоскребы Пленчит.", "hotel/th/indigo-bangkok-wireless-road.ru.html", "Hotel Indigo Bangkok Wireless Road infinity pool", 13.7398, 100.5476],
-            ["W Bangkok 5★ (Башня 31 этаж + Дизайнерский бассейн)", 149000, "Тусовочный небоскреб 5★ рядом с башней Mahanakhon: необычный бассейн WET Deck с подводной музыкой.", "hotel/th/w-bangkok.ru.html", "W Bangkok hotel WET Deck swimming pool", 13.7225, 100.5282],
-            ["Bangkok Marriott Hotel Sukhumvit 5★ (Башня 49 этажей, Тонглор)", 152000, "Высотная башня у BTS Thong Lo: открытый бассейн на 7 этаже + трехуровневый панорамный бар Octave на 45–49 этажах.", "hotel/th/bangkok-marriott-sukhumvit.ru.html", "Bangkok Marriott Hotel Sukhumvit pool Octave", 13.7235, 100.5802],
-            ["Bangkok Marriott Hotel The Surawongse 5★ (Башня 32 этажа + Инфинити)", 156000, "Один из самых красивых открытых инфинити-бассейнов Бангкока на 18 этаже башни с прямым видом на Mahanakhon.", "hotel/th/bangkok-marriott-the-surawongse.ru.html", "Bangkok Marriott Hotel The Surawongse infinity pool", 13.7275, 100.5231],
-            ["SO/ Bangkok 5★ (Башня 30 этажей + Панорамный инфинити)", 162000, "Дизайнерская башня 5★ с панорамным инфинити-бассейном на 10 этаже с видом на парк Люмпини и небоскребы Сатхона.", "hotel/th/sofitel-so-bangkok.ru.html", "SO Bangkok hotel infinity pool Lumpini Park", 13.7263, 100.5432],
-            ["Banyan Tree Bangkok 5★ (Башня 61 этаж + Панорамный бассейн)", 168000, "Высотная башня на Сатхоне: открытый бассейн на 21 этаже над небоскребами и легендарный бар Moon Bar на 61 этаже.", "hotel/th/banyan-tree-bangkok.ru.html", "Banyan Tree Bangkok hotel swimming pool", 13.7232, 100.5398],
-            ["The Standard, Bangkok Mahanakhon 5★ (Башня 78 этажей + Бассейн)", 215000, "Внутри знаменитого пиксельного небоскреба Mahanakhon! Открытый бассейн на террасе + бесплатный вход на SkyWalk 78 этаж.", "hotel/th/the-standard-bangkok-mahanakhon.ru.html", "The Standard Bangkok Mahanakhon hotel pool", 13.7238, 100.5289]
-        ];
-
-        const RAW_TAO = [
-            ["Diamond Beach Resort 3★ (Пляж Сайри — 3 номера)", 72000, "Выгодный отель на первой линии главного пляжа Сайри рядом с вечерними фаер-шоу и барами.", "hotel/th/diamond-beach-bungalow.ru.html", "Diamond Beach Resort Koh Tao Sairee Beach", 10.0942, 99.8285],
-            ["Simple Life Talay & Divers Resort 3.5★ (Сайри — 3 номера)", 84000, "Свежий отель с большим бассейном прямо у выхода на пляж Сайри, рядом ночной рынок и кафе.", "hotel/th/simple-life-talay-amp-divers-resort.ru.html", "Simple Life Talay and Divers Resort Koh Tao pool", 10.0968, 99.8292],
-            ["Koh Tao Relax Freedom Beach Resort 3★ (Freedom Beach)", 88000, "Отель прямо на знаменитом пляже Freedom Beach и в бухте Таа То. Коралловый риф в 10 метрах от берега.", "hotel/th/taatoh-resort.ru.html", "Koh Tao Relax Freedom Beach Resort Taatoh", 10.0628, 99.8265],
-            ["Wind Beach Resort 3.5★ (1-я линия Сайри — 3 номера)", 91000, "Два бассейна, отличный пляжный гриль-бар на закате и размещение в самом центре Сайри Бич.", "hotel/th/wind-beach-resort.ru.html", "Wind Beach Resort Koh Tao Sairee pool", 10.0985, 99.8278],
-            ["Seashell Resort Koh Tao 3★ (Пляж Сайри — 3 номера)", 93000, "Первая линия пляжа Сайри в окружении пальм: свой бассейн, дайв-центр и пляжное кафе.", "hotel/th/seashell-resort-koh-tao.ru.html", "Seashell Resort Koh Tao Sairee Beach pool", 10.1002, 99.8275],
-            ["Big Tree Boutique Hotel 3.5★ (Мае Хаад — 3 номера)", 95000, "Очень стильный бутик-отель с отличным рестораном в 2 минутах ходьбы от пляжа Мае Хаад.", "hotel/th/big-tree-boutique.ru.html", "Big Tree Boutique Hotel Koh Tao", 10.0835, 99.8258],
-            ["Montalay Beach Resort 3.5★ (Пляж Таноте Бэй — 3 номера)", 96000, "Отель с бассейном на пляже Таноте Бэй, где живые кораллы и черепахи плавают в 20 метрах от берега.", "hotel/th/montalay-beach-resort.ru.html", "Montalay Beach Resort Koh Tao Tanote Bay", 10.0882, 99.8495],
-            ["Koh Tao Beach Club 3.5★ (Пляж Мае Хаад — 3 номера)", 99000, "Первая линия песчаного пляжа Мае Хаад в 5 минутах от пирса, бассейн прямо у воды.", "hotel/th/beach-club-koh-tao-ko-tao2.ru.html", "Koh Tao Beach Club Mae Haad beach pool", 10.0858, 99.8252],
-            ["Coral Grand Resort 3.5★ (Пляж Сайри — 3 номера)", 102000, "Курортный отель вокруг большого бассейна прямо на берегу моря в спокойной части Сайри.", "hotel/th/coral-grand-resort.ru.html", "Coral Grand Resort Koh Tao Sairee pool", 10.1038, 99.8268],
-            ["Chintakiri Resort 3.5★ (Панорама Чалок — 3 номера)", 106000, "Видовой отель с инфинити-бассейном на холме между пляжем Чалок и бухтой Shark Bay.", "hotel/th/chintakiri-resort.ru.html", "Chintakiri Resort Koh Tao Chalok pool", 10.0685, 99.8289],
-            ["Blue Tao Beach Hotel 3.5★ (1-я линия Сайри — 3 номера)", 109000, "Современный чистый отель прямо на пешеходной набережной пляжа Сайри с видом на закат.", "hotel/th/blue-tao-beach.ru.html", "Blue Tao Beach Hotel Koh Tao Sairee", 10.0975, 99.8281],
-            ["Ban's Diving Resort 4★ (Центр пляжа Сайри — 3 номера)", 114000, "Главный курорт в центре Сайри Бич: 4 бассейна в тропическом парке, пляжный ресторан и бар Fishbowl.", "hotel/th/ban-s-diving-resort.ru.html", "Bans Diving Resort Koh Tao swimming pool", 10.0955, 99.8288],
-            ["Koh Tao Montra Resort 4★ (Пляж Мае Хаад — 3 номера)", 116000, "Курортный отель на первой линии Мае Хаад с самым большим трехуровневым бассейном на острове.", "hotel/th/koh-tao-montra-resort-and-spa.ru.html", "Koh Tao Montra Resort and Spa pool", 10.0872, 99.8256],
-            ["Pinnacle Koh Tao Resort 4★ (Пляж June Juea Bay — 3 номера)", 122000, "Отель в собственной тихой бухте Джун Джуа: панорамный бассейн, коралловый риф и бесплатный шаттл.", "hotel/th/pinnacle-koh-tao-resort.ru.html", "Pinnacle Koh Tao Resort June Juea Bay", 10.0672, 99.8212],
-            ["Dusit Buncha Koh Tao 4★ (Вид на Nang Yuan — 3 номера)", 128000, "Знаменитый вид на три островка Ко Нанг Юань! Инфинити-бассейн в гранитных валунах и отличный снорклинг.", "hotel/th/dusit-buncha-resort.ru.html", "Dusit Buncha Resort Koh Tao pool view", 10.1145, 99.8225],
-            ["Sensi Paradise Beach Resort 3.5★ (Мае Хаад — 3 номера)", 134000, "Атмосферный эко-отель у тихого пляжа Мае Хаад: огромный каскадный бассейн и завтраки у самой воды.", "hotel/th/sensi-paradise-beach-resort.ru.html", "Sensi Paradise Beach Resort Koh Tao pool", 10.0792, 99.8228],
-            ["The Tarna Align Resort 4★ (Сайри — 3 отдельных номера)", 138000, "Современный 4★ отель с двухъярусным инфинити-бассейном, суши-баром на закате и панорамой на весь остров.", "hotel/th/the-tarna-align-resort.ru.html", "The Tarna Align Resort Koh Tao infinity pool", 10.0962, 99.8345],
-            ["Mango Bay Boutique Resort 4★ (Бухта Манго Бэй — 3 номера)", 142000, "Бутик-отель над изумрудной водой самой красивой коралловой бухты севера острова.", "hotel/th/mango-bay-boutique-resort.ru.html", "Mango Bay Boutique Resort Koh Tao", 10.1215, 99.8392],
-            ["Sai Daeng Resort 4★ (Мыс Shark Bay — 3 отдельных номера)", 146000, "Знаменитый отель на полуострове: снорклинг с черепахами и рифовыми акулами прямо с берега, панорамный бассейн.", "hotel/th/sai-daeng-resort.ru.html", "Sai Daeng Resort Koh Tao Shark Bay pool", 10.0652, 99.8408],
-            ["Nangyuan Island Dive Resort 3.5★ (Остров Ко Нанг Юань)", 149000, "Единственный отель прямо на знаменитом острове-заповеднике Нанг Юань с тройной песчаной косой!", "hotel/th/nangyuan-island-dive-resort.ru.html", "Nangyuan Island Dive Resort Koh Nang Yuan", 10.1182, 99.8142],
-            ["View Point Resort 4★ (Мыс Чалок — 3 отдельных номера)", 154000, "Уединенный отель на зеленом мысе Чалок с собственным секретным пляжем, бассейном и панорамным рестораном.", "hotel/th/view-point-resort.ru.html", "View Point Resort Koh Tao Chalok pool", 10.0642, 99.8218],
-            ["Koh Tao Cabana Hotel 4★ (Север пляжа Сайри — 3 номера)", 162000, "Курортный отель в самом красивом и чистом северном углу пляжа Сайри с бассейном и деревянной набережной.", "hotel/th/koh-tao-cabana.ru.html", "Koh Tao Cabana Resort Sairee Beach", 10.1062, 99.8258],
-            ["Beach Club by Haadtien 4★ (Пляж Shark Bay — 3 номера)", 178000, "Стильный отель прямо у кромки воды в бухте Хаад Тхиан с большим инфинити-бассейном на пляже.", "hotel/th/beach-club-by-haadtien.ru.html", "Beach Club by Haadtien Koh Tao pool", 10.0648, 99.8355],
-            ["Jamahkiri Dive Resort & Spa 5★ (Shark Bay — 3 номера)", 188000, "Пятизвездочный спа-отель над заливом Тхиан Ог: панорамные номера, бассейн в скалах и свой пирс для снорклинга.", "hotel/th/jamahkiri-spa-resort.ru.html", "Jamahkiri Resort and Spa Koh Tao pool", 10.0622, 99.8338],
-            ["Haad Tien Beach Resort 4★ (Лагуна Shark Bay — 3 номера)", 198000, "Лучший пляжный курорт острова в бирюзовой бухте Shark Bay: пальмовая роща, белый песок и бассейн у моря.", "hotel/th/haadtien-beach-resort.ru.html", "Haad Tien Beach Resort Koh Tao beach pool", 10.0655, 99.8362]
-        ];
-
-        const RAW_SAMUI = [
-            ["3 Bedroom Villa with Swimming Pool Lamai (Ламаи)", 118000, "Оценка 10/10! 3 спальни, приватный бассейн, закрытый зеленый двор, барбекю и полная кухня.", "hotel/th/3-bedroom-swimming-pool-lamai.ru.html", "3 Bedroom Villa Swimming Pool Lamai Koh Samui", 9.4685, 100.0412],
-            ["Tropical Season Villa Resort — 3BR Pool Villa (Маенам)", 124000, "Выгодная 3-спальная вилла с частным бассейном в тихом пальмовом районе Маенам.", "hotel/th/tropical-season-villa-resort.ru.html", "Tropical Season Villa Resort Koh Samui pool", 9.5682, 99.9925],
-            ["Love Is Pool Villa — Modern & Cozy 3BR (Бопут)", 129000, "Свежая дизайнерская 3-спальная вилла после реновации. Свой бассейн, просторная гостиная и кухня.", "hotel/th/love-is-pool-villa-modern-3br-pool-villa-cozy-style.ru.html", "Love Is Pool Villa Modern 3BR Koh Samui", 9.5485, 100.0315],
-            ["Villa Chacha 3 Bedrooms Private Pool (Ламаи, 3 кровати King)", 136000, "Рейтинг 9.1! 200 м², во всех 3 спальнях кровати King-size и отдельные санузлы, большой приватный бассейн.", "hotel/th/villa-chacha-3-bedrooms-private-pool.ru.html", "Villa Chacha 3 Bedrooms Private Pool Koh Samui", 9.4722, 100.0438],
-            ["Villa Sumalee 3BR Private Pool — 8 mins to Beach (Ламаи)", 145000, "Рейтинг 9.4! Огромная вилла 250 м² в пальмовом саду. 3 спальни, большой приватный бассейн, пешком до пляжа.", "hotel/th/villa-sumalee-3br-private-pool.ru.html", "Villa Sumalee 3BR Private Pool Lamai Koh Samui", 9.4648, 100.0425],
-            ["Pawanthorn Samui — 3BR Private Pool Villa (Чонг Мон)", 152000, "Уютный комплекс частных вилл у пляжа Чонг Мон. 3 спальни, свой бассейн с джакузи и терраса.", "hotel/th/pawanthorn-samui.ru.html", "Pawanthorn Samui luxury pool villa", 9.5695, 100.0712],
-            ["Horizon Residence — 3BR Pool Villa Choeng Mon (Чонг Мон)", 156000, "600 метров до пляжа Чонг Мон! Современная вилла с 3 спальнями, приватным бассейном и охраной.", "hotel/th/horizon-residence-rentals.ru.html", "Horizon Residence Choeng Mon Koh Samui villa pool", 9.5722, 100.0685],
-            ["Sea Valley Hotel & Spa — 3BR Pool Villa (Липа Ной)", 162000, "Пляж Липа Ной (лучшие закаты и песчаное дно). 3 спальни, приватный бассейн с гидромассажем.", "hotel/th/sea-valley-hotel-and-spa.ru.html", "Sea Valley Hotel and Spa Koh Samui pool villa", 9.4892, 99.9345],
-            ["Crystal Bay Yacht Club — 3BR Family Villa (Silver Beach)", 166000, "Прямо в самой красивой бухте острова — Crystal Bay (Серебряный пляж) со снорклингом.", "hotel/th/crystal-bay-yacht-club-beach-resort.ru.html", "Crystal Bay Yacht Club Beach Resort Koh Samui", 9.4852, 100.0672],
-            ["Villa Labaron — 3BR Beachside Pool Villa (Банграк)", 168000, "Вилла у самой воды на пляже Банграк с видом на закаты. 3 спальни, приватный бассейн.", "hotel/th/villa-labaron.ru.html", "Villa Labaron Koh Samui Bangrak pool", 9.5642, 100.0548],
-            ["Jungle Club Samui — 3BR Panoramic Villa (Чавенг Ной)", 172000, "Легендарная смотровая площадка острова! Вилла с 3 спальнями и панорамным видом на весь залив Чавенг.", "hotel/th/the-jungle-club.ru.html", "The Jungle Club Koh Samui panoramic pool", 9.5012, 100.0532],
-            ["Villa Tenament 3BR Modern with Infinity Pool (Бопут / Чавенг Ной)", 175000, "Рейтинг 9.7! Вилла 163 м², 3 спальни, 3 ванные, личный инфинити-бассейн с видом на море и горы + трансфер.", "hotel/th/villa-tenament-3br-modern-with-infinity-pool.ru.html", "Villa Tenament 3BR Modern with Infinity Pool Koh Samui", 9.5125, 100.0542],
-            ["Mai Tai Luxury 3 Bedroom Pool Villa (Пляж Чонг Мон)", 179000, "Престижный район Чонг Мон с белым песком. 3 спальни, 3 ванные, приватный бассейн и терраса с шезлонгами.", "hotel/th/mai-tai-luxury-3-bedroom-villa.ru.html", "Mai Tai Luxury 3 Bedroom Villa Koh Samui", 9.5742, 100.0698],
-            ["The Sea Koh Samui Resort — 3BR Pool Villa (Банг По)", 184000, "Первая береговая линия пляжа Банг По с видом на Пханган. 3 спальни, свой бассейн и пляжный ресторан.", "hotel/th/the-sea-koh-samui-boutique-resort-and-residences.ru.html", "The Sea Koh Samui Resort and Residences pool villa", 9.5785, 99.9542],
-            ["The Sunset Beach Resort & Spa — 3BR Pool Residence", 188000, "Пятизвездочный сервис на побережье Талинг Нгам. 3 спальни, приватный бассейн и спа-центр.", "hotel/th/the-sunset-beach-resort-amp-spa-taling-ngam.ru.html", "The Sunset Beach Resort and Spa Taling Ngam Koh Samui", 9.4425, 99.9412],
-            ["Baan Haad Ngam Boutique Resort — 3BR Pool Villa (Чавенг)", 192000, "Тихий северный край пляжа Чавенг. Вилла с 3 спальнями, частным бассейном и выходом к белому песку.", "hotel/th/baan-haad-ngam-boutique-resort.ru.html", "Baan Haad Ngam Boutique Resort Villas Koh Samui", 9.5415, 100.0692],
-            ["Wild Cottages Luxury & Natural 3BR Pool Villa (Ламаи)", 196000, "Эксклюзивная вилла с видом на слонов в джунглях! 3 спальни, инфинити-бассейн и панорамная терраса.", "hotel/th/wild-cottages-luxury-and-natural.ru.html", "Wild Cottages Luxury and Natural Koh Samui pool", 9.4765, 100.0325],
-            ["Beachfront 3BR Villa Baan Rim Haad (Ламаи, 1-я линия моря)", 205000, "Рейтинг 9.6! Прямой выход на пляж Ламаи! 180 м², 3 спальни, 4 ванные, свой бассейн прямо у берега.", "hotel/th/beach-front-villa-baan-rim-haad.ru.html", "Beachfront Villa Baan Rim Haad Koh Samui", 9.4585, 100.0435],
-            ["Khwan Beach Resort — 3BR Luxury Pool Villa (Маенам)", 212000, "Бутик-резорт в 100 м от пляжа Маенам. Вилла с 3 спальнями, приватным бассейном и тропическим садом.", "hotel/th/khwan-beach-resort.ru.html", "Khwan Beach Resort Koh Samui luxury pool villa", 9.5665, 100.0028],
-            ["Sandalwood Luxury Villas — 3BR Panoramic Sea View (Чавенг Ной)", 218000, "Вилла на склоне Чавенг Ной с фантастическим видом на залив. 3 спальни, личный инфинити-бассейн.", "hotel/th/sandalwood-luxury-villas.ru.html", "Sandalwood Luxury Villas Koh Samui infinity pool", 9.4985, 100.0612],
-            ["Idyllic Samui Beach Villa Resort — 3BR Beachfront Pool", 225000, "Прямой выход в тихую лагуну Самронг! 3 спальни, собственный бассейн на берегу, бесплатные каяки.", "hotel/th/idyllic-samui-resort.ru.html", "Idyllic Samui Beach Villa Resort Koh Samui", 9.5835, 100.0725],
-            ["Karma Resort — 3 Bedroom Pool Villa (Пляж Бопут)", 234000, "Бутик-вилла 4★ в 2 минутах от Fisherman's Village. 3 спальни, приватный бассейн, пляжный клуб и завтраки.", "hotel/th/karma-samui.ru.html", "Karma Resort Koh Samui Bophut pool villa", 9.5582, 100.0258],
-            ["Samui Bayside Luxury Villas — 3BR Sea View (Самронг Бэй)", 248000, "Закрытая бухта Самронг Бэй. 3 спальни, свой инфинити-бассейн прямо у берега моря.", "hotel/th/samui-bayside-luxury-villas.ru.html", "Samui Bayside Luxury Villas Koh Samui pool", 9.5848, 100.0742],
-            ["Celes Beachfront Resort — 3BR Pool Residence (Пляж Бопут)", 268000, "Люкс-резиденция 5★ на первой линии пляжа Бопут. 3 спальни, частный бассейн, сервис 5★.", "hotel/th/celes-beachfront-resort-koh-samui.ru.html", "Celes Beachfront Resort Koh Samui pool villa", 9.5595, 100.0215],
-            ["Garrya Tongsai Bay Samui 5★ — Pool Villa Suite (Тонгсай Бэй)", 285000, "Закрытая частная бухта Тонгсай! Роскошная вилла 5★ на склоне с собственным бассейном и видом на море.", "hotel/th/the-tongsai-bay.ru.html", "Garrya Tongsai Bay Samui pool villa", 9.5762, 100.0645]
-        ];
-
-        const CATALOG_SLUG_MAP = {};
-        const CATALOG_QUERY_MAP = {};
-        const CATALOG_COORDS_MAP = {};
-        const CATALOG_PRICE_MAP = {};
-
-        function buildCatalogItem(raw, loc, idx, nights, datesText) {
-            const title = raw[0];
-            const key = title.toLowerCase().trim();
-            const slug = raw[3];
-            CATALOG_SLUG_MAP[key] = slug;
-            CATALOG_QUERY_MAP[key] = raw[4];
-            CATALOG_COORDS_MAP[key] = { lat: raw[5], lng: raw[6] };
-            CATALOG_PRICE_MAP[key] = raw[1];
-
-            const isVilla = loc === "samui";
-            const checkin = isVilla ? "2027-03-15" : (loc === "bangkok" ? "2027-03-06" : "2027-03-09");
-            const checkout = isVilla ? "2027-03-22" : (loc === "bangkok" ? "2027-03-09" : "2027-03-15");
-            const adults = isVilla ? 5 : 2;
-
-            return {
-                id: loc[0] + (idx + 1),
-                title: title,
-                location: loc,
-                nights: nights,
-                dates_text: datesText,
-                price_rub: raw[1],
-                image_url: buildRealHotelPhotoUrl(raw[4], idx),
-                booking_url: `https://www.booking.com/${slug}?checkin=${checkin}&checkout=${checkout}&group_adults=${adults}&no_rooms=1&selected_currency=RUB`,
-                notes: raw[2],
-                added_by: "Booking_Direct_v11",
-                votes: {}
-            };
-        }
-
-        const BOOKING_CATALOG = [
-            ...RAW_BANGKOK.map((item, idx) => buildCatalogItem(item, "bangkok", idx, 3, "6–9 марта (3 ночи)")),
-            ...RAW_TAO.map((item, idx) => buildCatalogItem(item, "tao", idx, 6, "9–15 марта (6 ночей)")),
-            ...RAW_SAMUI.map((item, idx) => buildCatalogItem(item, "samui", idx, 7, "15–22 марта (7 ночей)"))
-        ];
-
-        let allProperties = [...BOOKING_CATALOG];
+        // Список начинается пустым и заполняется ТОЛЬКО вашими объектами из базы Supabase
+        let allProperties = [];
         let currentFilter = "all";
         let currentSort = "default";
 
-        // =========================================================================
-        // НАДЕЖНОЕ ХРАНЕНИЕ ЛАЙКОВ, КОММЕНТАРИЕВ И СТАТУСА ЦЕН ВНУТРИ ПОЛЯ `votes`
-        // =========================================================================
         function extractVotesOnly(votesObj) {
             if (!votesObj || typeof votesObj !== "object") return {};
             const res = {};
@@ -620,7 +563,7 @@
                 "Authorization": `Bearer ${SUPABASE_KEY}`,
                 "Content-Type": "application/json"
             };
-            if (method === "POST" || method === "PATCH") {
+            if (method === "POST" || method === "PATCH" || method === "DELETE") {
                 headers["Prefer"] = "return=representation";
             }
 
@@ -639,68 +582,250 @@
             return await response.json();
         }
 
-        // Гарантированное сохранение изменений в конкретную карточку в Supabase (по UUID или по Title, если UUID еще не получен)
-        async function persistCardPatchToSupabase(item, patchFields) {
-            if (isValidUuid(item.id)) {
-                await supabaseRequest(`thai_properties?id=eq.${item.id}`, "PATCH", patchFields);
+        // =========================================================================
+        // УДАЛЕНИЕ КАРТОЧЕК И ОЧИСТКА БАЗЫ В 2 КЛИКА (БЕЗ ЗАБЛОКИРОВАННОГО confirm())
+        // =========================================================================
+        const pendingDeleteTimers = {};
+
+        async function handleDeleteCardClick(propId, event) {
+            if (event) event.stopPropagation();
+            const key = String(propId);
+            const btn = document.getElementById(`del-btn-${key}`);
+
+            // 1-й клик: просим подтверждение прямо на кнопке
+            if (!pendingDeleteTimers[key]) {
+                if (btn) {
+                    btn.innerText = "Удалить? Да";
+                    btn.className = "bg-rose-600 text-white text-[11px] font-black px-2.5 py-1 rounded-full shadow-lg cursor-pointer transition";
+                }
+                if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred("medium");
+
+                pendingDeleteTimers[key] = setTimeout(() => {
+                    delete pendingDeleteTimers[key];
+                    const resetBtn = document.getElementById(`del-btn-${key}`);
+                    if (resetBtn) {
+                        resetBtn.innerText = "🗑";
+                        resetBtn.className = "bg-slate-950/85 hover:bg-rose-600 text-slate-300 hover:text-white text-xs px-2.5 py-1 rounded-full cursor-pointer transition";
+                    }
+                }, 3500);
                 return;
             }
-            // Если вдруг у карточки еще локальный ID (b1/t1), находим её в БД по названию и привязываем настоящий UUID!
-            const encodedTitle = encodeURIComponent(item.title);
-            const found = await supabaseRequest(`thai_properties?title=eq.${encodedTitle}&select=id,votes&limit=1`);
-            if (found && found[0] && isValidUuid(found[0].id)) {
-                item.id = found[0].id;
-                await supabaseRequest(`thai_properties?id=eq.${item.id}`, "PATCH", patchFields);
-            } else {
-                // Если такой строки еще нет в БД — создаем её и запоминаем UUID
-                const { id, ...cleanPayload } = { ...item, ...patchFields };
-                const inserted = await supabaseRequest("thai_properties", "POST", [cleanPayload]);
-                if (inserted && inserted[0] && isValidUuid(inserted[0].id)) {
-                    item.id = inserted[0].id;
+
+            // 2-й клик: реально удаляем из экрана и из базы Supabase
+            clearTimeout(pendingDeleteTimers[key]);
+            delete pendingDeleteTimers[key];
+
+            if (btn) btn.innerText = "⏳...";
+            const item = allProperties.find(p => String(p.id) === key);
+
+            allProperties = allProperties.filter(p => String(p.id) !== key);
+            updateCounters();
+            const cardEl = document.getElementById(`card-${key}`);
+            if (cardEl) cardEl.remove();
+            if (allProperties.length === 0) renderList();
+
+            try {
+                if (isValidUuid(key)) {
+                    await supabaseRequest(`thai_properties?id=eq.${key}`, "DELETE");
+                } else if (item && item.title) {
+                    await supabaseRequest(`thai_properties?title=eq.${encodeURIComponent(item.title)}`, "DELETE");
                 }
+            } catch (err) {
+                console.error("Ошибка удаления из Supabase:", err.message);
+            }
+        }
+
+        let wipeAllConfirmTimer = null;
+        async function handleWipeAllClick() {
+            const btn = document.getElementById("wipe-all-btn");
+            if (!wipeAllConfirmTimer) {
+                btn.innerText = "⚠️ Точно очистить всё?";
+                btn.className = "bg-rose-600 text-white px-2.5 py-1.5 rounded-xl text-[11px] font-black cursor-pointer shadow";
+                wipeAllConfirmTimer = setTimeout(() => {
+                    wipeAllConfirmTimer = null;
+                    btn.innerText = "🗑 Очистить";
+                    btn.className = "bg-slate-900 hover:bg-rose-950 border border-slate-700 hover:border-rose-600 text-slate-400 hover:text-rose-300 px-2 py-1.5 rounded-xl text-[11px] font-bold cursor-pointer transition";
+                }, 4000);
+                return;
+            }
+
+            clearTimeout(wipeAllConfirmTimer);
+            wipeAllConfirmTimer = null;
+            btn.innerText = "⏳ Очищаем...";
+
+            try {
+                await supabaseRequest("thai_properties?id=not.is.null", "DELETE");
+                allProperties = [];
+                updateCounters();
+                renderList();
+                if (currentFilter === "map") renderMapPins(null);
+                document.getElementById("status-line").innerText = "🟢 База полностью очищена (0 объектов)";
+            } catch (err) {
+                alert("Ошибка очистки базы: " + err.message);
+            } finally {
+                btn.innerText = "🗑 Очистить";
+                btn.className = "bg-slate-900 hover:bg-rose-950 border border-slate-700 hover:border-rose-600 text-slate-400 hover:text-rose-300 px-2 py-1.5 rounded-xl text-[11px] font-bold cursor-pointer transition";
             }
         }
 
         // =========================================================================
-        // КАСКАДНЫЙ СЕРВЕРНЫЙ ПАРСЕР ЦЕН ПРЯМО ИЗ КАРТОЧКИ BOOKING.COM (БЕЗ ОКОН ВВОДА!)
+        // АВТОГЕНЕРАЦИЯ ОПИСАНИЯ, ОПРЕДЕЛЕНИЕ КООРДИНАТ КАРТЫ И ЦЕНЫ ИЗ ССЫЛКИ BOOKING
         // =========================================================================
+        function detectCoordinatesAndDistrict(title, rawUrl, rawText, location) {
+            const combined = `${title} ${rawUrl} ${rawText}`.toLowerCase();
+
+            // 1. Проверяем, есть ли в HTML страницы Booking точные GPS-координаты отеля
+            if (rawText) {
+                const latMatch = rawText.match(/(?:b_map_center_latitude|latitude|data-atlas-latlng=")\s*[:=]?\s*["']?([0-9]{1,2}\.[0-9]{4,8})/i);
+                const lngMatch = rawText.match(/(?:b_map_center_longitude|longitude|data-atlas-latlng="[0-9.]+\s*,)\s*[:=]?\s*["']?([0-9]{2,3}\.[0-9]{4,8})/i);
+                if (latMatch && lngMatch) {
+                    const lat = parseFloat(latMatch[1]);
+                    const lng = parseFloat(lngMatch[1]);
+                    if (lat > 5 && lat < 21 && lng > 97 && lng < 106) {
+                        return { lat, lng, districtRu: null };
+                    }
+                }
+            }
+
+            // 2. Ищем совпадение по базе районов и пляжей Бангкока, Ко Тао и Самуи
+            for (const [kw, info] of Object.entries(DISTRICT_COORDS)) {
+                if (combined.includes(kw)) {
+                    // Добавляем микро-смещение от названия, чтобы соседние отели не лежали в одной точке
+                    const hash = (title || "").split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+                    const offsetLat = ((hash % 9) - 4) * 0.0008;
+                    const offsetLng = (((hash >> 3) % 9) - 4) * 0.0008;
+                    return {
+                        lat: Number((info.lat + offsetLat).toFixed(5)),
+                        lng: Number((info.lng + offsetLng).toFixed(5)),
+                        districtRu: info.ru
+                    };
+                }
+            }
+
+            return null;
+        }
+
+        // Запрос точных координат по названию отеля через бесплатный геокодер OpenStreetMap Nominatim
+        async function fetchNominatimCoords(hotelTitle, location) {
+            const cleanName = getCleanHotelName(hotelTitle);
+            const city = location === "bangkok" ? "Bangkok Thailand" : (location === "tao" ? "Koh Tao Thailand" : "Koh Samui Thailand");
+            try {
+                const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(cleanName + " " + city)}`;
+                const res = await fetch(url, { headers: { "Accept-Language": "ru,en" } });
+                if (res.ok) {
+                    const arr = await res.json();
+                    if (arr && arr[0] && arr[0].lat && arr[0].lon) {
+                        return {
+                            lat: parseFloat(arr[0].lat),
+                            lng: parseFloat(arr[0].lon)
+                        };
+                    }
+                }
+            } catch (e) {}
+            return null;
+        }
+
+        // Умный сборщик описания на русском языке из данных страницы Booking.com
+        function buildRussianDescription(title, location, districtRu, ogDescription, pageText) {
+            const isVilla = location === "samui";
+            const parts = [];
+
+            // 1. Рейтинг отеля, если найден на странице
+            const ratingMatch = (pageText || ogDescription || "").match(/(?:Оценка|Рейтинг|Scored|Rating|Потрясающе|Великолепно|Превосходно)[^0-9]{0,15}([89]\.[0-9]|10(?:\.0)?)/i);
+            if (ratingMatch && ratingMatch[1]) {
+                parts.push(`Рейтинг Booking: ${ratingMatch[1]}/10.`);
+            }
+
+            // 2. Формат размещения и район/пляж
+            const locText = districtRu ? `Локация: ${districtRu}.` : (
+                location === "bangkok" ? "Высотный отель в Бангкоке." :
+                location === "tao" ? "Курортный отель на острове Ко Тао." :
+                "Приватная вилла для компании на Самуи."
+            );
+            parts.push(locText);
+
+            // 3. Если мета-описание с Booking уже на русском и информативное — очищаем его от рекламы Booking
+            if (ogDescription && /[а-яА-ЯёЁ]{4,}/.test(ogDescription)) {
+                const cleanedOg = ogDescription
+                    .replace(/бронируйте.*$/i, "")
+                    .replace(/сэкономьте.*$/i, "")
+                    .replace(/booking\.com.*$/i, "")
+                    .replace(/\s+/g, " ")
+                    .trim();
+                if (cleanedOg.length > 25) {
+                    parts.push(cleanedOg.slice(0, 180));
+                }
+            } else {
+                // 4. Извлекаем ключевые удобства из текста страницы и переводим в теги на русском
+                const combinedLower = `${title} ${ogDescription || ""} ${pageText || ""}`.toLowerCase();
+                const features = [];
+
+                if (combinedLower.includes("infinity pool") || combinedLower.includes("инфинити")) {
+                    features.push("панорамный инфинити-бассейн");
+                } else if (combinedLower.includes("pool") || combinedLower.includes("бассейн")) {
+                    features.push(isVilla ? "собственный приватный бассейн" : "открытый бассейн");
+                }
+
+                if (isVilla || combinedLower.includes("3 bedroom") || combinedLower.includes("3br") || combinedLower.includes("3 спальн")) {
+                    features.push("3 отдельные спальни для компании");
+                }
+
+                if (combinedLower.includes("beachfront") || combinedLower.includes("первая линия") || combinedLower.includes("private beach")) {
+                    features.push("первая береговая линия у моря");
+                } else if (combinedLower.includes("sea view") || combinedLower.includes("ocean view") || combinedLower.includes("вид на море")) {
+                    features.push("вид на море");
+                }
+
+                if (combinedLower.includes("rooftop") || combinedLower.includes("sky bar") || combinedLower.includes("руфтоп")) {
+                    features.push("видовой бар на крыше");
+                }
+
+                if (combinedLower.includes("bts") || combinedLower.includes("mrt") || combinedLower.includes("метро")) {
+                    features.push("рядом со станцией метро BTS/MRT");
+                }
+
+                if (combinedLower.includes("breakfast") || combinedLower.includes("завтрак")) {
+                    features.push("доступны завтраки");
+                }
+
+                if (features.length > 0) {
+                    parts.push("Удобства: " + features.join(", ") + ".");
+                } else {
+                    parts.push(isVilla ? "Вилла с собственным бассейном, террасой, гостиной и кухней." : "Комфортные отдельные номера с кондиционером, бассейном и Wi-Fi.");
+                }
+            }
+
+            return parts.join(" ");
+        }
+
         function extractPriceFromBookingContent(rawText, nights, isVilla) {
             if (!rawText || rawText.length < 100) return null;
-
             const candidatesRub = [];
 
-            // 1. Ищем структурированные JSON-поля цены внутри кода карточки Booking.com
             const jsonPatterns = [
                 /"b_price"\s*:\s*"?(?:RUB|THB|\s)*([0-9][0-9\s,.]{2,9})"?/gi,
                 /"price"\s*:\s*"?([0-9]{3,7})(?:\.[0-9]{2})?"?/gi,
                 /"gross_amount_per_night"\s*:\s*([0-9.]+)/gi,
-                /"all_inclusive_amount"\s*:\s*([0-9.]+)/gi,
-                /"totalPrice"\s*:\s*([0-9.]+)/gi,
-                /"minPrice"\s*:\s*([0-9.]+)/gi
+                /"all_inclusive_amount"\s*:\s*([0-9.]+)/gi
             ];
 
             for (const regex of jsonPatterns) {
                 let m;
                 while ((m = regex.exec(rawText)) !== null) {
                     const val = parseFloat(String(m[1]).replace(/[^0-9.]/g, ""));
-                    if (!isNaN(val) && val > 1200 && val < 900000) {
+                    if (!isNaN(val) && val > 1500 && val < 900000) {
                         candidatesRub.push(Math.round(val));
                     }
                 }
             }
 
-            // 2. Ищем цены в тексте с символом рубля (₽ / RUB / руб.)
-            const rubTextRegex = /(?:от|цена|price|итого|всего|за\s+\d+\s+ноч[а-я]*)?[^0-9]{0,20}([0-9]{1,3}(?:[\s\u00A0.,][0-9]{3})+|[0-9]{4,6})\s*(?:₽|RUB|руб)/gi;
+            const rubTextRegex = /([0-9]{1,3}(?:[\s\u00A0.,][0-9]{3})+|[0-9]{4,6})\s*(?:₽|RUB|руб)/gi;
             let rm;
             while ((rm = rubTextRegex.exec(rawText)) !== null) {
-                const cleanDigits = rm[1].replace(/[\s\u00A0.,]/g, "");
-                const val = parseInt(cleanDigits, 10);
-                if (!isNaN(val) && val >= 2500 && val <= 850000) {
-                    candidatesRub.push(val);
-                }
+                const val = parseInt(rm[1].replace(/[\s\u00A0.,]/g, ""), 10);
+                if (!isNaN(val) && val >= 2500 && val <= 850000) candidatesRub.push(val);
             }
 
-            // 3. Ищем цены в тайских батах (THB / ฿) и переводим по курсу в рубли
             const thbTextRegex = /(?:THB|฿)\s*([0-9]{1,3}(?:[\s,][0-9]{3})+|[0-9]{4,6})|([0-9]{1,3}(?:[\s,][0-9]{3})+|[0-9]{4,6})\s*(?:THB|฿)/gi;
             let tm;
             while ((tm = thbTextRegex.exec(rawText)) !== null) {
@@ -713,72 +838,180 @@
 
             if (candidatesRub.length === 0) return null;
 
-            // Фильтруем реалистичный диапазон стоимости (за 1 номер на все ночи или за 1 сутки)
-            const minExpectedForStay = isVilla ? 65000 : (nights * 3500);
-            const maxExpectedForStay = isVilla ? 650000 : (nights * 45000);
-
-            const stayPrices = candidatesRub.filter(v => v >= minExpectedForStay && v <= maxExpectedForStay);
+            const minStay = isVilla ? 60000 : (nights * 3500);
+            const maxStay = isVilla ? 650000 : (nights * 45000);
+            const stayPrices = candidatesRub.filter(v => v >= minStay && v <= maxStay);
             if (stayPrices.length > 0) {
                 stayPrices.sort((a, b) => a - b);
-                // Берем медианный нижний тариф стандартного номера
                 return stayPrices[Math.floor(stayPrices.length * 0.25)];
             }
 
-            // Если в карточке указана цена за 1 ночь — умножаем на число ночей
-            const minPerNight = isVilla ? 9000 : 1800;
-            const maxPerNight = isVilla ? 85000 : 35000;
-            const nightPrices = candidatesRub.filter(v => v >= minPerNight && v < minExpectedForStay && v <= maxPerNight);
+            const nightPrices = candidatesRub.filter(v => v >= 1800 && v < minStay);
             if (nightPrices.length > 0) {
                 nightPrices.sort((a, b) => a - b);
                 return nightPrices[0] * nights;
             }
-
             return null;
         }
 
-        // Обращается через 3 серверных прокси-шлюза напрямую к карточке отеля на Booking.com
-        async function fetchLivePriceFromBookingCard(p) {
-            const isVilla = p.location === "samui";
-            const nights = Number(p.nights) || (isVilla ? 7 : 3);
-            const directCardUrl = getDirectHotelBookingUrl(p, isVilla ? 5 : 2);
+        // Парсер ссылки при вставке в модальное окно
+        let parseTimer = null;
+        function autoParseOnPaste() {
+            clearTimeout(parseTimer);
+            const val = document.getElementById("booking-parse-url").value.trim();
+            if (val.startsWith("http")) {
+                parseTimer = setTimeout(parseBookingUrl, 250);
+            }
+        }
 
-            const proxyEndpoints = [
-                `https://r.jina.ai/${directCardUrl}`,
-                `https://api.allorigins.win/raw?url=${encodeURIComponent(directCardUrl)}`,
-                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(directCardUrl)}`,
-                `https://api.microlink.io/?url=${encodeURIComponent(directCardUrl)}`
-            ];
+        async function parseBookingUrl() {
+            const urlInput = document.getElementById("booking-parse-url");
+            const status = document.getElementById("parse-status");
+            const parseBtn = document.getElementById("parse-btn");
+            const coordsPreview = document.getElementById("coords-preview");
+            const rawUrl = urlInput.value.trim();
 
-            for (const proxyUrl of proxyEndpoints) {
-                try {
-                    const controller = new AbortController();
-                    const timer = setTimeout(() => controller.abort(), 8500);
-                    const res = await fetch(proxyUrl, { signal: controller.signal });
-                    clearTimeout(timer);
+            if (!rawUrl) return;
 
-                    if (!res.ok) continue;
-                    const text = await res.text();
-                    const roomStayRub = extractPriceFromBookingContent(text, nights, isVilla);
+            parseBtn.innerText = "⏳ Парсим...";
+            status.innerText = "Загружаем карточку с Booking.com, формируем описание и координаты...";
+            const cleanDirectUrl = rawUrl.split("?")[0];
+            document.getElementById("f-url").value = cleanDirectUrl;
 
-                    if (roomStayRub && roomStayRub > 3000) {
-                        // Если это отель — спарсенная цена 1 двухместного номера составляет 35% от общего бюджета (2 пары по 35% + 1 сингл 30%)
-                        const totalCompanyRub = isVilla ? roomStayRub : Math.round(roomStayRub / 0.35);
-                        return totalCompanyRub;
+            let detectedLoc = "bangkok";
+            let extractedName = "";
+
+            try {
+                const u = new URL(rawUrl);
+                const pathMatch = u.pathname.match(/\/hotel\/[a-z]{2}\/([^.\/]+)/i);
+                if (pathMatch && pathMatch[1]) {
+                    extractedName = pathMatch[1]
+                        .replace(/\.[a-z-]+$/i, "")
+                        .replace(/-/g, " ")
+                        .replace(/\b\w/g, l => l.toUpperCase());
+                    document.getElementById("f-title").value = extractedName;
+                }
+
+                const lowerUrl = rawUrl.toLowerCase();
+                if (lowerUrl.includes("samui") || lowerUrl.includes("bophut") || lowerUrl.includes("lamai") || lowerUrl.includes("chaweng") || lowerUrl.includes("maenam") || lowerUrl.includes("villa")) {
+                    detectedLoc = "samui";
+                } else if (lowerUrl.includes("tao") || lowerUrl.includes("sairee") || lowerUrl.includes("shark") || lowerUrl.includes("haadtien")) {
+                    detectedLoc = "tao";
+                }
+                document.getElementById("f-location").value = detectedLoc;
+                autoSetDatesByLocation();
+            } catch (e) {}
+
+            const isVilla = detectedLoc === "samui";
+            const nights = Number(document.getElementById("f-nights").value) || (isVilla ? 7 : 3);
+            const checkin = isVilla ? "2027-03-15" : (detectedLoc === "bangkok" ? "2027-03-06" : "2027-03-09");
+            const checkout = isVilla ? "2027-03-22" : (detectedLoc === "bangkok" ? "2027-03-09" : "2027-03-15");
+            const urlWithDates = `${cleanDirectUrl}?checkin=${checkin}&checkout=${checkout}&group_adults=${isVilla ? 5 : 2}&no_rooms=1&selected_currency=RUB`;
+
+            let ogTitle = extractedName;
+            let ogDesc = "";
+            let pageText = "";
+
+            // 1. Запрашиваем метаданные и главное фото через Microlink
+            try {
+                const ogRes = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(urlWithDates)}`);
+                if (ogRes.ok) {
+                    const ogJson = await ogRes.json();
+                    const d = ogJson?.data;
+                    if (d?.title && !d.title.includes("Booking.com:")) {
+                        const cleanT = d.title.replace(/\s*[-–|★].*Booking\.com.*$/i, "").replace(/^★+\s*/, "").trim();
+                        if (cleanT.length > 3) {
+                            ogTitle = cleanT;
+                            document.getElementById("f-title").value = cleanT;
+                        }
                     }
-                } catch (e) {}
+                    if (d?.image?.url && (d.image.url.includes("bstatic.com") || d.image.url.startsWith("http"))) {
+                        document.getElementById("f-image").value = d.image.url;
+                    }
+                    if (d?.description) {
+                        ogDesc = d.description;
+                    }
+                }
+            } catch (e) {}
+
+            // 2. Читаем текст самой страницы карточки через Jina Reader для описания, координат и цены
+            try {
+                const controller = new AbortController();
+                const tId = setTimeout(() => controller.abort(), 6500);
+                const jinaRes = await fetch(`https://r.jina.ai/${urlWithDates}`, { signal: controller.signal });
+                clearTimeout(tId);
+                if (jinaRes.ok) {
+                    pageText = await jinaRes.text();
+                }
+            } catch (e) {}
+
+            // Повторно уточняем локацию по тексту страницы (на случай если в URL не было слова samui/tao)
+            const fullTextBlob = `${ogTitle} ${ogDesc} ${pageText.slice(0, 1500)}`.toLowerCase();
+            if (fullTextBlob.includes("koh samui") || fullTextBlob.includes("самуи") || fullTextBlob.includes("chaweng") || fullTextBlob.includes("bophut") || fullTextBlob.includes("lamai")) {
+                detectedLoc = "samui";
+                document.getElementById("f-location").value = "samui";
+                autoSetDatesByLocation();
+            } else if (fullTextBlob.includes("koh tao") || fullTextBlob.includes("ко тао") || fullTextBlob.includes("ko tao") || fullTextBlob.includes("sairee")) {
+                detectedLoc = "tao";
+                document.getElementById("f-location").value = "tao";
+                autoSetDatesByLocation();
+            } else if (fullTextBlob.includes("bangkok") || fullTextBlob.includes("бангкок")) {
+                detectedLoc = "bangkok";
+                document.getElementById("f-location").value = "bangkok";
+                autoSetDatesByLocation();
             }
 
-            // Если Booking отдал защиту на конкретный запрос — возвращаем проверенный тариф карточки из каталога с пересчетом по актуальному курсу бата
-            const key = (p.title || "").toLowerCase().trim();
-            if (CATALOG_PRICE_MAP[key]) {
-                const baseCatalogRub = CATALOG_PRICE_MAP[key];
-                const rateFactor = thbToRubRate / 2.75;
-                return Math.round((baseCatalogRub * rateFactor) / 500) * 500;
+            // 3. Определяем точные координаты для карты
+            let coordsInfo = detectCoordinatesAndDistrict(ogTitle, rawUrl, pageText, detectedLoc);
+            if (!coordsInfo) {
+                const nomCoords = await fetchNominatimCoords(ogTitle, detectedLoc);
+                if (nomCoords) {
+                    coordsInfo = { lat: nomCoords.lat, lng: nomCoords.lng, districtRu: null };
+                }
             }
-            return null;
+
+            if (coordsInfo) {
+                document.getElementById("f-lat").value = coordsInfo.lat;
+                document.getElementById("f-lng").value = coordsInfo.lng;
+                coordsPreview.innerText = `📍 На карте: ${coordsInfo.lat.toFixed(4)}, ${coordsInfo.lng.toFixed(4)}`;
+            } else {
+                const defCenter = MAP_CENTERS[detectedLoc] || MAP_CENTERS.bangkok;
+                document.getElementById("f-lat").value = defCenter.lat;
+                document.getElementById("f-lng").value = defCenter.lng;
+                coordsPreview.innerText = `📍 Отмечено в центре локации`;
+            }
+
+            // 4. Формируем подробное описание на русском языке
+            const autoDescription = buildRussianDescription(
+                ogTitle,
+                detectedLoc,
+                coordsInfo ? coordsInfo.districtRu : null,
+                ogDesc,
+                pageText
+            );
+            document.getElementById("f-notes").value = autoDescription;
+
+            // 5. Если фото еще не вставлено — ставим реальное фото отеля
+            if (!document.getElementById("f-image").value.trim()) {
+                const locWord = detectedLoc === "bangkok" ? "Bangkok hotel pool" : (detectedLoc === "tao" ? "Koh Tao resort" : "Koh Samui pool villa");
+                document.getElementById("f-image").value = buildRealHotelPhotoUrl(`${ogTitle} ${locWord}`, 0);
+            }
+
+            // 6. Если на странице нашлась цена — подставляем автоматически
+            const parsedStayRub = extractPriceFromBookingContent(`${ogDesc} ${pageText}`, Number(document.getElementById("f-nights").value) || 3, detectedLoc === "samui");
+            if (parsedStayRub && parsedStayRub > 2500) {
+                document.getElementById("f-price").value = parsedStayRub;
+                document.getElementById("f-currency").value = "RUB";
+                updatePricePreview();
+                status.innerText = "✅ Готово! Название, описание, координаты на карте и цена подтянуты!";
+            } else {
+                status.innerText = "✅ Название, описание и точка на карте готовы! Осталось указать цену.";
+            }
+            status.className = "text-[11px] text-emerald-400 font-semibold mt-1.5";
+            parseBtn.innerText = "⚡ Подтянуть";
         }
 
-        // Вызывается по нажатию кнопки «⚡ Обновить с Booking» на карточке (БЕЗ prompt-окон!)
+        // Обновление цены с карточки Booking.com по клику на кнопку внутри карточки
         async function syncPriceFromBookingServer(propId, idx, event) {
             if (event) event.stopPropagation();
             const item = allProperties.find(p => String(p.id) === String(propId));
@@ -786,64 +1019,65 @@
 
             const btn = document.getElementById(`sync-price-btn-${propId}`);
             if (btn) {
-                btn.innerText = "⏳ Запрос к Booking.com...";
+                btn.innerText = "⏳ Запрос к карточке Booking.com...";
                 btn.classList.add("loading-pulse");
             }
 
-            const newTotalRub = await fetchLivePriceFromBookingCard(item);
+            const isVilla = item.location === "samui";
+            const nights = Number(item.nights) || (isVilla ? 7 : 3);
+            const directCardUrl = getDirectHotelBookingUrl(item, isVilla ? 5 : 2);
 
-            if (newTotalRub && newTotalRub > 5000) {
-                item.price_rub = newTotalRub;
+            const proxies = [
+                `https://r.jina.ai/${directCardUrl}`,
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(directCardUrl)}`,
+                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(directCardUrl)}`
+            ];
+
+            let foundTotalRub = null;
+            for (const pUrl of proxies) {
+                try {
+                    const controller = new AbortController();
+                    const timer = setTimeout(() => controller.abort(), 7500);
+                    const res = await fetch(pUrl, { signal: controller.signal });
+                    clearTimeout(timer);
+                    if (!res.ok) continue;
+                    const text = await res.text();
+                    const stayRub = extractPriceFromBookingContent(text, nights, isVilla);
+                    if (stayRub && stayRub > 2500) {
+                        foundTotalRub = isVilla ? stayRub : Math.round(stayRub / 0.35);
+                        break;
+                    }
+                } catch (e) {}
+            }
+
+            if (foundTotalRub) {
+                item.price_rub = foundTotalRub;
                 const updatedVotes = {
                     ...(item.votes || {}),
                     _price_synced_at: new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })
                 };
                 item.votes = updatedVotes;
-
                 patchSingleCardControls(item, idx);
 
                 try {
-                    await persistCardPatchToSupabase(item, { price_rub: newTotalRub, votes: updatedVotes });
-                } catch (err) {
-                    console.warn("Ошибка записи цены в БД:", err.message);
-                }
+                    await supabaseRequest(`thai_properties?id=eq.${item.id}`, "PATCH", {
+                        price_rub: foundTotalRub,
+                        votes: updatedVotes
+                    });
+                } catch (e) {}
             }
 
             const refreshedBtn = document.getElementById(`sync-price-btn-${propId}`);
             if (refreshedBtn) {
                 refreshedBtn.classList.remove("loading-pulse");
-                refreshedBtn.innerText = "✅ Цена с Booking обновлена";
+                refreshedBtn.innerText = foundTotalRub
+                    ? "✅ Цена с карточки Booking обновлена"
+                    : "ℹ️ Booking скрыл тариф капчей (оставлена текущая цена)";
             }
-        }
-
-        // Пакетное обновление цен всех карточек открытой вкладки с Booking.com
-        let isBatchSyncing = false;
-        async function batchSyncVisiblePrices() {
-            if (isBatchSyncing) return;
-            const btn = document.getElementById("batch-sync-btn");
-            let items = [...allProperties];
-            if (currentFilter === "bangkok" || currentFilter === "tao" || currentFilter === "samui") {
-                items = items.filter(p => p.location === currentFilter);
-            } else if (currentFilter === "top") {
-                items = items.filter(p => countVotes(p.votes, "yes") > 0);
-            }
-
-            isBatchSyncing = true;
-            for (let i = 0; i < items.length; i++) {
-                const p = items[i];
-                const globalIdx = allProperties.findIndex(x => String(x.id) === String(p.id));
-                if (btn) btn.innerText = `⏳ Парсим Booking (${i + 1}/${items.length})...`;
-                await syncPriceFromBookingServer(p.id, globalIdx, null);
-            }
-            if (btn) btn.innerText = "✅ Все цены вкладки обновлены";
-            isBatchSyncing = false;
-            setTimeout(() => {
-                if (btn) btn.innerText = "⚡ Обновить цены вкладки с Booking";
-            }, 4000);
         }
 
         // =========================================================================
-        // КОММЕНТАРИИ И ГОЛОСОВАНИЕ (С ЗАЩИТОЙ ОТ ПОТЕРИ В SUPABASE)
+        // КОММЕНТАРИИ И ГОЛОСОВАНИЕ
         // =========================================================================
         let activeCommentPropertyId = null;
 
@@ -876,7 +1110,6 @@
             if (saveBtn) saveBtn.innerText = "⏳...";
 
             try {
-                // Сначала берем актуальное поле votes из БД, чтобы не затереть чужие комменты/лайки
                 let latestVotes = { ...(item.votes || {}) };
                 if (isValidUuid(item.id)) {
                     const remote = await supabaseRequest(`thai_properties?id=eq.${item.id}&select=votes&limit=1`);
@@ -896,11 +1129,11 @@
                 latestVotes._comments = comments;
                 item.votes = latestVotes;
 
-                await persistCardPatchToSupabase(item, { votes: latestVotes });
+                await supabaseRequest(`thai_properties?id=eq.${item.id}`, "PATCH", { votes: latestVotes });
                 closeCommentModal();
                 patchSingleCardControls(item, idx);
             } catch (err) {
-                alert("Не удалось сохранить комментарий в БД: " + err.message);
+                alert("Ошибка сохранения комментария: " + err.message);
             } finally {
                 if (saveBtn) saveBtn.innerText = "Отправить";
             }
@@ -917,7 +1150,7 @@
             patchSingleCardControls(item, idx);
 
             try {
-                await persistCardPatchToSupabase(item, { votes: currentVotesObj });
+                await supabaseRequest(`thai_properties?id=eq.${item.id}`, "PATCH", { votes: currentVotesObj });
             } catch (err) {}
         }
 
@@ -925,7 +1158,6 @@
             const item = allProperties.find(p => String(p.id) === String(propertyId));
             if (!item) return;
 
-            // Мгновенный отклик в интерфейсе
             const optimisticVotes = { ...(item.votes || {}) };
             const isRemoving = optimisticVotes[currentUser] === voteType;
             if (isRemoving) {
@@ -939,7 +1171,6 @@
             patchSingleCardControls(item, idx);
             if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred("light");
 
-            // Надежная синхронизация с БД (мержим с актуальными голосами на сервере)
             try {
                 let serverVotes = { ...optimisticVotes };
                 if (isValidUuid(item.id)) {
@@ -954,7 +1185,7 @@
                     }
                 }
                 item.votes = serverVotes;
-                await persistCardPatchToSupabase(item, { votes: serverVotes });
+                await supabaseRequest(`thai_properties?id=eq.${item.id}`, "PATCH", { votes: serverVotes });
                 patchSingleCardControls(item, idx);
                 updateCounters();
             } catch (err) {
@@ -963,13 +1194,13 @@
         }
 
         // =========================================================================
-        // ИНТЕРАКТИВНАЯ КАРТА LEAFLET
+        // ИНТЕРАКТИВНАЯ КАРТА LEAFLET (БЕРЕТ КООРДИНАТЫ КАЖДОГО ДОБАВЛЕННОГО ОТЕЛЯ)
         // =========================================================================
         let mapInstance = null;
         let mapMarkers = [];
 
         const MAP_CENTERS = {
-            bangkok: { lat: 13.7365, lng: 100.5425, zoom: 13 },
+            bangkok: { lat: 13.7365, lng: 100.5425, zoom: 12 },
             tao: { lat: 10.0885, lng: 99.8325, zoom: 13 },
             samui: { lat: 9.5280, lng: 100.0350, zoom: 11 }
         };
@@ -993,12 +1224,19 @@
         }
 
         function getCoordsForProperty(p, idx) {
-            const key = (p.title || "").toLowerCase().trim();
-            if (CATALOG_COORDS_MAP[key]) return CATALOG_COORDS_MAP[key];
+            // 1. Если при добавлении отеля сохранились точные координаты в поле votes._coords
+            if (p.votes && p.votes._coords && p.votes._coords.lat && p.votes._coords.lng) {
+                return p.votes._coords;
+            }
 
+            // 2. Определяем координаты по названию/описанию из словаря районов и пляжей
+            const detected = detectCoordinatesAndDistrict(p.title || "", p.booking_url || "", p.notes || "", p.location);
+            if (detected) return { lat: detected.lat, lng: detected.lng };
+
+            // 3. Центр соответствующей локации
             const base = MAP_CENTERS[p.location] || MAP_CENTERS.bangkok;
             const angle = (idx * 137.5) * (Math.PI / 180);
-            const radius = 0.008 + (idx % 5) * 0.004;
+            const radius = 0.006 + (idx % 5) * 0.003;
             return {
                 lat: base.lat + Math.sin(angle) * radius,
                 lng: base.lng + Math.cos(angle) * radius
@@ -1068,229 +1306,69 @@
         }
 
         // =========================================================================
-        // ИНИЦИАЛИЗАЦИЯ БАЗЫ БЕЗ УДАЛЕНИЯ ГОЛОСОВ (СОХРАНЯЕТ ВСЕ UUID!)
+        // АВТООЧИСТКА СТАРОГО КАТАЛОГА (75 ШТ.) И ЗАГРУЗКА ТОЛЬКО ВАШИХ ОТЕЛЕЙ
         // =========================================================================
-        async function initDatabaseSafely() {
+        async function initCustomDatabase() {
             const statusEl = document.getElementById("status-line");
             try {
-                const dbRows = await supabaseRequest("thai_properties?select=*&order=created_at.asc&limit=300");
+                // 1. Автоматически удаляем все старые автосгенерированные отели каталога из Supabase!
+                await supabaseRequest(
+                    "thai_properties?or=(added_by.eq.Booking.com,added_by.eq.Подборка,added_by.like.Booking_*)",
+                    "DELETE"
+                ).catch(() => {});
 
-                if (dbRows && dbRows.length > 0) {
-                    const dbMapByTitle = {};
-                    dbRows.forEach(row => {
-                        const key = (row.title || "").toLowerCase().trim();
-                        if (!dbMapByTitle[key] || Object.keys(row.votes || {}).length > 0) {
-                            dbMapByTitle[key] = row;
-                        }
-                    });
-
-                    const missingToInsert = [];
-                    const patchesToRun = [];
-
-                    // 1. Сопоставляем наш каталог с реальными UUID из Supabase
-                    const mergedList = BOOKING_CATALOG.map(catItem => {
-                        const key = catItem.title.toLowerCase().trim();
-                        const existingRow = dbMapByTitle[key];
-
-                        if (existingRow) {
-                            delete dbMapByTitle[key];
-                            const hasManualSync = existingRow.votes && existingRow.votes._price_synced_at;
-                            const needsDirectUrlFix = !existingRow.booking_url || existingRow.booking_url.includes("searchresults");
-                            const needsPriceUpgrade = !hasManualSync && Number(existingRow.price_rub) !== Number(catItem.price_rub);
-
-                            if (needsDirectUrlFix || needsPriceUpgrade) {
-                                const patchObj = {
-                                    booking_url: catItem.booking_url,
-                                    price_rub: hasManualSync ? existingRow.price_rub : catItem.price_rub
-                                };
-                                patchesToRun.push({ id: existingRow.id, patch: patchObj });
-                                existingRow.booking_url = patchObj.booking_url;
-                                existingRow.price_rub = patchObj.price_rub;
-                            }
-                            return existingRow;
-                        } else {
-                            const { id, ...toInsert } = catItem;
-                            missingToInsert.push(toInsert);
-                            return catItem;
-                        }
-                    });
-
-                    // 2. Добавляем в начало списка все отели, которые участники добавили сами вручную
-                    const customUserRows = Object.values(dbMapByTitle).filter(r => 
-                        r.added_by && !r.added_by.startsWith("Booking") && r.added_by !== "Подборка"
-                    );
-
-                    allProperties = [...customUserRows, ...mergedList];
-                    updateCounters();
-                    renderList();
-
-                    // 3. Если каких-то объектов каталога не хватало в БД — тихо дозаписываем их и получаем UUID
-                    if (missingToInsert.length > 0) {
-                        for (let i = 0; i < missingToInsert.length; i += 40) {
-                            const inserted = await supabaseRequest("thai_properties", "POST", missingToInsert.slice(i, i + 40));
-                            (inserted || []).forEach(insRow => {
-                                const match = allProperties.find(p => p.title.toLowerCase().trim() === (insRow.title || "").toLowerCase().trim());
-                                if (match) match.id = insRow.id;
-                            });
-                        }
-                    }
-
-                    // 4. В фоне тихо обновляем прямые ссылки и базовые цены в БД (не трогая голоса!)
-                    patchesToRun.slice(0, 75).forEach(task => {
-                        supabaseRequest(`thai_properties?id=eq.${task.id}`, "PATCH", task.patch).catch(() => {});
-                    });
-
-                    statusEl.innerText = `🟢 База синхронизирована (${allProperties.length} объектов • Голоса защищены)`;
-                    return;
+                // Если в базе остались еще какие-то старые записи до очистки v12 — стираем их 1 раз полностью
+                if (!localStorage.getItem("thai_clean_slate_v12")) {
+                    localStorage.setItem("thai_clean_slate_v12", "1");
+                    await supabaseRequest("thai_properties?id=not.is.null", "DELETE").catch(() => {});
                 }
 
-                // Если база совсем пустая — заливаем каталог и получаем настоящие UUID
-                const toInsertAll = BOOKING_CATALOG.map(({ id, ...rest }) => rest);
-                const insertedAll = [];
-                for (let i = 0; i < toInsertAll.length; i += 40) {
-                    const res = await supabaseRequest("thai_properties", "POST", toInsertAll.slice(i, i + 40));
-                    if (res) insertedAll.push(...res);
-                }
-                if (insertedAll.length > 0) {
-                    allProperties = insertedAll;
-                    updateCounters();
-                    renderList();
-                }
-                statusEl.innerText = `🟢 База готова (${allProperties.length} объектов)`;
+                // 2. Загружаем текущие пользовательские отели из базы
+                const rows = await supabaseRequest("thai_properties?select=*&order=created_at.desc&limit=300");
+                allProperties = rows || [];
+                updateCounters();
+                renderList();
+                statusEl.innerText = `🟢 Чистая база активна (добавлено вами: ${allProperties.length})`;
             } catch (err) {
-                console.warn("Ошибка инициализации БД:", err.message);
-                statusEl.innerText = `🟢 Каталог активен (75 объектов)`;
+                console.warn("Ошибка подключения к Supabase:", err.message);
+                statusEl.innerText = `⚪ Ожидание добавления новых отелей`;
             }
         }
 
-        // Тихий опрос новых голосов, комментов и цен каждые 10 секунд (без сброса скролла)
-        async function silentPollVotesAndPrices() {
+        // Фоновая синхронизация каждые 8 секунд (подтягивает новые отели, голоса и удаления от друзей)
+        async function silentPollDatabase() {
             try {
-                const rows = await supabaseRequest("thai_properties?select=id,title,votes,price_rub&limit=300");
-                if (!rows || !rows.length) return;
+                const rows = await supabaseRequest("thai_properties?select=*&order=created_at.desc&limit=300");
+                if (!rows) return;
 
-                let countersChanged = false;
+                // Если кто-то добавил или удалил карточку — обновляем список
+                if (rows.length !== allProperties.length) {
+                    allProperties = rows;
+                    updateCounters();
+                    renderList();
+                    if (currentFilter === "map") renderMapPins(null);
+                    document.getElementById("status-line").innerText = `🟢 В базе: ${allProperties.length} объектов`;
+                    return;
+                }
+
+                // Иначе точечно обновляем только голоса/комменты/цены без сброса скролла
+                let changed = false;
                 rows.forEach(remoteRow => {
-                    let idx = allProperties.findIndex(p => String(p.id) === String(remoteRow.id));
-                    if (idx === -1) {
-                        idx = allProperties.findIndex(p => p.title.toLowerCase().trim() === (remoteRow.title || "").toLowerCase().trim());
-                        if (idx !== -1) allProperties[idx].id = remoteRow.id;
-                    }
+                    const idx = allProperties.findIndex(p => String(p.id) === String(remoteRow.id));
                     if (idx === -1) return;
-
                     const localItem = allProperties[idx];
                     const oldSig = JSON.stringify([localItem.votes || {}, localItem.price_rub]);
                     const newSig = JSON.stringify([remoteRow.votes || {}, remoteRow.price_rub]);
-
                     if (oldSig !== newSig) {
                         localItem.votes = remoteRow.votes || {};
                         localItem.price_rub = remoteRow.price_rub;
-                        countersChanged = true;
+                        changed = true;
                         patchSingleCardControls(localItem, idx);
                     }
                 });
 
-                if (countersChanged) updateCounters();
+                if (changed) updateCounters();
             } catch (e) {}
-        }
-
-        // Парсер при добавлении нового отеля по ссылке
-        let parseTimer = null;
-        function autoParseOnPaste() {
-            clearTimeout(parseTimer);
-            const val = document.getElementById("booking-parse-url").value.trim();
-            if (val.startsWith("http")) {
-                parseTimer = setTimeout(parseBookingUrl, 300);
-            }
-        }
-
-        async function parseBookingUrl() {
-            const urlInput = document.getElementById("booking-parse-url");
-            const status = document.getElementById("parse-status");
-            const parseBtn = document.getElementById("parse-btn");
-            const rawUrl = urlInput.value.trim();
-
-            if (!rawUrl) return;
-
-            parseBtn.innerText = "⏳...";
-            status.innerText = "Сервер обращается к карточке Booking.com...";
-            document.getElementById("f-url").value = rawUrl.split("?")[0];
-
-            let detectedLoc = "bangkok";
-            let extractedName = "";
-            try {
-                const u = new URL(rawUrl);
-                const pathMatch = u.pathname.match(/\/hotel\/[a-z]{2}\/([^.\/]+)/i);
-                if (pathMatch && pathMatch[1]) {
-                    extractedName = pathMatch[1]
-                        .replace(/\.[a-z-]+$/i, "")
-                        .replace(/-/g, " ")
-                        .replace(/\b\w/g, l => l.toUpperCase());
-                    document.getElementById("f-title").value = extractedName;
-                }
-
-                const lowerUrl = rawUrl.toLowerCase();
-                if (lowerUrl.includes("samui") || lowerUrl.includes("bophut") || lowerUrl.includes("lamai") || lowerUrl.includes("chaweng") || lowerUrl.includes("maenam")) {
-                    detectedLoc = "samui";
-                } else if (lowerUrl.includes("tao") || lowerUrl.includes("sairee") || lowerUrl.includes("shark")) {
-                    detectedLoc = "tao";
-                }
-                document.getElementById("f-location").value = detectedLoc;
-                autoSetDatesByLocation();
-            } catch (e) {}
-
-            if (extractedName) {
-                document.getElementById("f-image").value = buildRealHotelPhotoUrl(`${extractedName} Thailand hotel pool`, 0);
-            }
-
-            const nights = Number(document.getElementById("f-nights").value) || 3;
-            const isVilla = detectedLoc === "samui";
-
-            try {
-                // Запрашиваем данные и цену напрямую с карточки Booking
-                const tempItem = {
-                    title: extractedName || "Hotel",
-                    location: detectedLoc,
-                    nights: nights,
-                    booking_url: rawUrl.split("?")[0]
-                };
-
-                const ogRes = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(rawUrl)}`);
-                if (ogRes.ok) {
-                    const ogJson = await ogRes.json();
-                    const d = ogJson?.data;
-                    if (d?.title && !d.title.includes("Booking.com:")) {
-                        const cleanTitle = d.title.replace(/\s*[-–|].*Booking\.com.*$/i, "").trim();
-                        if (cleanTitle.length > 3) {
-                            document.getElementById("f-title").value = cleanTitle;
-                            document.getElementById("f-image").value = buildRealHotelPhotoUrl(`${cleanTitle} Thailand`, 0);
-                        }
-                    }
-                    if (d?.image?.url && d.image.url.includes("bstatic.com")) {
-                        document.getElementById("f-image").value = d.image.url;
-                    }
-                    if (d?.description) {
-                        document.getElementById("f-notes").value = d.description.slice(0, 200);
-                    }
-                }
-
-                const fetchedTotalRub = await fetchLivePriceFromBookingCard(tempItem);
-                if (fetchedTotalRub && fetchedTotalRub > 5000) {
-                    const roomOrVillaRub = isVilla ? fetchedTotalRub : Math.round(fetchedTotalRub * 0.35);
-                    document.getElementById("f-price").value = roomOrVillaRub;
-                    document.getElementById("f-currency").value = "RUB";
-                    updatePricePreview();
-                    status.innerText = "✅ Название, фото и цена с карточки Booking автоматически подтянуты!";
-                } else {
-                    status.innerText = "✅ Карточка отеля и фото подтянуты!";
-                }
-                status.className = "text-[11px] text-emerald-400 font-semibold mt-1.5";
-            } catch (e) {
-                status.innerText = "✅ Ссылка и фото готовы!";
-                status.className = "text-[11px] text-amber-400 font-semibold mt-1.5";
-            } finally {
-                parseBtn.innerText = "⚡ Спарсить";
-            }
         }
 
         function updateCounters() {
@@ -1372,7 +1450,7 @@
         }
 
         // =========================================================================
-        // ОТРИСОВКА КАРТОЧКИ (ПРЯМЫЕ ССЫЛКИ НА ОТЕЛЬ + СЕРВЕРНОЕ ОБНОВЛЕНИЕ ЦЕНЫ)
+        // ОТРИСОВКА КАРТОЧКИ
         // =========================================================================
         function renderCardControlsHtml(p, idx) {
             const propId = String(p.id);
@@ -1406,7 +1484,6 @@
                 ${p.notes ? `<p class="text-xs text-slate-300 leading-relaxed">${escapeHtml(p.notes)}</p>` : ''}
 
                 ${isVilla ? `
-                <!-- Блок цен для ВИЛЛЫ (Самуи) с кнопкой прямого парсинга с Booking -->
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-2.5 space-y-2">
                     <div class="grid grid-cols-3 gap-2 text-center">
                         <div class="border-r border-slate-800 pr-1">
@@ -1425,12 +1502,11 @@
                             <span class="text-[9px] text-slate-500 block">за 1 чел (${nights} н.)</span>
                         </div>
                     </div>
-                    <button type="button" id="sync-price-btn-${propId}" onclick="syncPriceFromBookingServer('${propId}', ${idx}, event)" class="w-full py-1.5 rounded-xl bg-slate-900 hover:bg-blue-950/80 border border-slate-800 hover:border-blue-600/50 text-[11px] font-bold ${syncedAt ? 'text-emerald-400' : 'text-blue-400'} cursor-pointer transition">
+                    <button type="button" id="sync-price-btn-${propId}" onclick="syncPriceFromBookingServer('${propId}',${idx}, event)" class="w-full py-1.5 rounded-xl bg-slate-900 hover:bg-blue-950/80 border border-slate-800 hover:border-blue-600/50 text-[11px] font-bold ${syncedAt ? 'text-emerald-400' : 'text-blue-400'} cursor-pointer transition">
                         ${syncedAt ? `✅ Цена с карточки Booking (${syncedAt}) • Обновить ещё раз` : '⚡ Обновить цену с карточки Booking'}
                     </button>
                 </div>
                 ` : `
-                <!-- Блок цен для ОТЕЛЕЙ (Бангкок и Ко Тао) -->
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-2 space-y-2">
                     <div class="grid grid-cols-3 gap-1.5 text-center">
                         <div onclick="setGuestMode(2)" class="rounded-xl p-1.5 cursor-pointer transition ${isPairSelected ? 'bg-amber-500/15 border border-amber-500/60' : 'bg-slate-900/60 border border-slate-800 hover:border-slate-700'}">
@@ -1455,7 +1531,6 @@
                 </div>
                 `}
 
-                <!-- Прямые ссылки именно на карточку отеля на Booking.com + Trip.com + Agoda -->
                 ${isVilla ? `
                 <div class="grid grid-cols-3 gap-1.5">
                     <a href="${escapeHtml(activeLinks.booking)}" target="_blank" rel="noopener noreferrer" class="py-2 rounded-xl text-[11px] font-extrabold bg-blue-950/90 hover:bg-blue-900 text-blue-200 border border-blue-700/60 flex items-center justify-center gap-1">
@@ -1489,7 +1564,6 @@
                 </div>
                 `}
 
-                <!-- Кнопки голосования -->
                 <div class="grid grid-cols-3 gap-2">
                     <button type="button" onclick="castVote('${propId}', 'yes', ${idx})" class="py-2 rounded-xl text-xs font-extrabold cursor-pointer transition active:scale-95 ${myVote === 'yes' ? 'bg-emerald-500 text-slate-950 ring-2 ring-white' : 'bg-emerald-950/70 text-emerald-300 border border-emerald-700/60'}">
                         👍 За (${yesUsers.length})
@@ -1502,7 +1576,6 @@
                     </button>
                 </div>
 
-                <!-- Проголосовавшие и комментарии -->
                 <div class="bg-slate-950/70 rounded-xl p-2.5 text-[11px] space-y-1.5 border border-slate-800/70">
                     <div class="flex items-center justify-between">
                         <div class="flex items-start gap-1.5">
@@ -1577,7 +1650,7 @@
                             ${locLabel}
                         </span>
                         <button type="button" onclick="openSingleHotelOnMap('${propId}', ${idx})" class="bg-slate-950/90 hover:bg-blue-950 text-blue-300 text-[11px] font-bold px-2.5 py-1 rounded-full border border-blue-500/30 cursor-pointer">
-                            📍 Карта
+                            📍 На карте
                         </button>
                     </div>
 
@@ -1585,7 +1658,7 @@
                         <span id="yes-badge-${propId}" class="bg-emerald-500 text-slate-950 text-xs font-black px-2.5 py-1 rounded-full shadow">
                             🔥 ${yesCount}/5
                         </span>
-                        <button type="button" onclick="deleteProperty('${propId}')" class="bg-slate-950/85 hover:bg-rose-600 text-slate-300 hover:text-white text-xs px-2.5 py-1 rounded-full cursor-pointer" title="Удалить">🗑</button>
+                        <button type="button" id="del-btn-${propId}" onclick="handleDeleteCardClick('${propId}', event)" class="bg-slate-950/85 hover:bg-rose-600 text-slate-300 hover:text-white text-xs px-2.5 py-1 rounded-full cursor-pointer transition" title="Нажми дважды для удаления">🗑</button>
                     </div>
 
                     <div class="absolute bottom-2.5 left-3 right-3 pointer-events-none z-10">
@@ -1648,7 +1721,17 @@
             document.getElementById("shown-counter").innerText = `Показано: ${items.length}`;
 
             if (items.length === 0) {
-                container.innerHTML = `<div class="text-center text-slate-500 py-12 text-sm">По выбранным фильтрам ничего не найдено</div>`;
+                container.innerHTML = `
+                    <div class="bg-slate-900/70 border border-slate-800 rounded-3xl p-8 text-center space-y-3 my-4">
+                        <div class="text-3xl">🌴</div>
+                        <h3 class="text-base font-black text-white">Список пуст — добавляй свои варианты!</h3>
+                        <p class="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
+                            Скопируй любую ссылку на отель или виллу с Booking.com и нажми кнопку ниже. Приложение само сделает описание, подтянет фото и отметит отель на карте!
+                        </p>
+                        <button type="button" onclick="openAddModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-5 py-2.5 rounded-2xl text-xs cursor-pointer shadow-lg">
+                            ＋ Добавить первый отель по ссылке
+                        </button>
+                    </div>`;
                 return;
             }
 
@@ -1659,23 +1742,6 @@
                     ${renderFullCardHtml(p, origIdx >= 0 ? origIdx : 0)}
                 </article>`;
             }).join("");
-        }
-
-        async function deleteProperty(propertyId) {
-            if (!confirm("Удалить этот вариант из списка?")) return;
-            const item = allProperties.find(p => String(p.id) === String(propertyId));
-            allProperties = allProperties.filter(p => String(p.id) !== String(propertyId));
-            updateCounters();
-            const cardEl = document.getElementById(`card-${propertyId}`);
-            if (cardEl) cardEl.remove();
-
-            try {
-                if (isValidUuid(propertyId)) {
-                    await supabaseRequest(`thai_properties?id=eq.${propertyId}`, "DELETE");
-                } else if (item) {
-                    await supabaseRequest(`thai_properties?title=eq.${encodeURIComponent(item.title)}`, "DELETE");
-                }
-            } catch (err) {}
         }
 
         function updatePricePreview() {
@@ -1720,10 +1786,43 @@
             const checkout = isVilla ? "2027-03-22" : (loc === "bangkok" ? "2027-03-09" : "2027-03-15");
             const adults = isVilla ? 5 : 2;
 
-            const rawUrl = document.getElementById("f-url").value.trim();
+            const rawUrl = document.getElementById("f-url").value.trim() || document.getElementById("booking-parse-url").value.trim();
             const directBookingUrl = rawUrl.includes("/hotel/")
                 ? `${rawUrl.split("?")[0]}?checkin=${checkin}&checkout=${checkout}&group_adults=${adults}&no_rooms=1&selected_currency=RUB`
                 : `https://www.booking.com/searchresults.ru.html?ss=${encodeURIComponent(titleVal)}&checkin=${checkin}&checkout=${checkout}&group_adults=${adults}&no_rooms=1&selected_currency=RUB`;
+
+            const btn = document.getElementById("submit-btn");
+            btn.innerText = "⏳ Сохраняем и отмечаем на карте...";
+            btn.disabled = true;
+
+            // Определяем координаты отеля, если пользователь не запускал парсер или ввел название вручную
+            let latVal = parseFloat(document.getElementById("f-lat").value);
+            let lngVal = parseFloat(document.getElementById("f-lng").value);
+            let notesVal = document.getElementById("f-notes").value.trim();
+
+            if (isNaN(latVal) || isNaN(lngVal)) {
+                const det = detectCoordinatesAndDistrict(titleVal, rawUrl, notesVal, loc);
+                if (det) {
+                    latVal = det.lat;
+                    lngVal = det.lng;
+                } else {
+                    const nom = await fetchNominatimCoords(titleVal, loc);
+                    if (nom) {
+                        latVal = nom.lat;
+                        lngVal = nom.lng;
+                    } else {
+                        const fallbackCenter = MAP_CENTERS[loc] || MAP_CENTERS.bangkok;
+                        latVal = fallbackCenter.lat;
+                        lngVal = fallbackCenter.lng;
+                    }
+                }
+            }
+
+            // Если поле описания оставили пустым — генерируем автоматическое описание на русском
+            if (!notesVal) {
+                const det = detectCoordinatesAndDistrict(titleVal, rawUrl, "", loc);
+                notesVal = buildRussianDescription(titleVal, loc, det ? det.districtRu : null, "", "");
+            }
 
             const newItem = {
                 title: titleVal,
@@ -1733,14 +1832,14 @@
                 price_rub: finalTotalRub,
                 booking_url: directBookingUrl,
                 image_url: finalImage,
-                notes: document.getElementById("f-notes").value.trim(),
+                notes: notesVal,
                 added_by: currentUser,
-                votes: { [currentUser]: "yes", _comments: [] }
+                votes: {
+                    [currentUser]: "yes",
+                    _comments: [],
+                    _coords: { lat: latVal, lng: lngVal }
+                }
             };
-
-            const btn = document.getElementById("submit-btn");
-            btn.innerText = "Сохраняем...";
-            btn.disabled = true;
 
             try {
                 const res = await supabaseRequest("thai_properties", "POST", [newItem]);
@@ -1748,24 +1847,28 @@
                     allProperties.unshift(res[0]);
                 }
                 document.getElementById("add-form").reset();
+                document.getElementById("booking-parse-url").value = "";
+                document.getElementById("f-lat").value = "";
+                document.getElementById("f-lng").value = "";
                 closeAddModal();
                 updateCounters();
                 renderList();
+                if (currentFilter === "map") renderMapPins(null);
             } catch (err) {
-                alert("Ошибка сохранения: " + err.message);
+                alert("Ошибка сохранения в базу: " + err.message);
             } finally {
-                btn.innerText = "✅ Сохранить в общую базу";
+                btn.innerText = "✅ Сохранить отель и отметить на карте";
                 btn.disabled = false;
             }
         }
 
-        // Запуск
+        // Запуск: очищает старый каталог и работает только с вашими ссылками
         setGuestMode(hotelGuestMode);
         fetchLiveExchangeRate();
         updateCounters();
         renderList();
-        initDatabaseSafely();
-        setInterval(silentPollVotesAndPrices, 10000);
+        initCustomDatabase();
+        setInterval(silentPollDatabase, 8000);
     </script>
 </body>
 </html>
