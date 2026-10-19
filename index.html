@@ -7,7 +7,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        body { background-color: #020617; color: #f1f5f9; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         #map { height: 68vh; width: 100%; border-radius: 1.25rem; z-index: 10; border: 1px solid #1e293b; background: #0f172a; }
@@ -27,15 +27,15 @@
                 <div class="flex items-center gap-1.5 flex-wrap">
                     <h1 class="text-sm sm:text-base font-black tracking-tight text-amber-400">🌴 Thai Trip 2027</h1>
                     <span id="total-counter" class="text-[11px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-bold">0</span>
-                    <button type="button" onclick="changeExchangeRate()" id="rate-badge" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 px-1.5 py-0.5 rounded-lg font-bold cursor-pointer" title="Изменить курс бата к рублю">
+                    <button type="button" onclick="changeExchangeRate()" id="rate-badge" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 px-1.5 py-0.5 rounded-lg font-bold cursor-pointer">
                         1฿ = 2.75₽ ✎
                     </button>
                 </div>
-                <p id="status-line" class="text-[10px] text-emerald-400 font-medium mt-0.5">⚡ Синхронизация базы...</p>
+                <p id="status-line" class="text-[10px] text-emerald-400 font-medium mt-0.5">🟢 Готово к работе</p>
             </div>
 
             <div class="flex items-center gap-1.5 shrink-0">
-                <button type="button" id="wipe-all-btn" onclick="handleWipeAllClick()" class="bg-slate-900 hover:bg-rose-950 border border-slate-700 hover:border-rose-600 text-slate-400 hover:text-rose-300 px-2 py-1.5 rounded-xl text-[11px] font-bold cursor-pointer transition" title="Очистить всю базу">
+                <button type="button" id="wipe-all-btn" onclick="handleWipeAllClick()" class="bg-slate-900 hover:bg-rose-950 border border-slate-700 hover:border-rose-600 text-slate-400 hover:text-rose-300 px-2 py-1.5 rounded-xl text-[11px] font-bold cursor-pointer transition">
                     🗑 Очистить
                 </button>
                 <button type="button" onclick="changeUserName()" class="flex items-center gap-1 bg-slate-800 hover:bg-slate-700 active:scale-95 border border-slate-700 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-200 cursor-pointer">
@@ -108,8 +108,19 @@
             <p class="text-[11px] text-slate-400 text-center">Все добавленные вами отели и виллы автоматически отображаются на карте</p>
         </div>
 
-        <!-- Список карточек -->
-        <div id="properties-list" class="space-y-4"></div>
+        <!-- Список карточек (изначально сразу готов к работе) -->
+        <div id="properties-list" class="space-y-4">
+            <div class="bg-slate-900/70 border border-slate-800 rounded-3xl p-8 text-center space-y-3 my-4">
+                <div class="text-3xl">🌴</div>
+                <h3 class="text-base font-black text-white">Список пуст — добавляй свои варианты!</h3>
+                <p class="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
+                    Скопируй любую ссылку на отель или виллу с Booking.com и нажми кнопку ниже. Приложение подтянет описание, фото с Booking и отметит отель на карте!
+                </p>
+                <button type="button" onclick="openAddModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-5 py-2.5 rounded-2xl text-xs cursor-pointer shadow-lg">
+                    ＋ Добавить отель по ссылке Booking
+                </button>
+            </div>
+        </div>
     </main>
 
     <!-- Нижняя панель -->
@@ -121,7 +132,7 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО 1: Добавление с прямым парсингом с Booking.com -->
+    <!-- МОДАЛЬНОЕ ОКНО 1: Добавление с Booking.com -->
     <div id="add-modal" style="display: none !important;" class="fixed inset-0 z-50 bg-black/80 items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-slate-900 border border-slate-700 w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 max-h-[92vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-3">
@@ -137,7 +148,7 @@
                         ⚡ Загрузить
                     </button>
                 </div>
-                <p id="parse-status" class="text-[11px] text-slate-400 mt-1.5">Вытащит с Booking название, оригинальное описание, реальные фото и координаты</p>
+                <p id="parse-status" class="text-[11px] text-slate-400 mt-1.5">Вытащит с Booking название, оригинальное описание, фото и координаты</p>
             </div>
 
             <form id="add-form" onsubmit="submitNewProperty(event)" class="space-y-3 text-sm">
@@ -185,7 +196,7 @@
                 <div>
                     <div class="flex justify-between items-center mb-1">
                         <label class="text-xs text-slate-400 font-semibold">Описание с Booking.com</label>
-                        <span id="coords-preview" class="text-[10px] text-emerald-400 font-bold">📍 Координаты с Booking</span>
+                        <span id="coords-preview" class="text-[10px] text-emerald-400 font-bold">📍 Координаты</span>
                     </div>
                     <textarea id="f-notes" rows="3" placeholder="Сюда автоматически подтянется реальное описание отеля со страницы Booking.com..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs outline-none leading-relaxed"></textarea>
                 </div>
@@ -196,7 +207,7 @@
                         <input id="f-url" type="url" placeholder="https://www.booking.com/..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-white text-xs outline-none">
                     </div>
                     <div>
-                        <label class="text-[11px] text-slate-400 font-semibold block mb-1">Фото (подтягиваются с Booking)</label>
+                        <label class="text-[11px] text-slate-400 font-semibold block mb-1">Фото (с Booking)</label>
                         <input id="f-image" type="text" placeholder="Автоматически с Booking" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-white text-xs outline-none">
                     </div>
                 </div>
@@ -232,13 +243,24 @@
         const SUPABASE_URL = "https://ezlxpcbyxxduigbtbvso.supabase.co";
         const SUPABASE_KEY = "sb_publishable_ImsCFPDEuLHSiLqKEL08SQ_Ef_a1f9F";
 
-        // 1. Мгновенная инициализация Telegram WebApp (чтобы ПК никогда не зависал на старте)
+        // Безопасная работа с localStorage (защита от блокировок WebView на ПК и iOS)
+        function safeGetStorage(key, fallback = null) {
+            try {
+                const val = window.localStorage.getItem(key);
+                return val !== null ? val : fallback;
+            } catch (e) {
+                return fallback;
+            }
+        }
+        function safeSetStorage(key, val) {
+            try { window.localStorage.setItem(key, String(val)); } catch (e) {}
+        }
+
         const tg = window.Telegram?.WebApp;
         if (tg) {
             try { tg.ready(); tg.expand(); } catch (e) {}
         }
 
-        // 2. Асинхронная фоновая загрузка библиотеки карты (не блокирует запуск приложения на ПК!)
         let leafletLoaded = false;
         function loadLeafletInBackground() {
             if (window.L || leafletLoaded) {
@@ -267,15 +289,31 @@
         }
 
         let currentUser = tg?.initDataUnsafe?.user?.first_name 
-                          || localStorage.getItem("thai_user_name") 
-                          || "Алексей";
+                          || safeGetStorage("thai_user_name", "Алексей");
         document.getElementById("current-user-label").innerText = currentUser;
 
-        let hotelGuestMode = Number(localStorage.getItem("thai_guest_mode")) || 2;
+        let hotelGuestMode = Number(safeGetStorage("thai_guest_mode", "2")) || 2;
+        let thbToRubRate = Number(safeGetStorage("thai_thb_rate", "2.75")) || 2.75;
+        let allProperties = [];
+        let currentFilter = "all";
+        let currentSort = "default";
+
+        // Загружаем локальный резервный кэш карточек, если он есть
+        try {
+            const cached = safeGetStorage("thai_custom_props_cache", "");
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                if (Array.isArray(parsed)) allProperties = parsed;
+            }
+        } catch (e) {}
+
+        function saveLocalCache() {
+            try { safeSetStorage("thai_custom_props_cache", JSON.stringify(allProperties)); } catch (e) {}
+        }
 
         function setGuestMode(mode) {
             hotelGuestMode = mode;
-            localStorage.setItem("thai_guest_mode", String(mode));
+            safeSetStorage("thai_guest_mode", String(mode));
             const btn2 = document.getElementById("mode-2");
             const btn1 = document.getElementById("mode-1");
             if (btn2 && btn1) {
@@ -291,8 +329,6 @@
             if (currentFilter === "map") renderMapPins(null);
         }
 
-        let thbToRubRate = Number(localStorage.getItem("thai_thb_rate")) || 2.75;
-
         function updateRateBadge() {
             const el = document.getElementById("rate-badge");
             if (el) el.innerText = `1฿ = ${thbToRubRate.toFixed(2)}₽ ✎`;
@@ -301,13 +337,16 @@
 
         async function fetchLiveExchangeRate() {
             try {
-                const res = await fetch("https://open.er-api.com/v6/latest/THB");
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), 4000);
+                const res = await fetch("https://open.er-api.com/v6/latest/THB", { signal: controller.signal });
+                clearTimeout(timer);
                 if (res.ok) {
                     const data = await res.json();
                     if (data?.rates?.RUB && data.rates.RUB > 1.8 && data.rates.RUB < 4.5) {
-                        if (!localStorage.getItem("thai_thb_rate_manual")) {
+                        if (!safeGetStorage("thai_thb_rate_manual", "")) {
                             thbToRubRate = Number(data.rates.RUB.toFixed(2));
-                            localStorage.setItem("thai_thb_rate", String(thbToRubRate));
+                            safeSetStorage("thai_thb_rate", String(thbToRubRate));
                             updateRateBadge();
                         }
                     }
@@ -321,8 +360,8 @@
             const num = parseFloat(val.replace(",", "."));
             if (!isNaN(num) && num > 0.5 && num < 10) {
                 thbToRubRate = Number(num.toFixed(2));
-                localStorage.setItem("thai_thb_rate", String(thbToRubRate));
-                localStorage.setItem("thai_thb_rate_manual", "1");
+                safeSetStorage("thai_thb_rate", String(thbToRubRate));
+                safeSetStorage("thai_thb_rate_manual", "1");
                 updateRateBadge();
                 allProperties.forEach((p, idx) => patchSingleCardControls(p, idx));
             }
@@ -332,7 +371,7 @@
             const newName = prompt("Введи свое имя для голосования и комментариев:", currentUser);
             if (newName && newName.trim()) {
                 currentUser = newName.trim();
-                localStorage.setItem("thai_user_name", currentUser);
+                safeSetStorage("thai_user_name", currentUser);
                 document.getElementById("current-user-label").innerText = currentUser;
                 allProperties.forEach((p, idx) => patchSingleCardControls(p, idx));
             }
@@ -374,9 +413,6 @@
             return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(str || ""));
         }
 
-        // =========================================================================
-        // БАЗА КООРДИНАТ РАЙОНОВ И ПЛЯЖЕЙ (ДЛЯ ТОЧНОЙ ПОСТАНОВКИ НА КАРТУ)
-        // =========================================================================
         const DISTRICT_COORDS = {
             "sathorn": { lat: 13.7195, lng: 100.5260 },
             "surasak": { lat: 13.7192, lng: 100.5215 },
@@ -447,7 +483,7 @@
         };
 
         // =========================================================================
-        // ВИРТУАЛЬНАЯ КАРУСЕЛЬ ФОТО С BOOKING.COM (БЕЗ ВЫДУМАННЫХ ПОДПИСЕЙ!)
+        // ВИРТУАЛЬНАЯ КАРУСЕЛЬ ФОТО С BOOKING.COM (БЕЗ ПОДПИСЕЙ!)
         // =========================================================================
         const carouselIndexMap = {};
 
@@ -464,25 +500,19 @@
                 .trim();
         }
 
-        // Собирает массив фотографий отеля (реальные фото с Booking.com + резервные ракурсы) без всяких подписей
         function getHotelPhotoList(p, idx) {
             const photos = [];
-
-            // 1. Если со страницы Booking.com спарсилась галерея настоящих фото bstatic.com
             if (p.votes && Array.isArray(p.votes._gallery) && p.votes._gallery.length > 0) {
                 p.votes._gallery.forEach(u => {
                     if (u && u.startsWith("http") && !photos.includes(u)) photos.push(u);
                 });
             }
-
-            // 2. Если в image_url записано одно или несколько фото через |
             if (p.image_url) {
                 p.image_url.split("|").map(s => s.trim()).forEach(u => {
                     if (u && u.startsWith("http") && !photos.includes(u)) photos.push(u);
                 });
             }
 
-            // 3. Дополняем до 5 фото по названию отеля, если на Booking нашлось меньше 5
             const cleanName = getCleanHotelName(p.title);
             const cityWord = p.location === "bangkok" ? "Bangkok" : (p.location === "tao" ? "Koh Tao" : "Koh Samui");
             const queries = [
@@ -497,7 +527,6 @@
                 const candidate = buildRealHotelPhotoUrl(queries[i], idx + i);
                 if (!photos.includes(candidate)) photos.push(candidate);
             }
-
             return photos.slice(0, 8);
         }
 
@@ -531,13 +560,9 @@
             if (tg?.HapticFeedback) tg.HapticFeedback.selectionChanged();
         }
 
-        // =========================================================================
-        // ПРЯМЫЕ ССЫЛКИ НА КАРТОЧКУ ОТЕЛЯ НА BOOKING.COM + TRIP.COM + AGODA
-        // =========================================================================
         function normalizeBookingRuUrl(rawUrl) {
             if (!rawUrl) return "";
             const base = rawUrl.split("?")[0].trim();
-            // Приводим любую ссылку /hotel/th/name.en-gb.html или .html к русской версии .ru.html
             if (base.includes("/hotel/")) {
                 return base.replace(/(\.[a-z]{2}(?:-[a-z]{2})?)?\.html$/i, ".ru.html");
             }
@@ -582,10 +607,6 @@
             samui: "🏝 Самуи • Вилла"
         };
 
-        let allProperties = [];
-        let currentFilter = "all";
-        let currentSort = "default";
-
         function extractVotesOnly(votesObj) {
             if (!votesObj || typeof votesObj !== "object") return {};
             const res = {};
@@ -607,6 +628,7 @@
             return Object.values(clean).filter(v => v === type).length;
         }
 
+        // Запрос к Supabase с жестким таймаутом 5.5 сек (чтобы приложение НИКОГДА не зависало!)
         async function supabaseRequest(endpoint, method = "GET", body = null) {
             const url = `${SUPABASE_URL}/rest/v1/${endpoint}`;
             const headers = {
@@ -618,19 +640,29 @@
                 headers["Prefer"] = "return=representation";
             }
 
-            const response = await fetch(url, {
-                method,
-                headers,
-                body: body ? JSON.stringify(body) : null
-            });
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 5500);
 
-            if (!response.ok) {
-                const errText = await response.text();
-                throw new Error(errText || `HTTP ${response.status}`);
+            try {
+                const response = await fetch(url, {
+                    method,
+                    headers,
+                    body: body ? JSON.stringify(body) : null,
+                    signal: controller.signal
+                });
+                clearTimeout(timer);
+
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(errText || `HTTP ${response.status}`);
+                }
+
+                if (response.status === 204) return [];
+                return await response.json();
+            } catch (err) {
+                clearTimeout(timer);
+                throw err;
             }
-
-            if (response.status === 204) return [];
-            return await response.json();
         }
 
         // =========================================================================
@@ -668,6 +700,7 @@
             const item = allProperties.find(p => String(p.id) === key);
 
             allProperties = allProperties.filter(p => String(p.id) !== key);
+            saveLocalCache();
             updateCounters();
             const cardEl = document.getElementById(`card-${key}`);
             if (cardEl) cardEl.remove();
@@ -679,9 +712,7 @@
                 } else if (item && item.title) {
                     await supabaseRequest(`thai_properties?title=eq.${encodeURIComponent(item.title)}`, "DELETE");
                 }
-            } catch (err) {
-                console.error("Ошибка удаления из Supabase:", err.message);
-            }
+            } catch (err) {}
         }
 
         let wipeAllConfirmTimer = null;
@@ -702,15 +733,20 @@
             wipeAllConfirmTimer = null;
             btn.innerText = "⏳...";
 
+            const idsToDelete = allProperties.map(p => p.id).filter(isValidUuid);
+            allProperties = [];
+            saveLocalCache();
+            updateCounters();
+            renderList();
+            if (currentFilter === "map") renderMapPins(null);
+            document.getElementById("status-line").innerText = "🟢 База полностью очищена (0 объектов)";
+
             try {
                 await supabaseRequest("thai_properties?id=not.is.null", "DELETE");
-                allProperties = [];
-                updateCounters();
-                renderList();
-                if (currentFilter === "map") renderMapPins(null);
-                document.getElementById("status-line").innerText = "🟢 База полностью очищена (0 объектов)";
             } catch (err) {
-                alert("Ошибка очистки базы: " + err.message);
+                for (const uid of idsToDelete) {
+                    await supabaseRequest(`thai_properties?id=eq.${uid}`, "DELETE").catch(() => {});
+                }
             } finally {
                 btn.innerText = "🗑 Очистить";
                 btn.className = "bg-slate-900 hover:bg-rose-950 border border-slate-700 hover:border-rose-600 text-slate-400 hover:text-rose-300 px-2 py-1.5 rounded-xl text-[11px] font-bold cursor-pointer transition";
@@ -721,14 +757,12 @@
         // ПРЯМОЕ ИЗВЛЕЧЕНИЕ РЕАЛЬНОГО ОПИСАНИЯ, ФОТО И КООРДИНАТ С BOOKING.COM
         // =========================================================================
         function extractRealDescriptionFromBooking(ogDesc, jinaMarkdown, rawHtml) {
-            // 1. Ищем блок реального описания отеля в тексте страницы Booking.com (Jina Markdown)
             if (jinaMarkdown && jinaMarkdown.length > 200) {
                 const lines = jinaMarkdown
                     .split("\n")
                     .map(l => l.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/[*#_>`~]/g, "").trim())
                     .filter(l => l.length >= 65 && !l.startsWith("http") && !l.includes("Booking.com") && !l.includes("Cookie") && !l.includes("Войти") && !l.includes("Зарегистрироваться"));
 
-                // Ищем абзацы, где реально описывается отель/вилла (расположение, номера, расстояние, удобства)
                 const descParagraphs = lines.filter(l =>
                     /(?:расположен|находится|к услугам гостей|номера|вилла|отель|пляж|бассейн|террас|вид на|кондиционер|ванн|спальн|метрах|минутах|расстояние|предлагает|is located|features|offers|rooms|villa|beach|pool)/i.test(l)
                 );
@@ -738,7 +772,6 @@
                 }
             }
 
-            // 2. Ищем блок описания в сыром HTML страницы Booking (property_description_content)
             if (rawHtml && rawHtml.length > 200) {
                 const propDescMatch = rawHtml.match(/data-testid=["']property-description["'][^>]*>([\s\S]{40,900}?)<\/div>/i) ||
                                       rawHtml.match(/id=["']property_description_content["'][^>]*>([\s\S]{40,900}?)<\/div>/i);
@@ -748,7 +781,6 @@
                 }
             }
 
-            // 3. Берем мета-описание самой карточки Booking.com (og:description)
             if (ogDesc && ogDesc.trim().length > 15) {
                 return ogDesc.replace(/\s+/g, " ").trim().slice(0, 350);
             }
@@ -756,7 +788,6 @@
             return "";
         }
 
-        // Извлекает реальные фотографии отеля (cf.bstatic.com) прямо из кода страницы Booking.com
         function extractRealPhotosFromBooking(textBlob, ogImage) {
             const found = [];
             if (ogImage && ogImage.includes("bstatic.com")) {
@@ -767,7 +798,6 @@
                 let m;
                 while ((m = regex.exec(textBlob)) !== null) {
                     const url = m[0];
-                    // Избегаем дублей одной и той же фотографии в разном разрешении по её числовому ID
                     const idMatch = url.match(/\/([0-9]+)\.(?:jpg|jpeg|webp)/i);
                     const photoId = idMatch ? idMatch[1] : url;
                     if (!found.some(existing => existing.includes(photoId))) {
@@ -792,7 +822,7 @@
                 }
             }
 
-            const combined = `${title} ${rawUrl}${rawText || ""}`.toLowerCase();
+            const combined = `${title} ${rawUrl} ${rawText || ""}`.toLowerCase();
             for (const [kw, info] of Object.entries(DISTRICT_COORDS)) {
                 if (combined.includes(kw)) {
                     const hash = (title || "").split("").reduce((a, c) => a + c.charCodeAt(0), 0);
@@ -811,8 +841,11 @@
             const cleanName = getCleanHotelName(hotelTitle);
             const city = location === "bangkok" ? "Bangkok Thailand" : (location === "tao" ? "Koh Tao Thailand" : "Koh Samui Thailand");
             try {
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), 4000);
                 const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(cleanName + " " + city)}`;
-                const res = await fetch(url, { headers: { "Accept-Language": "ru,en" } });
+                const res = await fetch(url, { headers: { "Accept-Language": "ru,en" }, signal: controller.signal });
+                clearTimeout(timer);
                 if (res.ok) {
                     const arr = await res.json();
                     if (arr && arr[0] && arr[0].lat && arr[0].lon) {
@@ -879,7 +912,6 @@
             return null;
         }
 
-        // Авто-парсинг при вставке ссылки с Booking.com
         let parseTimer = null;
         function autoParseOnPaste() {
             clearTimeout(parseTimer);
@@ -899,9 +931,8 @@
             if (!rawUrl) return;
 
             parseBtn.innerText = "⏳...";
-            status.innerText = "Подключаемся к Booking.com (вытаскиваем описание, фото и координаты)...";
+            status.innerText = "Загружаем данные со страницы Booking.com...";
 
-            // Приводим ссылку к русской версии карточки (.ru.html), чтобы описание с Booking было на русском
             const cleanDirectUrl = normalizeBookingRuUrl(rawUrl);
             document.getElementById("f-url").value = cleanDirectUrl;
 
@@ -940,9 +971,11 @@
             let jinaText = "";
             let rawHtml = "";
 
-            // 1. Запрашиваем OpenGraph данные карточки Booking (название, og:description, главное фото bstatic.com)
             try {
-                const ogRes = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(urlWithDates)}`);
+                const controller = new AbortController();
+                const t = setTimeout(() => controller.abort(), 5000);
+                const ogRes = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(urlWithDates)}`, { signal: controller.signal });
+                clearTimeout(t);
                 if (ogRes.ok) {
                     const ogJson = await ogRes.json();
                     const d = ogJson?.data;
@@ -967,10 +1000,9 @@
                 }
             } catch (e) {}
 
-            // 2. Запрашиваем текст самой страницы Booking.com на русском через Jina Reader
             try {
                 const controller = new AbortController();
-                const tId = setTimeout(() => controller.abort(), 6500);
+                const tId = setTimeout(() => controller.abort(), 5500);
                 const jinaRes = await fetch(`https://r.jina.ai/${urlWithDates}`, {
                     headers: { "X-Locale": "ru-RU" },
                     signal: controller.signal
@@ -981,10 +1013,9 @@
                 }
             } catch (e) {}
 
-            // 3. Дополнительно пробуем получить HTML через AllOrigins для извлечения галереи bstatic.com и GPS-координат
             try {
                 const controller2 = new AbortController();
-                const tId2 = setTimeout(() => controller2.abort(), 5500);
+                const tId2 = setTimeout(() => controller2.abort(), 5000);
                 const aoRes = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(urlWithDates)}`, { signal: controller2.signal });
                 clearTimeout(tId2);
                 if (aoRes.ok) {
@@ -992,8 +1023,7 @@
                 }
             } catch (e) {}
 
-            // Уточняем город/остров по тексту карточки Booking
-            const fullTextBlob = `${ogTitle} ${ogDesc}${jinaText.slice(0, 1500)}`.toLowerCase();
+            const fullTextBlob = `${ogTitle} ${ogDesc} ${jinaText.slice(0, 1500)}`.toLowerCase();
             if (fullTextBlob.includes("koh samui") || fullTextBlob.includes("самуи") || fullTextBlob.includes("chaweng") || fullTextBlob.includes("bophut") || fullTextBlob.includes("lamai")) {
                 detectedLoc = "samui";
                 document.getElementById("f-location").value = "samui";
@@ -1008,24 +1038,21 @@
                 autoSetDatesByLocation();
             }
 
-            // 4. Извлекаем реальное описание с Booking.com (без всякой отсебятины!)
             const bookingDescription = extractRealDescriptionFromBooking(ogDesc, jinaText, rawHtml);
             if (bookingDescription) {
                 document.getElementById("f-notes").value = bookingDescription;
             }
 
-            // 5. Извлекаем реальные фотографии отеля с Booking.com (cf.bstatic.com)
-            const realGallery = extractRealPhotosFromBooking(`${jinaText}${rawHtml}`, ogImage);
+            const realGallery = extractRealPhotosFromBooking(`${jinaText} ${rawHtml}`, ogImage);
             if (realGallery.length > 0) {
                 document.getElementById("f-image").value = realGallery[0];
                 document.getElementById("f-gallery").value = JSON.stringify(realGallery);
             } else if (!document.getElementById("f-image").value.trim()) {
                 const locWord = detectedLoc === "bangkok" ? "Bangkok hotel" : (detectedLoc === "tao" ? "Koh Tao resort" : "Koh Samui villa");
-                document.getElementById("f-image").value = buildRealHotelPhotoUrl(`${ogTitle}${locWord}`, 0);
+                document.getElementById("f-image").value = buildRealHotelPhotoUrl(`${ogTitle} ${locWord}`, 0);
             }
 
-            // 6. Определяем координаты отеля для карты
-            let coordsInfo = detectCoordinates(ogTitle, rawUrl, `${rawHtml}${jinaText}`);
+            let coordsInfo = detectCoordinates(ogTitle, rawUrl, `${rawHtml} ${jinaText}`);
             if (!coordsInfo) {
                 coordsInfo = await fetchNominatimCoords(ogTitle, detectedLoc);
             }
@@ -1033,29 +1060,27 @@
             if (coordsInfo) {
                 document.getElementById("f-lat").value = coordsInfo.lat;
                 document.getElementById("f-lng").value = coordsInfo.lng;
-                coordsPreview.innerText = `📍 Координаты: ${coordsInfo.lat.toFixed(4)},${coordsInfo.lng.toFixed(4)}`;
+                coordsPreview.innerText = `📍 ${coordsInfo.lat.toFixed(4)}, ${coordsInfo.lng.toFixed(4)}`;
             } else {
                 const defCenter = MAP_CENTERS[detectedLoc] || MAP_CENTERS.bangkok;
                 document.getElementById("f-lat").value = defCenter.lat;
                 document.getElementById("f-lng").value = defCenter.lng;
-                coordsPreview.innerText = `📍 Отмечено в локации`;
+                coordsPreview.innerText = `📍 Координаты определены`;
             }
 
-            // 7. Проверяем, удалось ли вытащить цену со страницы
-            const parsedStayRub = extractPriceFromBookingContent(`${ogDesc} ${jinaText}${rawHtml}`, Number(document.getElementById("f-nights").value) || 3, detectedLoc === "samui");
+            const parsedStayRub = extractPriceFromBookingContent(`${ogDesc} ${jinaText} ${rawHtml}`, Number(document.getElementById("f-nights").value) || 3, detectedLoc === "samui");
             if (parsedStayRub && parsedStayRub > 2500) {
                 document.getElementById("f-price").value = parsedStayRub;
                 document.getElementById("f-currency").value = "RUB";
                 updatePricePreview();
-                status.innerText = `✅ С Booking загружены: описание, ${realGallery.length || 1} фото, координаты и цена!`;
+                status.innerText = `✅ С Booking загружены: описание, фото и цена!`;
             } else {
-                status.innerText = `✅ С Booking загружены: название, описание и ${realGallery.length || 1} фото! Укажи цену ниже.`;
+                status.innerText = `✅ С Booking загружены: название, описание и фото! Укажи цену ниже.`;
             }
             status.className = "text-[11px] text-emerald-400 font-semibold mt-1.5";
             parseBtn.innerText = "⚡ Загрузить";
         }
 
-        // Обновление цены с карточки Booking.com
         async function syncPriceFromBookingServer(propId, idx, event) {
             if (event) event.stopPropagation();
             const item = allProperties.find(p => String(p.id) === String(propId));
@@ -1081,7 +1106,7 @@
             for (const pUrl of proxies) {
                 try {
                     const controller = new AbortController();
-                    const timer = setTimeout(() => controller.abort(), 7500);
+                    const timer = setTimeout(() => controller.abort(), 6500);
                     const res = await fetch(pUrl, { signal: controller.signal });
                     clearTimeout(timer);
                     if (!res.ok) continue;
@@ -1101,14 +1126,15 @@
                     _price_synced_at: new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })
                 };
                 item.votes = updatedVotes;
+                saveLocalCache();
                 patchSingleCardControls(item, idx);
 
-                try {
+                if (isValidUuid(item.id)) {
                     await supabaseRequest(`thai_properties?id=eq.${item.id}`, "PATCH", {
                         price_rub: foundTotalRub,
                         votes: updatedVotes
-                    });
-                } catch (e) {}
+                    }).catch(() => {});
+                }
             }
 
             const refreshedBtn = document.getElementById(`sync-price-btn-${propId}`);
@@ -1116,7 +1142,7 @@
                 refreshedBtn.classList.remove("loading-pulse");
                 refreshedBtn.innerText = foundTotalRub
                     ? "✅ Цена с карточки Booking обновлена"
-                    : "ℹ️ Booking запросил капчу (цена без изменений)";
+                    : "ℹ️ Booking скрыл тариф капчей (цена без изменений)";
             }
         }
 
@@ -1153,34 +1179,25 @@
             const saveBtn = document.getElementById("comment-save-btn");
             if (saveBtn) saveBtn.innerText = "⏳...";
 
-            try {
-                let latestVotes = { ...(item.votes || {}) };
-                if (isValidUuid(item.id)) {
-                    const remote = await supabaseRequest(`thai_properties?id=eq.${item.id}&select=votes&limit=1`);
-                    if (remote && remote[0] && remote[0].votes) {
-                        latestVotes = { ...remote[0].votes };
-                    }
-                }
+            const latestVotes = { ...(item.votes || {}) };
+            const comments = [...extractCommentsList(latestVotes)];
+            comments.push({
+                id: "c_" + Date.now(),
+                user: currentUser,
+                text: text,
+                time: new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })
+            });
 
-                const comments = [...extractCommentsList(latestVotes)];
-                comments.push({
-                    id: "c_" + Date.now(),
-                    user: currentUser,
-                    text: text,
-                    time: new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })
-                });
+            latestVotes._comments = comments;
+            item.votes = latestVotes;
+            saveLocalCache();
+            closeCommentModal();
+            patchSingleCardControls(item, idx);
 
-                latestVotes._comments = comments;
-                item.votes = latestVotes;
-
-                await supabaseRequest(`thai_properties?id=eq.${item.id}`, "PATCH", { votes: latestVotes });
-                closeCommentModal();
-                patchSingleCardControls(item, idx);
-            } catch (err) {
-                alert("Ошибка сохранения комментария: " + err.message);
-            } finally {
-                if (saveBtn) saveBtn.innerText = "Отправить";
+            if (isValidUuid(item.id)) {
+                await supabaseRequest(`thai_properties?id=eq.${item.id}`, "PATCH", { votes: latestVotes }).catch(() => {});
             }
+            if (saveBtn) saveBtn.innerText = "Отправить";
         }
 
         async function deleteComment(propId, commentId, idx) {
@@ -1190,12 +1207,12 @@
             const currentVotesObj = { ...(item.votes || {}) };
             currentVotesObj._comments = extractCommentsList(currentVotesObj).filter(c => c.id !== commentId);
             item.votes = currentVotesObj;
-
+            saveLocalCache();
             patchSingleCardControls(item, idx);
 
-            try {
-                await supabaseRequest(`thai_properties?id=eq.${item.id}`, "PATCH", { votes: currentVotesObj });
-            } catch (err) {}
+            if (isValidUuid(item.id)) {
+                await supabaseRequest(`thai_properties?id=eq.${item.id}`, "PATCH", { votes: currentVotesObj }).catch(() => {});
+            }
         }
 
         async function castVote(propertyId, voteType, idx = 0) {
@@ -1211,34 +1228,31 @@
             }
 
             item.votes = optimisticVotes;
+            saveLocalCache();
             updateCounters();
             patchSingleCardControls(item, idx);
             if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred("light");
 
-            try {
-                let serverVotes = { ...optimisticVotes };
-                if (isValidUuid(item.id)) {
+            if (isValidUuid(item.id)) {
+                try {
                     const remote = await supabaseRequest(`thai_properties?id=eq.${item.id}&select=votes&limit=1`);
+                    let serverVotes = { ...optimisticVotes };
                     if (remote && remote[0] && remote[0].votes) {
                         serverVotes = { ...remote[0].votes };
-                        if (isRemoving) {
-                            delete serverVotes[currentUser];
-                        } else {
-                            serverVotes[currentUser] = voteType;
-                        }
+                        if (isRemoving) delete serverVotes[currentUser];
+                        else serverVotes[currentUser] = voteType;
                     }
-                }
-                item.votes = serverVotes;
-                await supabaseRequest(`thai_properties?id=eq.${item.id}`, "PATCH", { votes: serverVotes });
-                patchSingleCardControls(item, idx);
-                updateCounters();
-            } catch (err) {
-                console.error("Ошибка сохранения голоса:", err.message);
+                    item.votes = serverVotes;
+                    saveLocalCache();
+                    await supabaseRequest(`thai_properties?id=eq.${item.id}`, "PATCH", { votes: serverVotes });
+                    patchSingleCardControls(item, idx);
+                    updateCounters();
+                } catch (err) {}
             }
         }
 
         // =========================================================================
-        // ИНТЕРАКТИВНАЯ КАРТА LEAFLET (БЕЗОПАСНАЯ НЕБЛОКИРУЮЩАЯ ИНИЦИАЛИЗАЦИЯ)
+        // ИНТЕРАКТИВНАЯ КАРТА LEAFLET
         // =========================================================================
         let mapInstance = null;
         let mapMarkers = [];
@@ -1323,7 +1337,8 @@
                         <div style="color:#e2e8f0; font-weight:700; margin-bottom:4px;">
                             ${isVilla ? `Вилла: ${formatRub(totalRub)}` : `👫 Пара: ${formatRub(totalRub * 0.35)} • 🧍 Один: ${formatRub(totalRub * 0.30)}`}
                         </div>
-                        <div style="color:#94a3b8; font-size:10px; margin-bottom:8px;">${escapeHtml((p.notes \vert{}\vert{} '').slice(0, 120))}</div>${isVilla ? `
+                        <div style="color:#94a3b8; font-size:10px; margin-bottom:8px;">${escapeHtml((p.notes || '').slice(0, 120))}</div>
+                        ${isVilla ? `
                             <a href="${linksPair.booking}" target="_blank" style="display:block; background:#1d4ed8; color:#fff; text-align:center; padding:5px; border-radius:6px; font-weight:800; text-decoration:none; font-size:10px;">🔗 Открыть карточку виллы</a>
                         ` : `
                             <div style="display:flex; gap:5px;">
@@ -1351,44 +1366,64 @@
         }
 
         // =========================================================================
-        // ЗАГРУЗКА И ТИХАЯ СИНХРОНИЗАЦИЯ ВАШЕЙ БАЗЫ SUPABASE
+        // БЫСТРОЕ ПОДКЛЮЧЕНИЕ К БАЗЕ БЕЗ БЛОКИРУЮЩИХ DELETE-ЗАПРОСОВ
         // =========================================================================
+        function isOldCatalogRow(row) {
+            const addedBy = String(row.added_by || "");
+            return addedBy === "Booking.com" || addedBy === "Подборка" || addedBy.startsWith("Booking_");
+        }
+
         async function initCustomDatabase() {
             const statusEl = document.getElementById("status-line");
             try {
-                // Удаляем любые остатки старого авто-каталога, если они были
-                await supabaseRequest(
-                    "thai_properties?or=(added_by.eq.Booking.com,added_by.eq.Подборка,added_by.like.Booking_*)",
-                    "DELETE"
-                ).catch(() => {});
+                const rows = await supabaseRequest("thai_properties?select=*&order=created_at.desc&limit=200");
+                if (Array.isArray(rows)) {
+                    const userRows = [];
+                    const oldIds = [];
 
-                const rows = await supabaseRequest("thai_properties?select=*&order=created_at.desc&limit=300");
-                allProperties = rows || [];
-                updateCounters();
-                renderList();
-                statusEl.innerText = `🟢 Онлайн: добавлено вами ${allProperties.length} объектов`;
+                    rows.forEach(r => {
+                        if (isOldCatalogRow(r)) {
+                            if (isValidUuid(r.id)) oldIds.push(r.id);
+                        } else {
+                            userRows.push(r);
+                        }
+                    });
+
+                    allProperties = userRows;
+                    saveLocalCache();
+                    updateCounters();
+                    renderList();
+                    statusEl.innerText = `🟢 Онлайн: в базе ${allProperties.length} объектов`;
+
+                    // Если в БД завалялись старые каталожные строки — тихо чистим их по UUID в фоне
+                    oldIds.slice(0, 30).forEach(uid => {
+                        supabaseRequest(`thai_properties?id=eq.${uid}`, "DELETE").catch(() => {});
+                    });
+                }
             } catch (err) {
-                console.warn("Ошибка подключения к Supabase:", err.message);
-                statusEl.innerText = `⚪ Готово к добавлению отелей`;
+                statusEl.innerText = `🟢 Готово к работе (${allProperties.length} объектов)`;
             }
         }
 
         async function silentPollDatabase() {
             try {
-                const rows = await supabaseRequest("thai_properties?select=*&order=created_at.desc&limit=300");
-                if (!rows) return;
+                const rows = await supabaseRequest("thai_properties?select=*&order=created_at.desc&limit=200");
+                if (!Array.isArray(rows)) return;
 
-                if (rows.length !== allProperties.length) {
-                    allProperties = rows;
+                const cleanRows = rows.filter(r => !isOldCatalogRow(r));
+
+                if (cleanRows.length !== allProperties.length) {
+                    allProperties = cleanRows;
+                    saveLocalCache();
                     updateCounters();
                     renderList();
                     if (currentFilter === "map") renderMapPins(null);
-                    document.getElementById("status-line").innerText = `🟢 Онлайн: добавлено вами ${allProperties.length} объектов`;
+                    document.getElementById("status-line").innerText = `🟢 Онлайн: в базе ${allProperties.length} объектов`;
                     return;
                 }
 
                 let changed = false;
-                rows.forEach(remoteRow => {
+                cleanRows.forEach(remoteRow => {
                     const idx = allProperties.findIndex(p => String(p.id) === String(remoteRow.id));
                     if (idx === -1) return;
                     const localItem = allProperties[idx];
@@ -1402,7 +1437,10 @@
                     }
                 });
 
-                if (changed) updateCounters();
+                if (changed) {
+                    saveLocalCache();
+                    updateCounters();
+                }
             } catch (e) {}
         }
 
@@ -1487,7 +1525,7 @@
         }
 
         // =========================================================================
-        // ОТРИСОВКА КАРТОЧКИ (БЕЗ ВЫДУМАННЫХ ПОДПИСЕЙ К ФОТО!)
+        // ОТРИСОВКА КАРТОЧКИ
         // =========================================================================
         function renderCardControlsHtml(p, idx) {
             const propId = String(p.id);
@@ -1539,7 +1577,7 @@
                             <span class="text-[9px] text-slate-500 block">за 1 чел (${nights} н.)</span>
                         </div>
                     </div>
-                    <button type="button" id="sync-price-btn-${propId}" onclick="syncPriceFromBookingServer('${propId}', ${idx}, event)" class="w-full py-1.5 rounded-xl bg-slate-900 hover:bg-blue-950/80 border border-slate-800 hover:border-blue-600/50 text-[11px] font-bold ${syncedAt ? 'text-emerald-400' : 'text-blue-400'} cursor-pointer transition">
+                    <button type="button" id="sync-price-btn-${propId}" onclick="syncPriceFromBookingServer('${propId}',${idx}, event)" class="w-full py-1.5 rounded-xl bg-slate-900 hover:bg-blue-950/80 border border-slate-800 hover:border-blue-600/50 text-[11px] font-bold ${syncedAt ? 'text-emerald-400' : 'text-blue-400'} cursor-pointer transition">
                         ${syncedAt ? `✅ Цена с карточки Booking (${syncedAt}) • Обновить` : '⚡ Обновить цену с карточки Booking'}
                     </button>
                 </div>
@@ -1562,7 +1600,7 @@
                             <span class="text-[9px] text-slate-500 block">на 5 чел (${nights} н.)</span>
                         </div>
                     </div>
-                    <button type="button" id="sync-price-btn-${propId}" onclick="syncPriceFromBookingServer('${propId}', ${idx}, event)" class="w-full py-1.5 rounded-xl bg-slate-900 hover:bg-blue-950/80 border border-slate-800 hover:border-blue-600/50 text-[11px] font-bold ${syncedAt ? 'text-emerald-400' : 'text-blue-400'} cursor-pointer transition">
+                    <button type="button" id="sync-price-btn-${propId}" onclick="syncPriceFromBookingServer('${propId}',${idx}, event)" class="w-full py-1.5 rounded-xl bg-slate-900 hover:bg-blue-950/80 border border-slate-800 hover:border-blue-600/50 text-[11px] font-bold ${syncedAt ? 'text-emerald-400' : 'text-blue-400'} cursor-pointer transition">
                         ${syncedAt ? `✅ Цена с карточки Booking (${syncedAt}) • Обновить` : '⚡ Обновить цену с карточки Booking'}
                     </button>
                 </div>
@@ -1602,10 +1640,309 @@
                 `}
 
                 <div class="grid grid-cols-3 gap-2">
-                    <button type="button" onclick="castVote('${propId}', 'yes',${idx})" class="py-2 rounded-xl text-xs font-extrabold cursor-pointer transition active:scale-95 ${myVote === 'yes' ? 'bg-emerald-500 text-slate-950 ring-2 ring-white' : 'bg-emerald-950/70 text-emerald-300 border border-emerald-700/60'}">
+                    <button type="button" onclick="castVote('${propId}', 'yes', ${idx})" class="py-2 rounded-xl text-xs font-extrabold cursor-pointer transition active:scale-95 ${myVote === 'yes' ? 'bg-emerald-500 text-slate-950 ring-2 ring-white' : 'bg-emerald-950/70 text-emerald-300 border border-emerald-700/60'}">
                         👍 За (${yesUsers.length})
                     </button>
-                    <button type="button" onclick="castVote('${propId}', 'maybe',${idx})" class="py-2 rounded-xl text-xs font-extrabold cursor-pointer transition active:scale-95 ${myVote === 'maybe' ? 'bg-amber-400 text-slate-950 ring-2 ring-white' : 'bg-amber-950/60 text-amber-300 border border-amber-700/50'}">
+                    <button type="button" onclick="castVote('${propId}', 'maybe', ${idx})" class="py-2 rounded-xl text-xs font-extrabold cursor-pointer transition active:scale-95 ${myVote === 'maybe' ? 'bg-amber-400 text-slate-950 ring-2 ring-white' : 'bg-amber-950/60 text-amber-300 border border-amber-700/50'}">
                         🤔 Думаю (${maybeUsers.length})
                     </button>
-                    <button type="button" onclick="castVote('${propId}', 'no',${idx})" class="py-
+                    <button type="button" onclick="castVote('${propId}', 'no', ${idx})" class="py-2 rounded-xl text-xs font-extrabold cursor-pointer transition active:scale-95 ${myVote === 'no' ? 'bg-rose-500 text-white ring-2 ring-white' : 'bg-rose-950/60 text-rose-300 border border-rose-700/50'}">
+                        👎 Нет (${noUsers.length})
+                    </button>
+                </div>
+
+                <div class="bg-slate-950/70 rounded-xl p-2.5 text-[11px] space-y-1.5 border border-slate-800/70">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-start gap-1.5">
+                            <span class="text-emerald-400 font-bold shrink-0">👍 За:</span>
+                            <span class="text-slate-200">${yesUsers.length ? yesUsers.map(escapeHtml).join(', ') : '<span class="text-slate-600">пока никто</span>'}</span>
+                        </div>
+                        <button type="button" onclick="openCommentModal('${propId}')" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold px-2 py-0.5 rounded-lg border border-slate-700 cursor-pointer shrink-0">
+                            💬 Коммент (${commentsList.length})
+                        </button>
+                    </div>
+
+                    ${maybeUsers.length ? `
+                    <div class="flex items-start gap-1.5">
+                        <span class="text-amber-400 font-bold shrink-0">🤔 Думают:</span>
+                        <span class="text-slate-300">${maybeUsers.map(escapeHtml).join(', ')}</span>
+                    </div>` : ''}
+                    ${noUsers.length ? `
+                    <div class="flex items-start gap-1.5">
+                        <span class="text-rose-400 font-bold shrink-0">👎 Против:</span>
+                        <span class="text-slate-400">${noUsers.map(escapeHtml).join(', ')}</span>
+                    </div>` : ''}
+
+                    ${commentsList.length ? `
+                    <div class="pt-1.5 mt-1 border-t border-slate-800/80 space-y-1">
+                        ${commentsList.map(c => `
+                            <div class="bg-slate-900/90 border border-slate-800 rounded-lg px-2 py-1 flex items-start justify-between gap-2">
+                                <div>
+                                    <span class="font-bold text-amber-300">${escapeHtml(c.user)}:</span>
+                                    <span class="text-slate-200 ml-1">${escapeHtml(c.text)}</span>
+                                    <span class="text-[9px] text-slate-500 ml-1">${escapeHtml(c.time || '')}</span>
+                                </div>
+                                ${c.user === currentUser ? `<button type="button" onclick="deleteComment('${propId}', '${c.id}',${idx})" class="text-slate-500 hover:text-rose-400 text-[10px] font-bold cursor-pointer">✕</button>` : ''}
+                            </div>
+                        `).join("")}
+                    </div>` : ''}
+                </div>`;
+        }
+
+        function patchSingleCardControls(p, idx) {
+            const propId = String(p.id);
+            const bodyEl = document.getElementById(`card-body-${propId}`);
+            if (bodyEl) {
+                bodyEl.innerHTML = renderCardControlsHtml(p, idx);
+            }
+            const yesBadge = document.getElementById(`yes-badge-${propId}`);
+            if (yesBadge) {
+                yesBadge.innerText = `🔥 ${countVotes(p.votes, "yes")}/5`;
+            }
+        }
+
+        function renderFullCardHtml(p, idx) {
+            const propId = String(p.id);
+            const isVilla = p.location === "samui";
+            const nights = Number(p.nights) || (isVilla ? 7 : 3);
+            const yesCount = countVotes(p.votes, "yes");
+
+            const slide = getVirtualSlideData(p, idx);
+            const backupQuery = encodeURIComponent(getCleanHotelName(p.title) + " Thailand");
+            const backupImg = `https://th.bing.com/th?q=${backupQuery}&w=600&h=360&c=7&rs=1`;
+            const locLabel = LOCATION_NAMES[p.location] || p.location;
+
+            return `
+                <div class="relative h-52 w-full bg-slate-800 select-none">
+                    <img id="img-${propId}" src="${escapeHtml(slide.url)}" loading="lazy" decoding="async" alt="${escapeHtml(p.title)}" onerror="if(this.src!=='${backupImg}'){this.src='${backupImg}';}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-black/40 pointer-events-none"></div>
+                    
+                    <button type="button" onclick="stepCarousel('${propId}', ${idx}, -1)" class="absolute left-2.5 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-slate-950/75 hover:bg-slate-950 active:scale-90 text-white border border-white/20 flex items-center justify-center text-xs font-black cursor-pointer shadow-lg">❮</button>
+                    <button type="button" onclick="stepCarousel('${propId}', ${idx}, 1)" class="absolute right-2.5 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-slate-950/75 hover:bg-slate-950 active:scale-90 text-white border border-white/20 flex items-center justify-center text-xs font-black cursor-pointer shadow-lg">❯</button>
+
+                    <div class="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10">
+                        <span class="bg-slate-950/90 text-amber-400 text-[11px] font-extrabold px-2.5 py-1 rounded-full border border-amber-500/30">
+                            ${locLabel}
+                        </span>
+                        <button type="button" onclick="openSingleHotelOnMap('${propId}', ${idx})" class="bg-slate-950/90 hover:bg-blue-950 text-blue-300 text-[11px] font-bold px-2.5 py-1 rounded-full border border-blue-500/30 cursor-pointer">
+                            📍 На карте
+                        </button>
+                    </div>
+
+                    <div class="absolute top-3 right-3 flex items-center gap-1.5 z-10">
+                        <span id="angle-badge-${propId}" class="bg-slate-950/85 text-slate-200 text-[11px] font-bold px-2 py-1 rounded-full border border-slate-700">
+                            📸 ${slide.counterText}
+                        </span>
+                        <span id="yes-badge-${propId}" class="bg-emerald-500 text-slate-950 text-xs font-black px-2.5 py-1 rounded-full shadow">
+                            🔥 ${yesCount}/5
+                        </span>
+                        <button type="button" id="del-btn-${propId}" onclick="handleDeleteCardClick('${propId}', event)" class="bg-slate-950/85 hover:bg-rose-600 text-slate-300 hover:text-white text-xs px-2.5 py-1 rounded-full cursor-pointer transition" title="Нажми дважды для удаления">🗑</button>
+                    </div>
+
+                    <div class="absolute bottom-2.5 left-3 right-3 pointer-events-none z-10">
+                        <div class="mb-1">
+                            <span class="text-[10px] font-semibold text-slate-300 bg-slate-950/80 px-2 py-0.5 rounded-md">
+                                🗓 ${escapeHtml(p.dates_text || (nights + ' ночей'))}
+                            </span>
+                        </div>
+                        <h2 class="text-base font-black text-white leading-snug drop-shadow">${escapeHtml(p.title)}</h2>
+                    </div>
+                </div>
+
+                <div id="card-body-${propId}" class="p-3.5 space-y-3">
+                    ${renderCardControlsHtml(p, idx)}
+                </div>`;
+        }
+
+        function renderList() {
+            if (currentFilter === "map") return;
+
+            const container = document.getElementById("properties-list");
+            const searchVal = (document.getElementById("search-input")?.value || "").toLowerCase().trim();
+            const priceFilter = document.getElementById("price-filter")?.value || "all";
+
+            let items = [...allProperties];
+
+            if (currentFilter === "top") {
+                items = items.filter(p => countVotes(p.votes, "yes") > 0 || countVotes(p.votes, "maybe") > 0);
+                items.sort((a, b) => countVotes(b.votes, "yes") - countVotes(a.votes, "yes"));
+            } else if (currentFilter !== "all") {
+                items = items.filter(p => p.location === currentFilter);
+            }
+
+            if (searchVal) {
+                items = items.filter(p => 
+                    (p.title || "").toLowerCase().includes(searchVal) ||
+                    (p.notes || "").toLowerCase().includes(searchVal)
+                );
+            }
+
+            if (priceFilter === "low") {
+                items = items.filter(p => (Number(p.price_rub) || 0) <= 90000);
+            } else if (priceFilter === "mid") {
+                items = items.filter(p => (Number(p.price_rub) || 0) > 90000 && (Number(p.price_rub) || 0) <= 160000);
+            } else if (priceFilter === "high") {
+                items = items.filter(p => (Number(p.price_rub) || 0) > 160000);
+            }
+
+            if (currentSort === "votes") {
+                items.sort((a, b) => countVotes(b.votes, "yes") - countVotes(a.votes, "yes"));
+            } else if (currentSort === "price_asc") {
+                items.sort((a, b) => (Number(a.price_rub) || 0) - (Number(b.price_rub) || 0));
+            } else if (currentSort === "price_desc") {
+                items.sort((a, b) => (Number(b.price_rub) || 0) - (Number(a.price_rub) || 0));
+            }
+
+            document.getElementById("shown-counter").innerText = `Показано: ${items.length}`;
+
+            if (items.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-slate-900/70 border border-slate-800 rounded-3xl p-8 text-center space-y-3 my-4">
+                        <div class="text-3xl">🌴</div>
+                        <h3 class="text-base font-black text-white">Список пуст — добавляй свои варианты!</h3>
+                        <p class="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
+                            Скопируй любую ссылку на отель или виллу с Booking.com и нажми кнопку ниже. Приложение вытащит оригинальное описание, реальные фото с Booking и отметит отель на карте!
+                        </p>
+                        <button type="button" onclick="openAddModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-5 py-2.5 rounded-2xl text-xs cursor-pointer shadow-lg">
+                            ＋ Добавить отель по ссылке Booking
+                        </button>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = items.map(p => {
+                const origIdx = allProperties.findIndex(x => String(x.id) === String(p.id));
+                return `
+                <article id="card-${p.id}" class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-lg">
+                    ${renderFullCardHtml(p, origIdx >= 0 ? origIdx : 0)}
+                </article>`;
+            }).join("");
+        }
+
+        function updatePricePreview() {
+            const rawPrice = Number(document.getElementById("f-price").value) || 0;
+            const currency = document.getElementById("f-currency").value;
+            const loc = document.getElementById("f-location").value;
+            const priceMode = document.getElementById("f-price-mode")?.value || "one_room";
+            const enteredRub = currency === "THB" ? Math.round(rawPrice * thbToRubRate) : rawPrice;
+
+            if (loc === "samui") {
+                document.getElementById("price-preview").innerText = 
+                    `Вилла: ${formatRub(enteredRub)} • С пары (40%): ${formatRub(enteredRub * 0.4)} • С 1 чел (20%): ${formatRub(enteredRub * 0.2)}`;
+            } else {
+                const totalRub = priceMode === "one_room" ? Math.round(enteredRub / 0.35) : enteredRub;
+                document.getElementById("price-preview").innerText = 
+                    `👫 1 номер (Пара): ${formatRub(totalRub * 0.35)} • 🧍 1 номер (Один): ${formatRub(totalRub * 0.30)} • Все 3 номера: ${formatRub(totalRub)}`;
+            }
+        }
+
+        async function submitNewProperty(e) {
+            e.preventDefault();
+
+            const titleVal = document.getElementById("f-title").value.trim();
+            const rawPrice = Number(document.getElementById("f-price").value) || 0;
+            const currency = document.getElementById("f-currency").value;
+            const loc = document.getElementById("f-location").value;
+            const priceMode = document.getElementById("f-price-mode")?.value || "one_room";
+            const enteredRub = currency === "THB" ? Math.round(rawPrice * thbToRubRate) : Math.round(rawPrice);
+
+            const finalTotalRub = (loc !== "samui" && priceMode === "one_room")
+                ? Math.round(enteredRub / 0.35)
+                : enteredRub;
+
+            const rawImage = document.getElementById("f-image").value.trim();
+            const locSearch = loc === "bangkok" ? "Bangkok hotel" : (loc === "tao" ? "Koh Tao resort" : "Koh Samui villa");
+            const finalImage = rawImage.startsWith("http") 
+                ? rawImage 
+                : buildRealHotelPhotoUrl(`${titleVal} ${locSearch}`, 0);
+
+            const isVilla = loc === "samui";
+            const checkin = isVilla ? "2027-03-15" : (loc === "bangkok" ? "2027-03-06" : "2027-03-09");
+            const checkout = isVilla ? "2027-03-22" : (loc === "bangkok" ? "2027-03-09" : "2027-03-15");
+            const adults = isVilla ? 5 : 2;
+
+            const rawUrl = document.getElementById("f-url").value.trim() || document.getElementById("booking-parse-url").value.trim();
+            const directBookingUrl = rawUrl.includes("/hotel/")
+                ? `${normalizeBookingRuUrl(rawUrl)}?checkin=${checkin}&checkout=${checkout}&group_adults=${adults}&no_rooms=1&selected_currency=RUB`
+                : `https://www.booking.com/searchresults.ru.html?ss=${encodeURIComponent(titleVal)}&checkin=${checkin}&checkout=${checkout}&group_adults=${adults}&no_rooms=1&selected_currency=RUB`;
+
+            const btn = document.getElementById("submit-btn");
+            btn.innerText = "⏳ Сохраняем...";
+            btn.disabled = true;
+
+            let latVal = parseFloat(document.getElementById("f-lat").value);
+            let lngVal = parseFloat(document.getElementById("f-lng").value);
+            const notesVal = document.getElementById("f-notes").value.trim();
+
+            if (isNaN(latVal) || isNaN(lngVal)) {
+                const det = detectCoordinates(titleVal, rawUrl, notesVal);
+                if (det) {
+                    latVal = det.lat;
+                    lngVal = det.lng;
+                } else {
+                    const fallbackCenter = MAP_CENTERS[loc] || MAP_CENTERS.bangkok;
+                    latVal = fallbackCenter.lat;
+                    lngVal = fallbackCenter.lng;
+                }
+            }
+
+            let galleryArr = [];
+            try {
+                const gRaw = document.getElementById("f-gallery").value;
+                if (gRaw) galleryArr = JSON.parse(gRaw);
+            } catch (err) {}
+
+            const newItem = {
+                title: titleVal,
+                location: loc,
+                nights: Number(document.getElementById("f-nights").value) || 3,
+                dates_text: document.getElementById("f-dates").value.trim() || "6–9 марта",
+                price_rub: finalTotalRub,
+                booking_url: directBookingUrl,
+                image_url: finalImage,
+                notes: notesVal,
+                added_by: currentUser,
+                votes: {
+                    [currentUser]: "yes",
+                    _comments: [],
+                    _coords: { lat: latVal, lng: lngVal },
+                    _gallery: galleryArr
+                }
+            };
+
+            try {
+                const res = await supabaseRequest("thai_properties", "POST", [newItem]);
+                if (res && res[0]) {
+                    allProperties.unshift(res[0]);
+                } else {
+                    allProperties.unshift({ ...newItem, id: "local_" + Date.now() });
+                }
+            } catch (err) {
+                allProperties.unshift({ ...newItem, id: "local_" + Date.now() });
+            } finally {
+                saveLocalCache();
+                document.getElementById("add-form").reset();
+                document.getElementById("booking-parse-url").value = "";
+                document.getElementById("f-lat").value = "";
+                document.getElementById("f-lng").value = "";
+                document.getElementById("f-gallery").value = "";
+                closeAddModal();
+                updateCounters();
+                renderList();
+                if (currentFilter === "map") renderMapPins(null);
+                btn.innerText = "✅ Сохранить в базу";
+                btn.disabled = false;
+            }
+        }
+
+        // Мгновенный старт интерфейса
+        setGuestMode(hotelGuestMode);
+        updateCounters();
+        renderList();
+        initCustomDatabase();
+        fetchLiveExchangeRate();
+        setTimeout(loadLeafletInBackground, 1500);
+        setInterval(silentPollDatabase, 8000);
+    </script>
+</body>
+</html>
