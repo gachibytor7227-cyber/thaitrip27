@@ -3,16 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Thai Trip 2027 — Отели, Виллы и Карта</title>
+    <title>Thai Trip 2027 — Отели и Виллы</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <style>
         body { -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        #map { height: 68vh; width: 100%; border-radius: 1.25rem; z-index: 10; border: 1px solid #1e293b; }
+        #map { height: 68vh; width: 100%; border-radius: 1.25rem; z-index: 10; border: 1px solid #1e293b; background: #0f172a; }
         .leaflet-popup-content-wrapper { background: #0f172a; color: #f8fafc; border: 1px solid #334155; border-radius: 1rem; padding: 2px; }
         .leaflet-popup-tip { background: #0f172a; }
         .leaflet-popup-content { margin: 10px 12px; }
@@ -23,7 +21,7 @@
 <body class="bg-slate-950 text-slate-100 min-h-screen pb-24">
 
     <!-- Верхняя панель -->
-    <header class="sticky top-0 z-30 bg-slate-950/95 backdrop-blur border-b border-slate-800 px-3 py-2 shadow-md">
+    <header class="sticky top-0 z-30 bg-slate-950 border-b border-slate-800 px-3 py-2 shadow-md">
         <div class="max-w-xl mx-auto flex items-center justify-between gap-2">
             <div>
                 <div class="flex items-center gap-1.5 flex-wrap">
@@ -33,15 +31,13 @@
                         1฿ = 2.75₽ ✎
                     </button>
                 </div>
-                <p id="status-line" class="text-[10px] text-emerald-400 font-medium mt-0.5">⚡ Подключение к базе Supabase...</p>
+                <p id="status-line" class="text-[10px] text-emerald-400 font-medium mt-0.5">⚡ Синхронизация базы...</p>
             </div>
 
             <div class="flex items-center gap-1.5 shrink-0">
-                <!-- Кнопка полной очистки базы в 2 клика -->
                 <button type="button" id="wipe-all-btn" onclick="handleWipeAllClick()" class="bg-slate-900 hover:bg-rose-950 border border-slate-700 hover:border-rose-600 text-slate-400 hover:text-rose-300 px-2 py-1.5 rounded-xl text-[11px] font-bold cursor-pointer transition" title="Очистить всю базу">
                     🗑 Очистить
                 </button>
-                <!-- Смена имени -->
                 <button type="button" onclick="changeUserName()" class="flex items-center gap-1 bg-slate-800 hover:bg-slate-700 active:scale-95 border border-slate-700 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-200 cursor-pointer">
                     <span>👤</span>
                     <span id="current-user-label">Алексей</span>
@@ -61,7 +57,7 @@
         </div>
 
         <!-- Переключатель режима для отелей: Пара (2 чел) или Один (1 чел) -->
-        <div id="guest-mode-bar" class="max-w-xl mx-auto mt-2 bg-slate-900/90 border border-slate-800 rounded-xl p-1 flex items-center justify-between gap-1">
+        <div id="guest-mode-bar" class="max-w-xl mx-auto mt-2 bg-slate-900 border border-slate-800 rounded-xl p-1 flex items-center justify-between gap-1">
             <span class="text-[10px] text-slate-400 font-semibold pl-2">Режим номера в отелях:</span>
             <div class="flex gap-1">
                 <button type="button" onclick="setGuestMode(2)" id="mode-2" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-amber-500 text-slate-950 cursor-pointer transition">
@@ -108,8 +104,8 @@
                 <button type="button" onclick="focusMapLocation('tao')" class="bg-slate-900 hover:bg-slate-800 border border-slate-700 py-2 rounded-xl font-bold text-emerald-400 cursor-pointer">🐢 Ко Тао</button>
                 <button type="button" onclick="focusMapLocation('samui')" class="bg-slate-900 hover:bg-slate-800 border border-slate-700 py-2 rounded-xl font-bold text-blue-400 cursor-pointer">🏝 Самуи</button>
             </div>
-            <div id="map"></div>
-            <p class="text-[11px] text-slate-400 text-center">Все добавленные вами по ссылкам отели и виллы автоматически отмечаются на этой карте</p>
+            <div id="map" class="flex items-center justify-center text-xs text-slate-400">Загрузка карты...</div>
+            <p class="text-[11px] text-slate-400 text-center">Все добавленные вами отели и виллы автоматически отображаются на карте</p>
         </div>
 
         <!-- Список карточек -->
@@ -117,7 +113,7 @@
     </main>
 
     <!-- Нижняя панель -->
-    <div class="fixed bottom-0 left-0 right-0 z-20 bg-slate-950/95 backdrop-blur border-t border-slate-800 p-3">
+    <div class="fixed bottom-0 left-0 right-0 z-20 bg-slate-950 border-t border-slate-800 p-3">
         <div class="max-w-xl mx-auto flex gap-2">
             <button type="button" onclick="openAddModal()" class="flex-1 bg-amber-500 hover:bg-amber-400 active:scale-[0.98] text-slate-950 font-black py-3 rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-1.5 cursor-pointer shadow-lg">
                 <span class="text-base leading-none">＋</span> Добавить отель или виллу по ссылке Booking
@@ -125,11 +121,11 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО 1: Добавление + Умный парсер Booking.com (Название, Описание, Карта, Фото, Цена) -->
+    <!-- МОДАЛЬНОЕ ОКНО 1: Добавление с прямым парсингом с Booking.com -->
     <div id="add-modal" style="display: none !important;" class="fixed inset-0 z-50 bg-black/80 items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-slate-900 border border-slate-700 w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 max-h-[92vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-3">
-                <h2 class="text-base font-black text-white">➕ Добавить вариант по ссылке</h2>
+                <h2 class="text-base font-black text-white">➕ Добавить вариант с Booking.com</h2>
                 <button type="button" onclick="closeAddModal()" class="text-slate-400 hover:text-white text-2xl font-bold px-2 py-1 cursor-pointer">✕</button>
             </div>
 
@@ -138,16 +134,16 @@
                 <div class="flex gap-2">
                     <input id="booking-parse-url" type="url" oninput="autoParseOnPaste()" placeholder="https://www.booking.com/hotel/th/..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-blue-400">
                     <button type="button" onclick="parseBookingUrl()" id="parse-btn" class="bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-bold px-3.5 py-2 rounded-xl text-xs whitespace-nowrap cursor-pointer">
-                        ⚡ Подтянуть
+                        ⚡ Загрузить
                     </button>
                 </div>
-                <p id="parse-status" class="text-[11px] text-slate-400 mt-1.5">Автоматически создаст описание, определит точку на карте, подтянет фото и даты</p>
+                <p id="parse-status" class="text-[11px] text-slate-400 mt-1.5">Вытащит с Booking название, оригинальное описание, реальные фото и координаты</p>
             </div>
 
             <form id="add-form" onsubmit="submitNewProperty(event)" class="space-y-3 text-sm">
                 <div>
                     <label class="text-xs text-slate-400 font-semibold block mb-1">Название отеля или виллы *</label>
-                    <input id="f-title" type="text" required placeholder="Подтянется из ссылки или введи вручную" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white focus:border-amber-400 outline-none">
+                    <input id="f-title" type="text" required placeholder="Подтянется с Booking.com" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white focus:border-amber-400 outline-none">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
@@ -188,10 +184,10 @@
 
                 <div>
                     <div class="flex justify-between items-center mb-1">
-                        <label class="text-xs text-slate-400 font-semibold">Описание (формируется автоматически при вставке ссылки)</label>
-                        <span id="coords-preview" class="text-[10px] text-emerald-400 font-bold">📍 Координаты определятся сами</span>
+                        <label class="text-xs text-slate-400 font-semibold">Описание с Booking.com</label>
+                        <span id="coords-preview" class="text-[10px] text-emerald-400 font-bold">📍 Координаты с Booking</span>
                     </div>
-                    <textarea id="f-notes" rows="3" placeholder="Район, пляж, бассейн, рейтинг и особенности подтянутся автоматически..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs outline-none leading-relaxed"></textarea>
+                    <textarea id="f-notes" rows="3" placeholder="Сюда автоматически подтянется реальное описание отеля со страницы Booking.com..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs outline-none leading-relaxed"></textarea>
                 </div>
 
                 <div class="grid grid-cols-2 gap-2">
@@ -200,17 +196,17 @@
                         <input id="f-url" type="url" placeholder="https://www.booking.com/..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-white text-xs outline-none">
                     </div>
                     <div>
-                        <label class="text-[11px] text-slate-400 font-semibold block mb-1">Фото (необязательно)</label>
-                        <input id="f-image" type="url" placeholder="Автопоиск по названию" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-white text-xs outline-none">
+                        <label class="text-[11px] text-slate-400 font-semibold block mb-1">Фото (подтягиваются с Booking)</label>
+                        <input id="f-image" type="text" placeholder="Автоматически с Booking" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-white text-xs outline-none">
                     </div>
                 </div>
 
-                <!-- Скрытые поля для точных GPS-координат отеля на карте -->
                 <input id="f-lat" type="hidden" value="">
                 <input id="f-lng" type="hidden" value="">
+                <input id="f-gallery" type="hidden" value="">
 
                 <button type="submit" id="submit-btn" class="w-full bg-emerald-500 hover:bg-emerald-400 active:scale-[0.98] text-slate-950 font-black py-3 rounded-2xl text-sm cursor-pointer shadow-lg">
-                    ✅ Сохранить отель и отметить на карте
+                    ✅ Сохранить в базу
                 </button>
             </form>
         </div>
@@ -236,9 +232,38 @@
         const SUPABASE_URL = "https://ezlxpcbyxxduigbtbvso.supabase.co";
         const SUPABASE_KEY = "sb_publishable_ImsCFPDEuLHSiLqKEL08SQ_Ef_a1f9F";
 
+        // 1. Мгновенная инициализация Telegram WebApp (чтобы ПК никогда не зависал на старте)
         const tg = window.Telegram?.WebApp;
         if (tg) {
-            try { tg.expand(); tg.ready(); } catch (e) {}
+            try { tg.ready(); tg.expand(); } catch (e) {}
+        }
+
+        // 2. Асинхронная фоновая загрузка библиотеки карты (не блокирует запуск приложения на ПК!)
+        let leafletLoaded = false;
+        function loadLeafletInBackground() {
+            if (window.L || leafletLoaded) {
+                leafletLoaded = true;
+                return Promise.resolve();
+            }
+            return new Promise((resolve) => {
+                const link = document.createElement("link");
+                link.rel = "stylesheet";
+                link.href = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
+                document.head.appendChild(link);
+
+                const script = document.createElement("script");
+                script.src = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
+                script.async = true;
+                script.onload = () => { leafletLoaded = true; resolve(); };
+                script.onerror = () => {
+                    const backup = document.createElement("script");
+                    backup.src = "https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js";
+                    backup.onload = () => { leafletLoaded = true; resolve(); };
+                    backup.onerror = () => resolve();
+                    document.head.appendChild(backup);
+                };
+                document.head.appendChild(script);
+            });
         }
 
         let currentUser = tg?.initDataUnsafe?.user?.first_name 
@@ -353,90 +378,77 @@
         // БАЗА КООРДИНАТ РАЙОНОВ И ПЛЯЖЕЙ (ДЛЯ ТОЧНОЙ ПОСТАНОВКИ НА КАРТУ)
         // =========================================================================
         const DISTRICT_COORDS = {
-            // Бангкок
-            "sathorn": { lat: 13.7195, lng: 100.5260, ru: "район Сатхон" },
-            "surasak": { lat: 13.7192, lng: 100.5215, ru: "у станции BTS Surasak (Сатхон)" },
-            "silom": { lat: 13.7260, lng: 100.5280, ru: "район Силом" },
-            "surawong": { lat: 13.7275, lng: 100.5235, ru: "район Суравонг / Силом" },
-            "mahanakhon": { lat: 13.7238, lng: 100.5289, ru: "рядом с башней Mahanakhon" },
-            "sukhumvit": { lat: 13.7355, lng: 100.5625, ru: "район Сукхумвит" },
-            "asok": { lat: 13.7375, lng: 100.5605, ru: "перекресток Асок (BTS Asok / MRT)" },
-            "terminal 21": { lat: 13.7379, lng: 100.5604, ru: "у ТЦ Terminal 21 (Асок)" },
-            "nana": { lat: 13.7405, lng: 100.5555, ru: "район Сукхумвит / BTS Nana" },
-            "phrom phong": { lat: 13.7305, lng: 100.5695, ru: "район Промпонг (у ТЦ EmQuartier)" },
-            "thonglor": { lat: 13.7240, lng: 100.5795, ru: "тусовочный район Тонглор" },
-            "thong lo": { lat: 13.7240, lng: 100.5795, ru: "тусовочный район Тонглор" },
-            "ekamai": { lat: 13.7195, lng: 100.5850, ru: "район Эккамай" },
-            "siam": { lat: 13.7460, lng: 100.5340, ru: "центр Сиам (у ТЦ Siam Paragon)" },
-            "centralworld": { lat: 13.7475, lng: 100.5388, ru: "у ТЦ CentralWorld (Сиам)" },
-            "ratchadamri": { lat: 13.7420, lng: 100.5400, ru: "район Ратчадамри / Сиам" },
-            "pratunam": { lat: 13.7535, lng: 100.5405, ru: "район Пратунам" },
-            "baiyoke": { lat: 13.7544, lng: 100.5404, ru: "Пратунам (башня Байок Скай)" },
-            "phayathai": { lat: 13.7568, lng: 100.5349, ru: "район Пхая Тхай (прямой поезд в аэропорт)" },
-            "phaya thai": { lat: 13.7568, lng: 100.5349, ru: "район Пхая Тхай" },
-            "wireless": { lat: 13.7398, lng: 100.5476, ru: "улица Wireless Road / Пленчит" },
-            "ploenchit": { lat: 13.7430, lng: 100.5490, ru: "район Пленчит" },
-            "lumpini": { lat: 13.7263, lng: 100.5432, ru: "у парка Люмпини" },
-            "riverside": { lat: 13.7220, lng: 100.5100, ru: "набережная реки Чао Прайя (Риверсайд)" },
-            "iconsiam": { lat: 13.7268, lng: 100.5105, ru: "на берегу реки у ТЦ ICONSIAM" },
-            "khaosan": { lat: 13.7588, lng: 100.4972, ru: "Старый город / Каосан Роуд" },
-            "chinatown": { lat: 13.7402, lng: 100.5098, ru: "Чайнатаун (Яоварат)" },
-
-            // Ко Тао
-            "sairee": { lat: 10.0975, lng: 99.8282, ru: "главный пляж Сайри (Sairee Beach)" },
-            "mae haad": { lat: 10.0852, lng: 99.8255, ru: "пляж и пирс Мае Хаад (Mae Haad)" },
-            "shark bay": { lat: 10.0652, lng: 99.8375, ru: "бухта Shark Bay (снорклинг с черепахами и акулами)" },
-            "haad tien": { lat: 10.0655, lng: 99.8362, ru: "лагуна Хаад Тхиан (Shark Bay)" },
-            "haadtien": { lat: 10.0655, lng: 99.8362, ru: "лагуна Хаад Тхиан (Shark Bay)" },
-            "sai daeng": { lat: 10.0652, lng: 99.8408, ru: "мыс Сай Дэнг (Shark Bay)" },
-            "chalok": { lat: 10.0645, lng: 99.8235, ru: "южная бухта Чалок (Chalok Baan Kao)" },
-            "freedom": { lat: 10.0628, lng: 99.8265, ru: "пляж Freedom Beach" },
-            "taatoh": { lat: 10.0632, lng: 99.8275, ru: "бухта Таа То у Freedom Beach" },
-            "tanote": { lat: 10.0882, lng: 99.8495, ru: "коралловая бухта Таноте Бэй (Tanote Bay)" },
-            "aow leuk": { lat: 10.0725, lng: 99.8435, ru: "бирюзовая бухта Ао Лек (Aow Leuk)" },
-            "ao leuk": { lat: 10.0725, lng: 99.8435, ru: "бухта Ао Лек" },
-            "mango bay": { lat: 10.1215, lng: 99.8392, ru: "северная бухта Манго Бэй" },
-            "nang yuan": { lat: 10.1182, lng: 99.8142, ru: "остров Ко Нанг Юань" },
-            "nangyuan": { lat: 10.1182, lng: 99.8142, ru: "остров Ко Нанг Юань" },
-            "june juea": { lat: 10.0672, lng: 99.8212, ru: "бухта Джун Джуа (June Juea Bay)" },
-            "jansom": { lat: 10.0785, lng: 99.8210, ru: "приватная бухта Джансом Бэй" },
-            "hin wong": { lat: 10.1035, lng: 99.8485, ru: "бухта Хин Вонг (Hin Wong Bay)" },
-
-            // Самуи
-            "chaweng noi": { lat: 9.5050, lng: 100.0565, ru: "пляж Чавенг Ной (лучший песок)" },
-            "chaweng": { lat: 9.5315, lng: 100.0635, ru: "центральный пляж Чавенг" },
-            "bophut": { lat: 9.5565, lng: 100.0285, ru: "район Бопут / Fisherman's Village" },
-            "bo phut": { lat: 9.5565, lng: 100.0285, ru: "район Бопут / Fisherman's Village" },
-            "fisherman": { lat: 9.5582, lng: 100.0258, ru: "Бопут (у набережной Fisherman's Village)" },
-            "lamai": { lat: 9.4665, lng: 100.0425, ru: "пляж Ламаи" },
-            "maret": { lat: 9.4685, lng: 100.0412, ru: "район Марет / пляж Ламаи" },
-            "maenam": { lat: 9.5675, lng: 99.9985, ru: "спокойный пляж Маенам" },
-            "mae nam": { lat: 9.5675, lng: 99.9985, ru: "пляж Маенам" },
-            "choeng mon": { lat: 9.5725, lng: 100.0695, ru: "уютная бухта Чонг Мон" },
-            "chong mon": { lat: 9.5725, lng: 100.0695, ru: "бухта Чонг Мон" },
-            "plai laem": { lat: 9.5795, lng: 100.0645, ru: "мыс Плай Лаем" },
-            "bangrak": { lat: 9.5642, lng: 100.0548, ru: "пляж Банграк (у Большого Будды)" },
-            "bang rak": { lat: 9.5642, lng: 100.0548, ru: "пляж Банграк" },
-            "bang po": { lat: 9.5785, lng: 99.9542, ru: "панорамный пляж Банг По" },
-            "lipa noi": { lat: 9.4892, lng: 99.9345, ru: "закатный пляж Липа Ной" },
-            "taling ngam": { lat: 9.4425, lng: 99.9412, ru: "побережье Талинг Нгам" },
-            "crystal bay": { lat: 9.4852, lng: 100.0672, ru: "бухта Crystal Bay (Серебряный пляж)" },
-            "silver beach": { lat: 9.4852, lng: 100.0672, ru: "бухта Silver Beach" },
-            "samrong": { lat: 9.5842, lng: 100.0735, ru: "закрытая бухта Самронг Бэй" },
-            "tongsai": { lat: 9.5762, lng: 100.0645, ru: "приватная бухта Тонгсай Бэй" }
+            "sathorn": { lat: 13.7195, lng: 100.5260 },
+            "surasak": { lat: 13.7192, lng: 100.5215 },
+            "silom": { lat: 13.7260, lng: 100.5280 },
+            "surawong": { lat: 13.7275, lng: 100.5235 },
+            "mahanakhon": { lat: 13.7238, lng: 100.5289 },
+            "sukhumvit": { lat: 13.7355, lng: 100.5625 },
+            "asok": { lat: 13.7375, lng: 100.5605 },
+            "terminal 21": { lat: 13.7379, lng: 100.5604 },
+            "nana": { lat: 13.7405, lng: 100.5555 },
+            "phrom phong": { lat: 13.7305, lng: 100.5695 },
+            "thonglor": { lat: 13.7240, lng: 100.5795 },
+            "thong lo": { lat: 13.7240, lng: 100.5795 },
+            "ekamai": { lat: 13.7195, lng: 100.5850 },
+            "siam": { lat: 13.7460, lng: 100.5340 },
+            "centralworld": { lat: 13.7475, lng: 100.5388 },
+            "ratchadamri": { lat: 13.7420, lng: 100.5400 },
+            "pratunam": { lat: 13.7535, lng: 100.5405 },
+            "baiyoke": { lat: 13.7544, lng: 100.5404 },
+            "phayathai": { lat: 13.7568, lng: 100.5349 },
+            "phaya thai": { lat: 13.7568, lng: 100.5349 },
+            "wireless": { lat: 13.7398, lng: 100.5476 },
+            "ploenchit": { lat: 13.7430, lng: 100.5490 },
+            "lumpini": { lat: 13.7263, lng: 100.5432 },
+            "riverside": { lat: 13.7220, lng: 100.5100 },
+            "iconsiam": { lat: 13.7268, lng: 100.5105 },
+            "khaosan": { lat: 13.7588, lng: 100.4972 },
+            "chinatown": { lat: 13.7402, lng: 100.5098 },
+            "sairee": { lat: 10.0975, lng: 99.8282 },
+            "mae haad": { lat: 10.0852, lng: 99.8255 },
+            "shark bay": { lat: 10.0652, lng: 99.8375 },
+            "haad tien": { lat: 10.0655, lng: 99.8362 },
+            "haadtien": { lat: 10.0655, lng: 99.8362 },
+            "sai daeng": { lat: 10.0652, lng: 99.8408 },
+            "chalok": { lat: 10.0645, lng: 99.8235 },
+            "freedom": { lat: 10.0628, lng: 99.8265 },
+            "taatoh": { lat: 10.0632, lng: 99.8275 },
+            "tanote": { lat: 10.0882, lng: 99.8495 },
+            "aow leuk": { lat: 10.0725, lng: 99.8435 },
+            "ao leuk": { lat: 10.0725, lng: 99.8435 },
+            "mango bay": { lat: 10.1215, lng: 99.8392 },
+            "nang yuan": { lat: 10.1182, lng: 99.8142 },
+            "nangyuan": { lat: 10.1182, lng: 99.8142 },
+            "june juea": { lat: 10.0672, lng: 99.8212 },
+            "jansom": { lat: 10.0785, lng: 99.8210 },
+            "hin wong": { lat: 10.1035, lng: 99.8485 },
+            "chaweng noi": { lat: 9.5050, lng: 100.0565 },
+            "chaweng": { lat: 9.5315, lng: 100.0635 },
+            "bophut": { lat: 9.5565, lng: 100.0285 },
+            "bo phut": { lat: 9.5565, lng: 100.0285 },
+            "fisherman": { lat: 9.5582, lng: 100.0258 },
+            "lamai": { lat: 9.4665, lng: 100.0425 },
+            "maret": { lat: 9.4685, lng: 100.0412 },
+            "maenam": { lat: 9.5675, lng: 99.9985 },
+            "mae nam": { lat: 9.5675, lng: 99.9985 },
+            "choeng mon": { lat: 9.5725, lng: 100.0695 },
+            "chong mon": { lat: 9.5725, lng: 100.0695 },
+            "plai laem": { lat: 9.5795, lng: 100.0645 },
+            "bangrak": { lat: 9.5642, lng: 100.0548 },
+            "bang rak": { lat: 9.5642, lng: 100.0548 },
+            "bang po": { lat: 9.5785, lng: 99.9542 },
+            "lipa noi": { lat: 9.4892, lng: 99.9345 },
+            "taling ngam": { lat: 9.4425, lng: 99.9412 },
+            "crystal bay": { lat: 9.4852, lng: 100.0672 },
+            "silver beach": { lat: 9.4852, lng: 100.0672 },
+            "samrong": { lat: 9.5842, lng: 100.0735 },
+            "tongsai": { lat: 9.5762, lng: 100.0645 }
         };
 
         // =========================================================================
-        // ВИРТУАЛЬНАЯ КАРУСЕЛЬ НА 5 РАКУРСОВ (В ОДНОМ ТЕГЕ <img>)
+        // ВИРТУАЛЬНАЯ КАРУСЕЛЬ ФОТО С BOOKING.COM (БЕЗ ВЫДУМАННЫХ ПОДПИСЕЙ!)
         // =========================================================================
-        const PHOTO_ANGLES = [
-            { suffix: "swimming pool exterior", label: "1/5 • Бассейн и фасад" },
-            { suffix: "guest room bedroom interior", label: "2/5 • Номер / Спальня" },
-            { suffix: "terrace view balcony", label: "3/5 • Вид и терраса" },
-            { suffix: "bathroom suite", label: "4/5 • Ванная комната" },
-            { suffix: "lobby restaurant beach", label: "5/5 • Территория / Локация" }
-        ];
-
         const carouselIndexMap = {};
 
         function buildRealHotelPhotoUrl(exactSearchQuery, serverSeed = 0) {
@@ -452,46 +464,86 @@
                 .trim();
         }
 
-        function getVirtualSlideData(p, idx) {
-            const propId = String(p.id);
-            const slideIdx = carouselIndexMap[propId] || 0;
-            const angle = PHOTO_ANGLES[slideIdx];
-            const cleanName = getCleanHotelName(p.title);
-            const cityWord = p.location === "bangkok" ? "Bangkok" : (p.location === "tao" ? "Koh Tao" : "Koh Samui");
+        // Собирает массив фотографий отеля (реальные фото с Booking.com + резервные ракурсы) без всяких подписей
+        function getHotelPhotoList(p, idx) {
+            const photos = [];
 
-            if (slideIdx === 0 && p.image_url && !p.image_url.includes("unsplash.com") && !p.image_url.includes("mm.bing.net")) {
-                return { url: p.image_url, label: angle.label, slideIdx };
+            // 1. Если со страницы Booking.com спарсилась галерея настоящих фото bstatic.com
+            if (p.votes && Array.isArray(p.votes._gallery) && p.votes._gallery.length > 0) {
+                p.votes._gallery.forEach(u => {
+                    if (u && u.startsWith("http") && !photos.includes(u)) photos.push(u);
+                });
             }
 
-            const fullQuery = `${cleanName} ${cityWord} ${angle.suffix}`;
+            // 2. Если в image_url записано одно или несколько фото через |
+            if (p.image_url) {
+                p.image_url.split("|").map(s => s.trim()).forEach(u => {
+                    if (u && u.startsWith("http") && !photos.includes(u)) photos.push(u);
+                });
+            }
+
+            // 3. Дополняем до 5 фото по названию отеля, если на Booking нашлось меньше 5
+            const cleanName = getCleanHotelName(p.title);
+            const cityWord = p.location === "bangkok" ? "Bangkok" : (p.location === "tao" ? "Koh Tao" : "Koh Samui");
+            const queries = [
+                `${cleanName} ${cityWord} hotel`,
+                `${cleanName} ${cityWord} pool`,
+                `${cleanName} ${cityWord} room`,
+                `${cleanName} ${cityWord} exterior`,
+                `${cleanName} ${cityWord} view`
+            ];
+
+            for (let i = 0; photos.length < 5 && i < queries.length; i++) {
+                const candidate = buildRealHotelPhotoUrl(queries[i], idx + i);
+                if (!photos.includes(candidate)) photos.push(candidate);
+            }
+
+            return photos.slice(0, 8);
+        }
+
+        function getVirtualSlideData(p, idx) {
+            const propId = String(p.id);
+            const list = getHotelPhotoList(p, idx);
+            const slideIdx = (carouselIndexMap[propId] || 0) % list.length;
             return {
-                url: buildRealHotelPhotoUrl(fullQuery, idx + slideIdx),
-                label: angle.label,
-                slideIdx
+                url: list[slideIdx],
+                counterText: `${slideIdx + 1}/${list.length}`,
+                slideIdx,
+                total: list.length
             };
         }
 
         function stepCarousel(propId, idx, dir) {
             const key = String(propId);
-            const current = carouselIndexMap[key] || 0;
-            const next = (current + dir + PHOTO_ANGLES.length) % PHOTO_ANGLES.length;
-            carouselIndexMap[key] = next;
-
             const item = allProperties.find(p => String(p.id) === key);
             if (!item) return;
 
-            const slide = getVirtualSlideData(item, idx);
+            const list = getHotelPhotoList(item, idx);
+            const current = carouselIndexMap[key] || 0;
+            const next = (current + dir + list.length) % list.length;
+            carouselIndexMap[key] = next;
+
             const imgEl = document.getElementById(`img-${key}`);
             const badgeEl = document.getElementById(`angle-badge-${key}`);
 
-            if (imgEl) imgEl.src = slide.url;
-            if (badgeEl) badgeEl.innerText = `📸 ${slide.label}`;
+            if (imgEl) imgEl.src = list[next];
+            if (badgeEl) badgeEl.innerText = `📸 ${next + 1}/${list.length}`;
             if (tg?.HapticFeedback) tg.HapticFeedback.selectionChanged();
         }
 
         // =========================================================================
         // ПРЯМЫЕ ССЫЛКИ НА КАРТОЧКУ ОТЕЛЯ НА BOOKING.COM + TRIP.COM + AGODA
         // =========================================================================
+        function normalizeBookingRuUrl(rawUrl) {
+            if (!rawUrl) return "";
+            const base = rawUrl.split("?")[0].trim();
+            // Приводим любую ссылку /hotel/th/name.en-gb.html или .html к русской версии .ru.html
+            if (base.includes("/hotel/")) {
+                return base.replace(/(\.[a-z]{2}(?:-[a-z]{2})?)?\.html$/i, ".ru.html");
+            }
+            return base;
+        }
+
         function getDirectHotelBookingUrl(p, adultsCount) {
             const isVilla = p.location === "samui";
             const checkin = isVilla ? "2027-03-15" : (p.location === "bangkok" ? "2027-03-06" : "2027-03-09");
@@ -499,7 +551,7 @@
             const adults = isVilla ? 5 : (adultsCount || hotelGuestMode || 2);
 
             if (p.booking_url && p.booking_url.includes("/hotel/")) {
-                const base = p.booking_url.split("?")[0];
+                const base = normalizeBookingRuUrl(p.booking_url);
                 return `${base}?checkin=${checkin}&checkout=${checkout}&group_adults=${adults}&no_rooms=1&selected_currency=RUB`;
             }
 
@@ -530,7 +582,6 @@
             samui: "🏝 Самуи • Вилла"
         };
 
-        // Список начинается пустым и заполняется ТОЛЬКО вашими объектами из базы Supabase
         let allProperties = [];
         let currentFilter = "all";
         let currentSort = "default";
@@ -583,7 +634,7 @@
         }
 
         // =========================================================================
-        // УДАЛЕНИЕ КАРТОЧЕК И ОЧИСТКА БАЗЫ В 2 КЛИКА (БЕЗ ЗАБЛОКИРОВАННОГО confirm())
+        // УДАЛЕНИЕ КАРТОЧЕК И ОЧИСТКА БАЗЫ В 2 КЛИКА
         // =========================================================================
         const pendingDeleteTimers = {};
 
@@ -592,7 +643,6 @@
             const key = String(propId);
             const btn = document.getElementById(`del-btn-${key}`);
 
-            // 1-й клик: просим подтверждение прямо на кнопке
             if (!pendingDeleteTimers[key]) {
                 if (btn) {
                     btn.innerText = "Удалить? Да";
@@ -611,7 +661,6 @@
                 return;
             }
 
-            // 2-й клик: реально удаляем из экрана и из базы Supabase
             clearTimeout(pendingDeleteTimers[key]);
             delete pendingDeleteTimers[key];
 
@@ -639,7 +688,7 @@
         async function handleWipeAllClick() {
             const btn = document.getElementById("wipe-all-btn");
             if (!wipeAllConfirmTimer) {
-                btn.innerText = "⚠️ Точно очистить всё?";
+                btn.innerText = "⚠️ Точно очистить?";
                 btn.className = "bg-rose-600 text-white px-2.5 py-1.5 rounded-xl text-[11px] font-black cursor-pointer shadow";
                 wipeAllConfirmTimer = setTimeout(() => {
                     wipeAllConfirmTimer = null;
@@ -651,7 +700,7 @@
 
             clearTimeout(wipeAllConfirmTimer);
             wipeAllConfirmTimer = null;
-            btn.innerText = "⏳ Очищаем...";
+            btn.innerText = "⏳...";
 
             try {
                 await supabaseRequest("thai_properties?id=not.is.null", "DELETE");
@@ -669,12 +718,68 @@
         }
 
         // =========================================================================
-        // АВТОГЕНЕРАЦИЯ ОПИСАНИЯ, ОПРЕДЕЛЕНИЕ КООРДИНАТ КАРТЫ И ЦЕНЫ ИЗ ССЫЛКИ BOOKING
+        // ПРЯМОЕ ИЗВЛЕЧЕНИЕ РЕАЛЬНОГО ОПИСАНИЯ, ФОТО И КООРДИНАТ С BOOKING.COM
         // =========================================================================
-        function detectCoordinatesAndDistrict(title, rawUrl, rawText, location) {
-            const combined = `${title} ${rawUrl} ${rawText}`.toLowerCase();
+        function extractRealDescriptionFromBooking(ogDesc, jinaMarkdown, rawHtml) {
+            // 1. Ищем блок реального описания отеля в тексте страницы Booking.com (Jina Markdown)
+            if (jinaMarkdown && jinaMarkdown.length > 200) {
+                const lines = jinaMarkdown
+                    .split("\n")
+                    .map(l => l.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/[*#_>`~]/g, "").trim())
+                    .filter(l => l.length >= 65 && !l.startsWith("http") && !l.includes("Booking.com") && !l.includes("Cookie") && !l.includes("Войти") && !l.includes("Зарегистрироваться"));
 
-            // 1. Проверяем, есть ли в HTML страницы Booking точные GPS-координаты отеля
+                // Ищем абзацы, где реально описывается отель/вилла (расположение, номера, расстояние, удобства)
+                const descParagraphs = lines.filter(l =>
+                    /(?:расположен|находится|к услугам гостей|номера|вилла|отель|пляж|бассейн|террас|вид на|кондиционер|ванн|спальн|метрах|минутах|расстояние|предлагает|is located|features|offers|rooms|villa|beach|pool)/i.test(l)
+                );
+
+                if (descParagraphs.length > 0) {
+                    return descParagraphs.slice(0, 2).join(" ").slice(0, 420);
+                }
+            }
+
+            // 2. Ищем блок описания в сыром HTML страницы Booking (property_description_content)
+            if (rawHtml && rawHtml.length > 200) {
+                const propDescMatch = rawHtml.match(/data-testid=["']property-description["'][^>]*>([\s\S]{40,900}?)<\/div>/i) ||
+                                      rawHtml.match(/id=["']property_description_content["'][^>]*>([\s\S]{40,900}?)<\/div>/i);
+                if (propDescMatch && propDescMatch[1]) {
+                    const cleanHtmlText = propDescMatch[1].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+                    if (cleanHtmlText.length > 30) return cleanHtmlText.slice(0, 420);
+                }
+            }
+
+            // 3. Берем мета-описание самой карточки Booking.com (og:description)
+            if (ogDesc && ogDesc.trim().length > 15) {
+                return ogDesc.replace(/\s+/g, " ").trim().slice(0, 350);
+            }
+
+            return "";
+        }
+
+        // Извлекает реальные фотографии отеля (cf.bstatic.com) прямо из кода страницы Booking.com
+        function extractRealPhotosFromBooking(textBlob, ogImage) {
+            const found = [];
+            if (ogImage && ogImage.includes("bstatic.com")) {
+                found.push(ogImage);
+            }
+            if (textBlob) {
+                const regex = /https:\/\/cf\.bstatic\.com\/xdata\/images\/hotel\/(?:max1024x768|max1280x900|max500|square600)\/[0-9]+\.(?:jpg|jpeg|webp)(?:\?[a-zA-Z0-9=&_-]+)?/gi;
+                let m;
+                while ((m = regex.exec(textBlob)) !== null) {
+                    const url = m[0];
+                    // Избегаем дублей одной и той же фотографии в разном разрешении по её числовому ID
+                    const idMatch = url.match(/\/([0-9]+)\.(?:jpg|jpeg|webp)/i);
+                    const photoId = idMatch ? idMatch[1] : url;
+                    if (!found.some(existing => existing.includes(photoId))) {
+                        found.push(url);
+                    }
+                    if (found.length >= 6) break;
+                }
+            }
+            return found;
+        }
+
+        function detectCoordinates(title, rawUrl, rawText) {
             if (rawText) {
                 const latMatch = rawText.match(/(?:b_map_center_latitude|latitude|data-atlas-latlng=")\s*[:=]?\s*["']?([0-9]{1,2}\.[0-9]{4,8})/i);
                 const lngMatch = rawText.match(/(?:b_map_center_longitude|longitude|data-atlas-latlng="[0-9.]+\s*,)\s*[:=]?\s*["']?([0-9]{2,3}\.[0-9]{4,8})/i);
@@ -682,30 +787,26 @@
                     const lat = parseFloat(latMatch[1]);
                     const lng = parseFloat(lngMatch[1]);
                     if (lat > 5 && lat < 21 && lng > 97 && lng < 106) {
-                        return { lat, lng, districtRu: null };
+                        return { lat, lng };
                     }
                 }
             }
 
-            // 2. Ищем совпадение по базе районов и пляжей Бангкока, Ко Тао и Самуи
+            const combined = `${title} ${rawUrl}${rawText || ""}`.toLowerCase();
             for (const [kw, info] of Object.entries(DISTRICT_COORDS)) {
                 if (combined.includes(kw)) {
-                    // Добавляем микро-смещение от названия, чтобы соседние отели не лежали в одной точке
                     const hash = (title || "").split("").reduce((a, c) => a + c.charCodeAt(0), 0);
                     const offsetLat = ((hash % 9) - 4) * 0.0008;
                     const offsetLng = (((hash >> 3) % 9) - 4) * 0.0008;
                     return {
                         lat: Number((info.lat + offsetLat).toFixed(5)),
-                        lng: Number((info.lng + offsetLng).toFixed(5)),
-                        districtRu: info.ru
+                        lng: Number((info.lng + offsetLng).toFixed(5))
                     };
                 }
             }
-
             return null;
         }
 
-        // Запрос точных координат по названию отеля через бесплатный геокодер OpenStreetMap Nominatim
         async function fetchNominatimCoords(hotelTitle, location) {
             const cleanName = getCleanHotelName(hotelTitle);
             const city = location === "bangkok" ? "Bangkok Thailand" : (location === "tao" ? "Koh Tao Thailand" : "Koh Samui Thailand");
@@ -715,87 +816,11 @@
                 if (res.ok) {
                     const arr = await res.json();
                     if (arr && arr[0] && arr[0].lat && arr[0].lon) {
-                        return {
-                            lat: parseFloat(arr[0].lat),
-                            lng: parseFloat(arr[0].lon)
-                        };
+                        return { lat: parseFloat(arr[0].lat), lng: parseFloat(arr[0].lon) };
                     }
                 }
             } catch (e) {}
             return null;
-        }
-
-        // Умный сборщик описания на русском языке из данных страницы Booking.com
-        function buildRussianDescription(title, location, districtRu, ogDescription, pageText) {
-            const isVilla = location === "samui";
-            const parts = [];
-
-            // 1. Рейтинг отеля, если найден на странице
-            const ratingMatch = (pageText || ogDescription || "").match(/(?:Оценка|Рейтинг|Scored|Rating|Потрясающе|Великолепно|Превосходно)[^0-9]{0,15}([89]\.[0-9]|10(?:\.0)?)/i);
-            if (ratingMatch && ratingMatch[1]) {
-                parts.push(`Рейтинг Booking: ${ratingMatch[1]}/10.`);
-            }
-
-            // 2. Формат размещения и район/пляж
-            const locText = districtRu ? `Локация: ${districtRu}.` : (
-                location === "bangkok" ? "Высотный отель в Бангкоке." :
-                location === "tao" ? "Курортный отель на острове Ко Тао." :
-                "Приватная вилла для компании на Самуи."
-            );
-            parts.push(locText);
-
-            // 3. Если мета-описание с Booking уже на русском и информативное — очищаем его от рекламы Booking
-            if (ogDescription && /[а-яА-ЯёЁ]{4,}/.test(ogDescription)) {
-                const cleanedOg = ogDescription
-                    .replace(/бронируйте.*$/i, "")
-                    .replace(/сэкономьте.*$/i, "")
-                    .replace(/booking\.com.*$/i, "")
-                    .replace(/\s+/g, " ")
-                    .trim();
-                if (cleanedOg.length > 25) {
-                    parts.push(cleanedOg.slice(0, 180));
-                }
-            } else {
-                // 4. Извлекаем ключевые удобства из текста страницы и переводим в теги на русском
-                const combinedLower = `${title} ${ogDescription || ""} ${pageText || ""}`.toLowerCase();
-                const features = [];
-
-                if (combinedLower.includes("infinity pool") || combinedLower.includes("инфинити")) {
-                    features.push("панорамный инфинити-бассейн");
-                } else if (combinedLower.includes("pool") || combinedLower.includes("бассейн")) {
-                    features.push(isVilla ? "собственный приватный бассейн" : "открытый бассейн");
-                }
-
-                if (isVilla || combinedLower.includes("3 bedroom") || combinedLower.includes("3br") || combinedLower.includes("3 спальн")) {
-                    features.push("3 отдельные спальни для компании");
-                }
-
-                if (combinedLower.includes("beachfront") || combinedLower.includes("первая линия") || combinedLower.includes("private beach")) {
-                    features.push("первая береговая линия у моря");
-                } else if (combinedLower.includes("sea view") || combinedLower.includes("ocean view") || combinedLower.includes("вид на море")) {
-                    features.push("вид на море");
-                }
-
-                if (combinedLower.includes("rooftop") || combinedLower.includes("sky bar") || combinedLower.includes("руфтоп")) {
-                    features.push("видовой бар на крыше");
-                }
-
-                if (combinedLower.includes("bts") || combinedLower.includes("mrt") || combinedLower.includes("метро")) {
-                    features.push("рядом со станцией метро BTS/MRT");
-                }
-
-                if (combinedLower.includes("breakfast") || combinedLower.includes("завтрак")) {
-                    features.push("доступны завтраки");
-                }
-
-                if (features.length > 0) {
-                    parts.push("Удобства: " + features.join(", ") + ".");
-                } else {
-                    parts.push(isVilla ? "Вилла с собственным бассейном, террасой, гостиной и кухней." : "Комфортные отдельные номера с кондиционером, бассейном и Wi-Fi.");
-                }
-            }
-
-            return parts.join(" ");
         }
 
         function extractPriceFromBookingContent(rawText, nights, isVilla) {
@@ -854,7 +879,7 @@
             return null;
         }
 
-        // Парсер ссылки при вставке в модальное окно
+        // Авто-парсинг при вставке ссылки с Booking.com
         let parseTimer = null;
         function autoParseOnPaste() {
             clearTimeout(parseTimer);
@@ -873,9 +898,11 @@
 
             if (!rawUrl) return;
 
-            parseBtn.innerText = "⏳ Парсим...";
-            status.innerText = "Загружаем карточку с Booking.com, формируем описание и координаты...";
-            const cleanDirectUrl = rawUrl.split("?")[0];
+            parseBtn.innerText = "⏳...";
+            status.innerText = "Подключаемся к Booking.com (вытаскиваем описание, фото и координаты)...";
+
+            // Приводим ссылку к русской версии карточки (.ru.html), чтобы описание с Booking было на русском
+            const cleanDirectUrl = normalizeBookingRuUrl(rawUrl);
             document.getElementById("f-url").value = cleanDirectUrl;
 
             let detectedLoc = "bangkok";
@@ -903,29 +930,35 @@
             } catch (e) {}
 
             const isVilla = detectedLoc === "samui";
-            const nights = Number(document.getElementById("f-nights").value) || (isVilla ? 7 : 3);
             const checkin = isVilla ? "2027-03-15" : (detectedLoc === "bangkok" ? "2027-03-06" : "2027-03-09");
             const checkout = isVilla ? "2027-03-22" : (detectedLoc === "bangkok" ? "2027-03-09" : "2027-03-15");
-            const urlWithDates = `${cleanDirectUrl}?checkin=${checkin}&checkout=${checkout}&group_adults=${isVilla ? 5 : 2}&no_rooms=1&selected_currency=RUB`;
+            const urlWithDates = `${cleanDirectUrl}?lang=ru&checkin=${checkin}&checkout=${checkout}&group_adults=${isVilla ? 5 : 2}&no_rooms=1&selected_currency=RUB`;
 
             let ogTitle = extractedName;
             let ogDesc = "";
-            let pageText = "";
+            let ogImage = "";
+            let jinaText = "";
+            let rawHtml = "";
 
-            // 1. Запрашиваем метаданные и главное фото через Microlink
+            // 1. Запрашиваем OpenGraph данные карточки Booking (название, og:description, главное фото bstatic.com)
             try {
                 const ogRes = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(urlWithDates)}`);
                 if (ogRes.ok) {
                     const ogJson = await ogRes.json();
                     const d = ogJson?.data;
                     if (d?.title && !d.title.includes("Booking.com:")) {
-                        const cleanT = d.title.replace(/\s*[-–|★].*Booking\.com.*$/i, "").replace(/^★+\s*/, "").trim();
-                        if (cleanT.length > 3) {
+                        const cleanT = d.title
+                            .replace(/\s*[-–|★].*Booking\.com.*$/i, "")
+                            .replace(/,\s*(?:Бангкок|Ко Тао|Самуи|Таиланд|Bangkok|Ko Tao|Koh Samui).*$/i, "")
+                            .replace(/^★+\s*/, "")
+                            .trim();
+                        if (cleanT.length > 2) {
                             ogTitle = cleanT;
                             document.getElementById("f-title").value = cleanT;
                         }
                     }
-                    if (d?.image?.url && (d.image.url.includes("bstatic.com") || d.image.url.startsWith("http"))) {
+                    if (d?.image?.url) {
+                        ogImage = d.image.url;
                         document.getElementById("f-image").value = d.image.url;
                     }
                     if (d?.description) {
@@ -934,19 +967,33 @@
                 }
             } catch (e) {}
 
-            // 2. Читаем текст самой страницы карточки через Jina Reader для описания, координат и цены
+            // 2. Запрашиваем текст самой страницы Booking.com на русском через Jina Reader
             try {
                 const controller = new AbortController();
                 const tId = setTimeout(() => controller.abort(), 6500);
-                const jinaRes = await fetch(`https://r.jina.ai/${urlWithDates}`, { signal: controller.signal });
+                const jinaRes = await fetch(`https://r.jina.ai/${urlWithDates}`, {
+                    headers: { "X-Locale": "ru-RU" },
+                    signal: controller.signal
+                });
                 clearTimeout(tId);
                 if (jinaRes.ok) {
-                    pageText = await jinaRes.text();
+                    jinaText = await jinaRes.text();
                 }
             } catch (e) {}
 
-            // Повторно уточняем локацию по тексту страницы (на случай если в URL не было слова samui/tao)
-            const fullTextBlob = `${ogTitle} ${ogDesc} ${pageText.slice(0, 1500)}`.toLowerCase();
+            // 3. Дополнительно пробуем получить HTML через AllOrigins для извлечения галереи bstatic.com и GPS-координат
+            try {
+                const controller2 = new AbortController();
+                const tId2 = setTimeout(() => controller2.abort(), 5500);
+                const aoRes = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(urlWithDates)}`, { signal: controller2.signal });
+                clearTimeout(tId2);
+                if (aoRes.ok) {
+                    rawHtml = await aoRes.text();
+                }
+            } catch (e) {}
+
+            // Уточняем город/остров по тексту карточки Booking
+            const fullTextBlob = `${ogTitle} ${ogDesc}${jinaText.slice(0, 1500)}`.toLowerCase();
             if (fullTextBlob.includes("koh samui") || fullTextBlob.includes("самуи") || fullTextBlob.includes("chaweng") || fullTextBlob.includes("bophut") || fullTextBlob.includes("lamai")) {
                 detectedLoc = "samui";
                 document.getElementById("f-location").value = "samui";
@@ -961,57 +1008,54 @@
                 autoSetDatesByLocation();
             }
 
-            // 3. Определяем точные координаты для карты
-            let coordsInfo = detectCoordinatesAndDistrict(ogTitle, rawUrl, pageText, detectedLoc);
+            // 4. Извлекаем реальное описание с Booking.com (без всякой отсебятины!)
+            const bookingDescription = extractRealDescriptionFromBooking(ogDesc, jinaText, rawHtml);
+            if (bookingDescription) {
+                document.getElementById("f-notes").value = bookingDescription;
+            }
+
+            // 5. Извлекаем реальные фотографии отеля с Booking.com (cf.bstatic.com)
+            const realGallery = extractRealPhotosFromBooking(`${jinaText}${rawHtml}`, ogImage);
+            if (realGallery.length > 0) {
+                document.getElementById("f-image").value = realGallery[0];
+                document.getElementById("f-gallery").value = JSON.stringify(realGallery);
+            } else if (!document.getElementById("f-image").value.trim()) {
+                const locWord = detectedLoc === "bangkok" ? "Bangkok hotel" : (detectedLoc === "tao" ? "Koh Tao resort" : "Koh Samui villa");
+                document.getElementById("f-image").value = buildRealHotelPhotoUrl(`${ogTitle}${locWord}`, 0);
+            }
+
+            // 6. Определяем координаты отеля для карты
+            let coordsInfo = detectCoordinates(ogTitle, rawUrl, `${rawHtml}${jinaText}`);
             if (!coordsInfo) {
-                const nomCoords = await fetchNominatimCoords(ogTitle, detectedLoc);
-                if (nomCoords) {
-                    coordsInfo = { lat: nomCoords.lat, lng: nomCoords.lng, districtRu: null };
-                }
+                coordsInfo = await fetchNominatimCoords(ogTitle, detectedLoc);
             }
 
             if (coordsInfo) {
                 document.getElementById("f-lat").value = coordsInfo.lat;
                 document.getElementById("f-lng").value = coordsInfo.lng;
-                coordsPreview.innerText = `📍 На карте: ${coordsInfo.lat.toFixed(4)}, ${coordsInfo.lng.toFixed(4)}`;
+                coordsPreview.innerText = `📍 Координаты: ${coordsInfo.lat.toFixed(4)},${coordsInfo.lng.toFixed(4)}`;
             } else {
                 const defCenter = MAP_CENTERS[detectedLoc] || MAP_CENTERS.bangkok;
                 document.getElementById("f-lat").value = defCenter.lat;
                 document.getElementById("f-lng").value = defCenter.lng;
-                coordsPreview.innerText = `📍 Отмечено в центре локации`;
+                coordsPreview.innerText = `📍 Отмечено в локации`;
             }
 
-            // 4. Формируем подробное описание на русском языке
-            const autoDescription = buildRussianDescription(
-                ogTitle,
-                detectedLoc,
-                coordsInfo ? coordsInfo.districtRu : null,
-                ogDesc,
-                pageText
-            );
-            document.getElementById("f-notes").value = autoDescription;
-
-            // 5. Если фото еще не вставлено — ставим реальное фото отеля
-            if (!document.getElementById("f-image").value.trim()) {
-                const locWord = detectedLoc === "bangkok" ? "Bangkok hotel pool" : (detectedLoc === "tao" ? "Koh Tao resort" : "Koh Samui pool villa");
-                document.getElementById("f-image").value = buildRealHotelPhotoUrl(`${ogTitle} ${locWord}`, 0);
-            }
-
-            // 6. Если на странице нашлась цена — подставляем автоматически
-            const parsedStayRub = extractPriceFromBookingContent(`${ogDesc} ${pageText}`, Number(document.getElementById("f-nights").value) || 3, detectedLoc === "samui");
+            // 7. Проверяем, удалось ли вытащить цену со страницы
+            const parsedStayRub = extractPriceFromBookingContent(`${ogDesc} ${jinaText}${rawHtml}`, Number(document.getElementById("f-nights").value) || 3, detectedLoc === "samui");
             if (parsedStayRub && parsedStayRub > 2500) {
                 document.getElementById("f-price").value = parsedStayRub;
                 document.getElementById("f-currency").value = "RUB";
                 updatePricePreview();
-                status.innerText = "✅ Готово! Название, описание, координаты на карте и цена подтянуты!";
+                status.innerText = `✅ С Booking загружены: описание, ${realGallery.length || 1} фото, координаты и цена!`;
             } else {
-                status.innerText = "✅ Название, описание и точка на карте готовы! Осталось указать цену.";
+                status.innerText = `✅ С Booking загружены: название, описание и ${realGallery.length || 1} фото! Укажи цену ниже.`;
             }
             status.className = "text-[11px] text-emerald-400 font-semibold mt-1.5";
-            parseBtn.innerText = "⚡ Подтянуть";
+            parseBtn.innerText = "⚡ Загрузить";
         }
 
-        // Обновление цены с карточки Booking.com по клику на кнопку внутри карточки
+        // Обновление цены с карточки Booking.com
         async function syncPriceFromBookingServer(propId, idx, event) {
             if (event) event.stopPropagation();
             const item = allProperties.find(p => String(p.id) === String(propId));
@@ -1072,7 +1116,7 @@
                 refreshedBtn.classList.remove("loading-pulse");
                 refreshedBtn.innerText = foundTotalRub
                     ? "✅ Цена с карточки Booking обновлена"
-                    : "ℹ️ Booking скрыл тариф капчей (оставлена текущая цена)";
+                    : "ℹ️ Booking запросил капчу (цена без изменений)";
             }
         }
 
@@ -1194,7 +1238,7 @@
         }
 
         // =========================================================================
-        // ИНТЕРАКТИВНАЯ КАРТА LEAFLET (БЕРЕТ КООРДИНАТЫ КАЖДОГО ДОБАВЛЕННОГО ОТЕЛЯ)
+        // ИНТЕРАКТИВНАЯ КАРТА LEAFLET (БЕЗОПАСНАЯ НЕБЛОКИРУЮЩАЯ ИНИЦИАЛИЗАЦИЯ)
         // =========================================================================
         let mapInstance = null;
         let mapMarkers = [];
@@ -1205,17 +1249,23 @@
             samui: { lat: 9.5280, lng: 100.0350, zoom: 11 }
         };
 
-        function initMapIfNeeded() {
-            if (mapInstance) return;
+        async function initMapIfNeeded() {
+            if (mapInstance) return true;
+            await loadLeafletInBackground();
+            if (!window.L) return false;
+            const mapEl = document.getElementById("map");
+            mapEl.innerHTML = "";
             mapInstance = L.map("map").setView([13.7365, 100.5425], 12);
             L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
                 maxZoom: 18,
                 attribution: "&copy; OpenStreetMap"
             }).addTo(mapInstance);
+            return true;
         }
 
-        function focusMapLocation(loc) {
-            initMapIfNeeded();
+        async function focusMapLocation(loc) {
+            const ok = await initMapIfNeeded();
+            if (!ok) return;
             const c = MAP_CENTERS[loc];
             if (c) {
                 mapInstance.setView([c.lat, c.lng], c.zoom);
@@ -1224,16 +1274,12 @@
         }
 
         function getCoordsForProperty(p, idx) {
-            // 1. Если при добавлении отеля сохранились точные координаты в поле votes._coords
             if (p.votes && p.votes._coords && p.votes._coords.lat && p.votes._coords.lng) {
                 return p.votes._coords;
             }
-
-            // 2. Определяем координаты по названию/описанию из словаря районов и пляжей
-            const detected = detectCoordinatesAndDistrict(p.title || "", p.booking_url || "", p.notes || "", p.location);
+            const detected = detectCoordinates(p.title || "", p.booking_url || "", p.notes || "");
             if (detected) return { lat: detected.lat, lng: detected.lng };
 
-            // 3. Центр соответствующей локации
             const base = MAP_CENTERS[p.location] || MAP_CENTERS.bangkok;
             const angle = (idx * 137.5) * (Math.PI / 180);
             const radius = 0.006 + (idx % 5) * 0.003;
@@ -1244,7 +1290,7 @@
         }
 
         function renderMapPins(locFilter = null) {
-            if (!mapInstance) return;
+            if (!mapInstance || !window.L) return;
             mapMarkers.forEach(m => mapInstance.removeLayer(m));
             mapMarkers = [];
 
@@ -1277,8 +1323,7 @@
                         <div style="color:#e2e8f0; font-weight:700; margin-bottom:4px;">
                             ${isVilla ? `Вилла: ${formatRub(totalRub)}` : `👫 Пара: ${formatRub(totalRub * 0.35)} • 🧍 Один: ${formatRub(totalRub * 0.30)}`}
                         </div>
-                        <div style="color:#94a3b8; font-size:10px; margin-bottom:8px;">${escapeHtml(p.notes || '')}</div>
-                        ${isVilla ? `
+                        <div style="color:#94a3b8; font-size:10px; margin-bottom:8px;">${escapeHtml((p.notes \vert{}\vert{} '').slice(0, 120))}</div>${isVilla ? `
                             <a href="${linksPair.booking}" target="_blank" style="display:block; background:#1d4ed8; color:#fff; text-align:center; padding:5px; border-radius:6px; font-weight:800; text-decoration:none; font-size:10px;">🔗 Открыть карточку виллы</a>
                         ` : `
                             <div style="display:flex; gap:5px;">
@@ -1292,11 +1337,11 @@
             });
         }
 
-        function openSingleHotelOnMap(propId, idx) {
+        async function openSingleHotelOnMap(propId, idx) {
             const item = allProperties.find(p => String(p.id) === String(propId));
             if (!item) return;
             const coords = getCoordsForProperty(item, idx);
-            setFilter("map");
+            await setFilter("map");
             setTimeout(() => {
                 if (mapInstance) {
                     mapInstance.setView([coords.lat, coords.lng], 15);
@@ -1306,52 +1351,42 @@
         }
 
         // =========================================================================
-        // АВТООЧИСТКА СТАРОГО КАТАЛОГА (75 ШТ.) И ЗАГРУЗКА ТОЛЬКО ВАШИХ ОТЕЛЕЙ
+        // ЗАГРУЗКА И ТИХАЯ СИНХРОНИЗАЦИЯ ВАШЕЙ БАЗЫ SUPABASE
         // =========================================================================
         async function initCustomDatabase() {
             const statusEl = document.getElementById("status-line");
             try {
-                // 1. Автоматически удаляем все старые автосгенерированные отели каталога из Supabase!
+                // Удаляем любые остатки старого авто-каталога, если они были
                 await supabaseRequest(
                     "thai_properties?or=(added_by.eq.Booking.com,added_by.eq.Подборка,added_by.like.Booking_*)",
                     "DELETE"
                 ).catch(() => {});
 
-                // Если в базе остались еще какие-то старые записи до очистки v12 — стираем их 1 раз полностью
-                if (!localStorage.getItem("thai_clean_slate_v12")) {
-                    localStorage.setItem("thai_clean_slate_v12", "1");
-                    await supabaseRequest("thai_properties?id=not.is.null", "DELETE").catch(() => {});
-                }
-
-                // 2. Загружаем текущие пользовательские отели из базы
                 const rows = await supabaseRequest("thai_properties?select=*&order=created_at.desc&limit=300");
                 allProperties = rows || [];
                 updateCounters();
                 renderList();
-                statusEl.innerText = `🟢 Чистая база активна (добавлено вами: ${allProperties.length})`;
+                statusEl.innerText = `🟢 Онлайн: добавлено вами ${allProperties.length} объектов`;
             } catch (err) {
                 console.warn("Ошибка подключения к Supabase:", err.message);
-                statusEl.innerText = `⚪ Ожидание добавления новых отелей`;
+                statusEl.innerText = `⚪ Готово к добавлению отелей`;
             }
         }
 
-        // Фоновая синхронизация каждые 8 секунд (подтягивает новые отели, голоса и удаления от друзей)
         async function silentPollDatabase() {
             try {
                 const rows = await supabaseRequest("thai_properties?select=*&order=created_at.desc&limit=300");
                 if (!rows) return;
 
-                // Если кто-то добавил или удалил карточку — обновляем список
                 if (rows.length !== allProperties.length) {
                     allProperties = rows;
                     updateCounters();
                     renderList();
                     if (currentFilter === "map") renderMapPins(null);
-                    document.getElementById("status-line").innerText = `🟢 В базе: ${allProperties.length} объектов`;
+                    document.getElementById("status-line").innerText = `🟢 Онлайн: добавлено вами ${allProperties.length} объектов`;
                     return;
                 }
 
-                // Иначе точечно обновляем только голоса/комменты/цены без сброса скролла
                 let changed = false;
                 rows.forEach(remoteRow => {
                     const idx = allProperties.findIndex(p => String(p.id) === String(remoteRow.id));
@@ -1386,7 +1421,7 @@
             document.getElementById("tab-top").innerText = `🏆 Топ (${countTop})`;
         }
 
-        function setFilter(filter) {
+        async function setFilter(filter) {
             currentFilter = filter;
             document.querySelectorAll(".filter-btn").forEach(btn => {
                 btn.className = btn.id === "tab-map"
@@ -1414,11 +1449,13 @@
                 listSec.classList.add("hidden");
                 filterBar.classList.add("hidden");
                 sortBar.classList.add("hidden");
-                setTimeout(() => {
-                    initMapIfNeeded();
-                    mapInstance.invalidateSize();
-                    renderMapPins(null);
-                }, 100);
+                const ok = await initMapIfNeeded();
+                if (ok && mapInstance) {
+                    setTimeout(() => {
+                        mapInstance.invalidateSize();
+                        renderMapPins(null);
+                    }, 80);
+                }
             } else {
                 mapSec.classList.add("hidden");
                 listSec.classList.remove("hidden");
@@ -1450,7 +1487,7 @@
         }
 
         // =========================================================================
-        // ОТРИСОВКА КАРТОЧКИ
+        // ОТРИСОВКА КАРТОЧКИ (БЕЗ ВЫДУМАННЫХ ПОДПИСЕЙ К ФОТО!)
         // =========================================================================
         function renderCardControlsHtml(p, idx) {
             const propId = String(p.id);
@@ -1502,8 +1539,8 @@
                             <span class="text-[9px] text-slate-500 block">за 1 чел (${nights} н.)</span>
                         </div>
                     </div>
-                    <button type="button" id="sync-price-btn-${propId}" onclick="syncPriceFromBookingServer('${propId}',${idx}, event)" class="w-full py-1.5 rounded-xl bg-slate-900 hover:bg-blue-950/80 border border-slate-800 hover:border-blue-600/50 text-[11px] font-bold ${syncedAt ? 'text-emerald-400' : 'text-blue-400'} cursor-pointer transition">
-                        ${syncedAt ? `✅ Цена с карточки Booking (${syncedAt}) • Обновить ещё раз` : '⚡ Обновить цену с карточки Booking'}
+                    <button type="button" id="sync-price-btn-${propId}" onclick="syncPriceFromBookingServer('${propId}', ${idx}, event)" class="w-full py-1.5 rounded-xl bg-slate-900 hover:bg-blue-950/80 border border-slate-800 hover:border-blue-600/50 text-[11px] font-bold ${syncedAt ? 'text-emerald-400' : 'text-blue-400'} cursor-pointer transition">
+                        ${syncedAt ? `✅ Цена с карточки Booking (${syncedAt}) • Обновить` : '⚡ Обновить цену с карточки Booking'}
                     </button>
                 </div>
                 ` : `
@@ -1525,8 +1562,8 @@
                             <span class="text-[9px] text-slate-500 block">на 5 чел (${nights} н.)</span>
                         </div>
                     </div>
-                    <button type="button" id="sync-price-btn-${propId}" onclick="syncPriceFromBookingServer('${propId}',${idx}, event)" class="w-full py-1.5 rounded-xl bg-slate-900 hover:bg-blue-950/80 border border-slate-800 hover:border-blue-600/50 text-[11px] font-bold ${syncedAt ? 'text-emerald-400' : 'text-blue-400'} cursor-pointer transition">
-                        ${syncedAt ? `✅ Цена с карточки Booking (${syncedAt}) • Обновить ещё раз` : '⚡ Обновить цену с карточки Booking'}
+                    <button type="button" id="sync-price-btn-${propId}" onclick="syncPriceFromBookingServer('${propId}', ${idx}, event)" class="w-full py-1.5 rounded-xl bg-slate-900 hover:bg-blue-950/80 border border-slate-800 hover:border-blue-600/50 text-[11px] font-bold ${syncedAt ? 'text-emerald-400' : 'text-blue-400'} cursor-pointer transition">
+                        ${syncedAt ? `✅ Цена с карточки Booking (${syncedAt}) • Обновить` : '⚡ Обновить цену с карточки Booking'}
                     </button>
                 </div>
                 `}
@@ -1565,310 +1602,10 @@
                 `}
 
                 <div class="grid grid-cols-3 gap-2">
-                    <button type="button" onclick="castVote('${propId}', 'yes', ${idx})" class="py-2 rounded-xl text-xs font-extrabold cursor-pointer transition active:scale-95 ${myVote === 'yes' ? 'bg-emerald-500 text-slate-950 ring-2 ring-white' : 'bg-emerald-950/70 text-emerald-300 border border-emerald-700/60'}">
+                    <button type="button" onclick="castVote('${propId}', 'yes',${idx})" class="py-2 rounded-xl text-xs font-extrabold cursor-pointer transition active:scale-95 ${myVote === 'yes' ? 'bg-emerald-500 text-slate-950 ring-2 ring-white' : 'bg-emerald-950/70 text-emerald-300 border border-emerald-700/60'}">
                         👍 За (${yesUsers.length})
                     </button>
-                    <button type="button" onclick="castVote('${propId}', 'maybe', ${idx})" class="py-2 rounded-xl text-xs font-extrabold cursor-pointer transition active:scale-95 ${myVote === 'maybe' ? 'bg-amber-400 text-slate-950 ring-2 ring-white' : 'bg-amber-950/60 text-amber-300 border border-amber-700/50'}">
+                    <button type="button" onclick="castVote('${propId}', 'maybe',${idx})" class="py-2 rounded-xl text-xs font-extrabold cursor-pointer transition active:scale-95 ${myVote === 'maybe' ? 'bg-amber-400 text-slate-950 ring-2 ring-white' : 'bg-amber-950/60 text-amber-300 border border-amber-700/50'}">
                         🤔 Думаю (${maybeUsers.length})
                     </button>
-                    <button type="button" onclick="castVote('${propId}', 'no', ${idx})" class="py-2 rounded-xl text-xs font-extrabold cursor-pointer transition active:scale-95 ${myVote === 'no' ? 'bg-rose-500 text-white ring-2 ring-white' : 'bg-rose-950/60 text-rose-300 border border-rose-700/50'}">
-                        👎 Нет (${noUsers.length})
-                    </button>
-                </div>
-
-                <div class="bg-slate-950/70 rounded-xl p-2.5 text-[11px] space-y-1.5 border border-slate-800/70">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-start gap-1.5">
-                            <span class="text-emerald-400 font-bold shrink-0">👍 За:</span>
-                            <span class="text-slate-200">${yesUsers.length ? yesUsers.map(escapeHtml).join(', ') : '<span class="text-slate-600">пока никто</span>'}</span>
-                        </div>
-                        <button type="button" onclick="openCommentModal('${propId}')" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold px-2 py-0.5 rounded-lg border border-slate-700 cursor-pointer shrink-0">
-                            💬 Коммент (${commentsList.length})
-                        </button>
-                    </div>
-
-                    ${maybeUsers.length ? `
-                    <div class="flex items-start gap-1.5">
-                        <span class="text-amber-400 font-bold shrink-0">🤔 Думают:</span>
-                        <span class="text-slate-300">${maybeUsers.map(escapeHtml).join(', ')}</span>
-                    </div>` : ''}
-                    ${noUsers.length ? `
-                    <div class="flex items-start gap-1.5">
-                        <span class="text-rose-400 font-bold shrink-0">👎 Против:</span>
-                        <span class="text-slate-400">${noUsers.map(escapeHtml).join(', ')}</span>
-                    </div>` : ''}
-
-                    ${commentsList.length ? `
-                    <div class="pt-1.5 mt-1 border-t border-slate-800/80 space-y-1">
-                        ${commentsList.map(c => `
-                            <div class="bg-slate-900/90 border border-slate-800 rounded-lg px-2 py-1 flex items-start justify-between gap-2">
-                                <div>
-                                    <span class="font-bold text-amber-300">${escapeHtml(c.user)}:</span>
-                                    <span class="text-slate-200 ml-1">${escapeHtml(c.text)}</span>
-                                    <span class="text-[9px] text-slate-500 ml-1">${escapeHtml(c.time || '')}</span>
-                                </div>
-                                ${c.user === currentUser ? `<button type="button" onclick="deleteComment('${propId}', '${c.id}',${idx})" class="text-slate-500 hover:text-rose-400 text-[10px] font-bold cursor-pointer">✕</button>` : ''}
-                            </div>
-                        `).join("")}
-                    </div>` : ''}
-                </div>`;
-        }
-
-        function patchSingleCardControls(p, idx) {
-            const propId = String(p.id);
-            const bodyEl = document.getElementById(`card-body-${propId}`);
-            if (bodyEl) {
-                bodyEl.innerHTML = renderCardControlsHtml(p, idx);
-            }
-            const yesBadge = document.getElementById(`yes-badge-${propId}`);
-            if (yesBadge) {
-                yesBadge.innerText = `🔥 ${countVotes(p.votes, "yes")}/5`;
-            }
-        }
-
-        function renderFullCardHtml(p, idx) {
-            const propId = String(p.id);
-            const isVilla = p.location === "samui";
-            const nights = Number(p.nights) || (isVilla ? 7 : 3);
-            const yesCount = countVotes(p.votes, "yes");
-
-            const slide = getVirtualSlideData(p, idx);
-            const backupQuery = encodeURIComponent(getCleanHotelName(p.title) + " Thailand");
-            const backupImg = `https://th.bing.com/th?q=${backupQuery}&w=600&h=360&c=7&rs=1`;
-            const locLabel = LOCATION_NAMES[p.location] || p.location;
-
-            return `
-                <div class="relative h-52 w-full bg-slate-800 select-none">
-                    <img id="img-${propId}" src="${escapeHtml(slide.url)}" loading="lazy" decoding="async" alt="${escapeHtml(p.title)}" onerror="if(this.src!=='${backupImg}'){this.src='${backupImg}';}" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-black/40 pointer-events-none"></div>
-                    
-                    <button type="button" onclick="stepCarousel('${propId}', ${idx}, -1)" class="absolute left-2.5 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-slate-950/75 hover:bg-slate-950 active:scale-90 text-white border border-white/20 flex items-center justify-center text-xs font-black cursor-pointer shadow-lg">❮</button>
-                    <button type="button" onclick="stepCarousel('${propId}', ${idx}, 1)" class="absolute right-2.5 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-slate-950/75 hover:bg-slate-950 active:scale-90 text-white border border-white/20 flex items-center justify-center text-xs font-black cursor-pointer shadow-lg">❯</button>
-
-                    <div class="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10">
-                        <span class="bg-slate-950/90 text-amber-400 text-[11px] font-extrabold px-2.5 py-1 rounded-full border border-amber-500/30">
-                            ${locLabel}
-                        </span>
-                        <button type="button" onclick="openSingleHotelOnMap('${propId}', ${idx})" class="bg-slate-950/90 hover:bg-blue-950 text-blue-300 text-[11px] font-bold px-2.5 py-1 rounded-full border border-blue-500/30 cursor-pointer">
-                            📍 На карте
-                        </button>
-                    </div>
-
-                    <div class="absolute top-3 right-3 flex items-center gap-1.5 z-10">
-                        <span id="yes-badge-${propId}" class="bg-emerald-500 text-slate-950 text-xs font-black px-2.5 py-1 rounded-full shadow">
-                            🔥 ${yesCount}/5
-                        </span>
-                        <button type="button" id="del-btn-${propId}" onclick="handleDeleteCardClick('${propId}', event)" class="bg-slate-950/85 hover:bg-rose-600 text-slate-300 hover:text-white text-xs px-2.5 py-1 rounded-full cursor-pointer transition" title="Нажми дважды для удаления">🗑</button>
-                    </div>
-
-                    <div class="absolute bottom-2.5 left-3 right-3 pointer-events-none z-10">
-                        <div class="flex items-center justify-between mb-1">
-                            <span id="angle-badge-${propId}" class="text-[10px] font-bold text-amber-300 bg-slate-950/80 px-2 py-0.5 rounded-md border border-slate-700/60">
-                                📸 ${slide.label}
-                            </span>
-                            <span class="text-[10px] font-semibold text-slate-300 bg-slate-950/80 px-2 py-0.5 rounded-md">
-                                🗓 ${escapeHtml(p.dates_text || (nights + ' ночей'))}
-                            </span>
-                        </div>
-                        <h2 class="text-base font-black text-white leading-snug drop-shadow">${escapeHtml(p.title)}</h2>
-                    </div>
-                </div>
-
-                <div id="card-body-${propId}" class="p-3.5 space-y-3">
-                    ${renderCardControlsHtml(p, idx)}
-                </div>`;
-        }
-
-        function renderList() {
-            if (currentFilter === "map") return;
-
-            const container = document.getElementById("properties-list");
-            const searchVal = (document.getElementById("search-input")?.value || "").toLowerCase().trim();
-            const priceFilter = document.getElementById("price-filter")?.value || "all";
-
-            let items = [...allProperties];
-
-            if (currentFilter === "top") {
-                items = items.filter(p => countVotes(p.votes, "yes") > 0 || countVotes(p.votes, "maybe") > 0);
-                items.sort((a, b) => countVotes(b.votes, "yes") - countVotes(a.votes, "yes"));
-            } else if (currentFilter !== "all") {
-                items = items.filter(p => p.location === currentFilter);
-            }
-
-            if (searchVal) {
-                items = items.filter(p => 
-                    (p.title || "").toLowerCase().includes(searchVal) ||
-                    (p.notes || "").toLowerCase().includes(searchVal)
-                );
-            }
-
-            if (priceFilter === "low") {
-                items = items.filter(p => (Number(p.price_rub) || 0) <= 90000);
-            } else if (priceFilter === "mid") {
-                items = items.filter(p => (Number(p.price_rub) || 0) > 90000 && (Number(p.price_rub) || 0) <= 160000);
-            } else if (priceFilter === "high") {
-                items = items.filter(p => (Number(p.price_rub) || 0) > 160000);
-            }
-
-            if (currentSort === "votes") {
-                items.sort((a, b) => countVotes(b.votes, "yes") - countVotes(a.votes, "yes"));
-            } else if (currentSort === "price_asc") {
-                items.sort((a, b) => (Number(a.price_rub) || 0) - (Number(b.price_rub) || 0));
-            } else if (currentSort === "price_desc") {
-                items.sort((a, b) => (Number(b.price_rub) || 0) - (Number(a.price_rub) || 0));
-            }
-
-            document.getElementById("shown-counter").innerText = `Показано: ${items.length}`;
-
-            if (items.length === 0) {
-                container.innerHTML = `
-                    <div class="bg-slate-900/70 border border-slate-800 rounded-3xl p-8 text-center space-y-3 my-4">
-                        <div class="text-3xl">🌴</div>
-                        <h3 class="text-base font-black text-white">Список пуст — добавляй свои варианты!</h3>
-                        <p class="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
-                            Скопируй любую ссылку на отель или виллу с Booking.com и нажми кнопку ниже. Приложение само сделает описание, подтянет фото и отметит отель на карте!
-                        </p>
-                        <button type="button" onclick="openAddModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-5 py-2.5 rounded-2xl text-xs cursor-pointer shadow-lg">
-                            ＋ Добавить первый отель по ссылке
-                        </button>
-                    </div>`;
-                return;
-            }
-
-            container.innerHTML = items.map(p => {
-                const origIdx = allProperties.findIndex(x => String(x.id) === String(p.id));
-                return `
-                <article id="card-${p.id}" class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-lg">
-                    ${renderFullCardHtml(p, origIdx >= 0 ? origIdx : 0)}
-                </article>`;
-            }).join("");
-        }
-
-        function updatePricePreview() {
-            const rawPrice = Number(document.getElementById("f-price").value) || 0;
-            const currency = document.getElementById("f-currency").value;
-            const loc = document.getElementById("f-location").value;
-            const priceMode = document.getElementById("f-price-mode")?.value || "one_room";
-            const enteredRub = currency === "THB" ? Math.round(rawPrice * thbToRubRate) : rawPrice;
-
-            if (loc === "samui") {
-                document.getElementById("price-preview").innerText = 
-                    `Вилла: ${formatRub(enteredRub)} • С пары (40%): ${formatRub(enteredRub * 0.4)} • С 1 чел (20%): ${formatRub(enteredRub * 0.2)}`;
-            } else {
-                const totalRub = priceMode === "one_room" ? Math.round(enteredRub / 0.35) : enteredRub;
-                document.getElementById("price-preview").innerText = 
-                    `👫 1 номер (Пара): ${formatRub(totalRub * 0.35)} • 🧍 1 номер (Один): ${formatRub(totalRub * 0.30)} • Все 3 номера: ${formatRub(totalRub)}`;
-            }
-        }
-
-        async function submitNewProperty(e) {
-            e.preventDefault();
-
-            const titleVal = document.getElementById("f-title").value.trim();
-            const rawPrice = Number(document.getElementById("f-price").value) || 0;
-            const currency = document.getElementById("f-currency").value;
-            const loc = document.getElementById("f-location").value;
-            const priceMode = document.getElementById("f-price-mode")?.value || "one_room";
-            const enteredRub = currency === "THB" ? Math.round(rawPrice * thbToRubRate) : Math.round(rawPrice);
-
-            const finalTotalRub = (loc !== "samui" && priceMode === "one_room")
-                ? Math.round(enteredRub / 0.35)
-                : enteredRub;
-
-            const rawImage = document.getElementById("f-image").value.trim();
-            const locSearch = loc === "bangkok" ? "Bangkok hotel pool" : (loc === "tao" ? "Koh Tao resort" : "Koh Samui villa pool");
-            const finalImage = rawImage.startsWith("http") 
-                ? rawImage 
-                : buildRealHotelPhotoUrl(`${titleVal} ${locSearch}`, 0);
-
-            const isVilla = loc === "samui";
-            const checkin = isVilla ? "2027-03-15" : (loc === "bangkok" ? "2027-03-06" : "2027-03-09");
-            const checkout = isVilla ? "2027-03-22" : (loc === "bangkok" ? "2027-03-09" : "2027-03-15");
-            const adults = isVilla ? 5 : 2;
-
-            const rawUrl = document.getElementById("f-url").value.trim() || document.getElementById("booking-parse-url").value.trim();
-            const directBookingUrl = rawUrl.includes("/hotel/")
-                ? `${rawUrl.split("?")[0]}?checkin=${checkin}&checkout=${checkout}&group_adults=${adults}&no_rooms=1&selected_currency=RUB`
-                : `https://www.booking.com/searchresults.ru.html?ss=${encodeURIComponent(titleVal)}&checkin=${checkin}&checkout=${checkout}&group_adults=${adults}&no_rooms=1&selected_currency=RUB`;
-
-            const btn = document.getElementById("submit-btn");
-            btn.innerText = "⏳ Сохраняем и отмечаем на карте...";
-            btn.disabled = true;
-
-            // Определяем координаты отеля, если пользователь не запускал парсер или ввел название вручную
-            let latVal = parseFloat(document.getElementById("f-lat").value);
-            let lngVal = parseFloat(document.getElementById("f-lng").value);
-            let notesVal = document.getElementById("f-notes").value.trim();
-
-            if (isNaN(latVal) || isNaN(lngVal)) {
-                const det = detectCoordinatesAndDistrict(titleVal, rawUrl, notesVal, loc);
-                if (det) {
-                    latVal = det.lat;
-                    lngVal = det.lng;
-                } else {
-                    const nom = await fetchNominatimCoords(titleVal, loc);
-                    if (nom) {
-                        latVal = nom.lat;
-                        lngVal = nom.lng;
-                    } else {
-                        const fallbackCenter = MAP_CENTERS[loc] || MAP_CENTERS.bangkok;
-                        latVal = fallbackCenter.lat;
-                        lngVal = fallbackCenter.lng;
-                    }
-                }
-            }
-
-            // Если поле описания оставили пустым — генерируем автоматическое описание на русском
-            if (!notesVal) {
-                const det = detectCoordinatesAndDistrict(titleVal, rawUrl, "", loc);
-                notesVal = buildRussianDescription(titleVal, loc, det ? det.districtRu : null, "", "");
-            }
-
-            const newItem = {
-                title: titleVal,
-                location: loc,
-                nights: Number(document.getElementById("f-nights").value) || 3,
-                dates_text: document.getElementById("f-dates").value.trim() || "6–9 марта",
-                price_rub: finalTotalRub,
-                booking_url: directBookingUrl,
-                image_url: finalImage,
-                notes: notesVal,
-                added_by: currentUser,
-                votes: {
-                    [currentUser]: "yes",
-                    _comments: [],
-                    _coords: { lat: latVal, lng: lngVal }
-                }
-            };
-
-            try {
-                const res = await supabaseRequest("thai_properties", "POST", [newItem]);
-                if (res && res[0]) {
-                    allProperties.unshift(res[0]);
-                }
-                document.getElementById("add-form").reset();
-                document.getElementById("booking-parse-url").value = "";
-                document.getElementById("f-lat").value = "";
-                document.getElementById("f-lng").value = "";
-                closeAddModal();
-                updateCounters();
-                renderList();
-                if (currentFilter === "map") renderMapPins(null);
-            } catch (err) {
-                alert("Ошибка сохранения в базу: " + err.message);
-            } finally {
-                btn.innerText = "✅ Сохранить отель и отметить на карте";
-                btn.disabled = false;
-            }
-        }
-
-        // Запуск: очищает старый каталог и работает только с вашими ссылками
-        setGuestMode(hotelGuestMode);
-        fetchLiveExchangeRate();
-        updateCounters();
-        renderList();
-        initCustomDatabase();
-        setInterval(silentPollDatabase, 8000);
-    </script>
-</body>
-</html>
+                    <button type="button" onclick="castVote('${propId}', 'no',${idx})" class="py-
